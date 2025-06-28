@@ -8,4 +8,7 @@ export { MainLayout } from './layout/MainLayout';
 export { BottomTabBar } from './navigation/BottomTabBar';
 
 // Screen Components
-export * from './screens'; 
+export * from './screens';
+
+// Feature Components
+export { StepCounter } from './StepCounter'; 

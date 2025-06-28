@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Text } from '../ui/Text';
+import { StepCounter } from '../StepCounter';
 
 interface UserProfile {
   name: string;
@@ -228,22 +229,8 @@ export const ProfileScreen: React.FC = () => {
             </View>
           </View>
 
-          {/* Step Counter Test Card */}
-          <View style={styles.stepCard}>
-            <View style={styles.stepCardContent}>
-              <Text variant="h3" weight="bold" style={styles.stepCardTitle}>
-                Test Your Step Counter
-              </Text>
-              <Text variant="body" color="secondary" style={styles.stepCardDescription}>
-                Take a quick test to calibrate your step counter and ensure accurate tracking
-              </Text>
-              <TouchableOpacity style={styles.stepButton} activeOpacity={0.8}>
-                <Text variant="body" weight="semibold" color="primary">
-                  Start Test
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          {/* Step Counter Component */}
+          <StepCounter />
         </View>
       </ScrollView>
     </TouchableWithoutFeedback>
@@ -352,29 +339,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ff6b35',
     fontSize: 16,
-  },
-  stepCard: {
-    backgroundColor: '#2d2d2d',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-  },
-  stepCardContent: {
-    alignItems: 'center',
-  },
-  stepCardTitle: {
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  stepCardDescription: {
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 22,
-  },
-  stepButton: {
-    backgroundColor: '#ff6b35',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
   },
 }); 
