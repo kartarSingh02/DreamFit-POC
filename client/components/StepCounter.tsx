@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Alert, Platform, PermissionsAndroid } from 'react-native';
 import { Pedometer } from 'expo-sensors';
 import * as Location from 'expo-location';
 import { Text } from './ui/Text';
@@ -45,6 +45,26 @@ export const StepCounter: React.FC = () => {
           [{ text: 'OK' }]
         );
         return;
+      }
+
+      // Request activity recognition permission (Android only)
+      if (Platform.OS === 'android') {
+        const activityStatus = await PermissionsAndroid.request(
+          'android.permission.ACTIVITY_RECOGNITION',
+          {
+            title: 'Activity Recognition Permission',
+            message: 'DreamFit needs access to your physical activity to count steps.',
+            buttonPositive: 'OK',
+          }
+        );
+        if (activityStatus !== PermissionsAndroid.RESULTS.GRANTED) {
+          Alert.alert(
+            'Permission Required',
+            'Activity Recognition permission is needed for step counting. Please enable it in settings.',
+            [{ text: 'OK' }]
+          );
+          return;
+        }
       }
 
       // Check if pedometer is available
@@ -139,10 +159,9 @@ export const StepCounter: React.FC = () => {
 
 const styles = StyleSheet.create({
   stepCard: {
-    backgroundColor: '#2d2d2d',
     borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
+    padding: 10,
+    marginBottom: 10,
   },
   stepCardContent: {
     alignItems: 'center',
@@ -153,7 +172,7 @@ const styles = StyleSheet.create({
   },
   stepCardDescription: {
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
     lineHeight: 22,
   },
   stepCountContainer: {

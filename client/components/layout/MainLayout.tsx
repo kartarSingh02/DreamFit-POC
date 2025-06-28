@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Text } from 'react-native';
 import { BottomTabBar } from '../navigation/BottomTabBar';
 import { 
   HomeScreen, 
@@ -8,19 +8,22 @@ import {
   LeaderboardScreen, 
   ProfileScreen 
 } from '../screens';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface MainLayoutProps {
   children?: React.ReactNode;
 }
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState('profile');
 
   const handleTabPress = (tabKey: string) => {
+    console.log('Tab pressed:', tabKey);
     setActiveTab(tabKey);
   };
 
   const renderTabContent = () => {
+    console.log('Rendering tab content for:', activeTab);
     switch (activeTab) {
       case 'home':
         return <HomeScreen />;
@@ -38,21 +41,39 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        {renderTabContent()}
-      </View>
-      <BottomTabBar activeTab={activeTab} onTabPress={handleTabPress} />
-    </SafeAreaView>
+    <LinearGradient
+      colors={['#18181b', '#23272f']}
+      style={styles.gradientBg}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+    >
+      <SafeAreaView style={styles.container}>
+        <View style={styles.content}>
+          {renderTabContent()}
+        </View>
+        <BottomTabBar activeTab={activeTab} onTabPress={handleTabPress} />
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
+  gradientBg: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
   },
   content: {
     flex: 1,
+  },
+  debugIndicator: {
+    backgroundColor: '#ff6b35',
+    padding: 8,
+    alignItems: 'center',
+  },
+  debugText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 }); 

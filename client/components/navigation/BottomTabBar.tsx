@@ -2,6 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '../ui/Text';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface TabItem {
   key: string;
@@ -53,7 +54,12 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
   onTabPress
 }) => {
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={['#18181b', '#23272f']}
+      style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+    >
       <View style={styles.tabContainer}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.key;
@@ -81,30 +87,33 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
           );
         })}
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1a1a1a',
     borderTopWidth: 1,
     borderTopColor: '#2d2d2d',
+    width: '100%',
   },
   tabContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 0,
+    width: '100%',
   },
   tabButton: {
     alignItems: 'center',
+    flex: 1,
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 0,
     borderRadius: 8,
   },
   tabText: {
     marginTop: 4,
+    fontSize: 12,
   },
 }); 

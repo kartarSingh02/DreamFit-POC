@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput, Touch
 import * as ImagePicker from 'expo-image-picker';
 import { Text } from '../ui/Text';
 import { StepCounter } from '../StepCounter';
+import { GlassCard } from '../ui/GlassCard';
 
 interface UserProfile {
   name: string;
@@ -38,7 +39,7 @@ const EditableField: React.FC<EditableFieldProps> = ({ label, value, onSave, isE
 
   return (
     <View style={styles.infoItem}>
-      <Text variant="caption" color="secondary">{label}</Text>
+      <Text variant="caption" style={{ color: '#fff' }}>{label}</Text>
       {isEditing ? (
         <TextInput
           value={tempValue}
@@ -50,7 +51,7 @@ const EditableField: React.FC<EditableFieldProps> = ({ label, value, onSave, isE
         />
       ) : (
         <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-          <Text variant="body" weight="medium" style={styles.editableText}>
+          <Text variant="body" weight="medium" style={[styles.editableText, { color: '#ff6b35' }]}>
             {value}
           </Text>
         </TouchableOpacity>
@@ -60,6 +61,8 @@ const EditableField: React.FC<EditableFieldProps> = ({ label, value, onSave, isE
 };
 
 export const ProfileScreen: React.FC = () => {
+  console.log('ProfileScreen rendering...');
+  
   const [editingField, setEditingField] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile>({
     name: 'Alex Johnson',
@@ -183,13 +186,12 @@ export const ProfileScreen: React.FC = () => {
           </View>
 
           {/* Basic Information Card */}
-          <View style={styles.infoCard}>
+          <GlassCard style={{ marginBottom: 20 }}>
             <View style={styles.infoHeader}>
-              <Text variant="h3" weight="semibold" style={styles.infoTitle}>
+              <Text variant="h3" weight="semibold" style={[styles.infoTitle, { color: '#fff' }]}>
                 Basic Information
               </Text>
             </View>
-
             <View style={styles.infoGrid}>
               <EditableField
                 label="Location"
@@ -227,10 +229,12 @@ export const ProfileScreen: React.FC = () => {
                 onPress={() => handleFieldPress('gender')}
               />
             </View>
-          </View>
+          </GlassCard>
 
-          {/* Step Counter Component */}
-          <StepCounter />
+          {/* Step Counter Card */}
+          <GlassCard style={{ marginBottom: 20 }}>
+            <StepCounter />
+          </GlassCard>
         </View>
       </ScrollView>
     </TouchableWithoutFeedback>
