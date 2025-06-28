@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text as RNText, TextProps, StyleSheet } from 'react-native';
+import Colors from '../../constants/Colors';
 
 interface CustomTextProps extends TextProps {
   variant?: 'h1' | 'h2' | 'h3' | 'body' | 'caption' | 'label';
@@ -59,13 +60,13 @@ const styles = StyleSheet.create({
   
   // Colors
   text_primary: {
-    color: '#ffffff',
+    color: Colors.primaryText,
   },
   text_secondary: {
-    color: '#9ca3af',
+    color: Colors.secondaryText,
   },
   text_accent: {
-    color: '#ff6b35',
+    color: Colors.accent,
   },
   
   // Weights

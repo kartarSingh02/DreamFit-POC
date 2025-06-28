@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Polyline, Circle } from 'react-native-svg';
+import Colors from '../../constants/Colors';
 
 const data = [
   { week: 'W1', bpm: 72 },
@@ -41,7 +42,7 @@ export const HeartbeatLineChart: React.FC = () => {
             <Polyline
               points={polylinePoints}
               fill="none"
-              stroke="#ff6b35"
+              stroke={Colors.accent}
               strokeWidth={3}
             />
             {points.map((pt, i) => (
@@ -50,8 +51,8 @@ export const HeartbeatLineChart: React.FC = () => {
                 cx={pt.x}
                 cy={pt.y}
                 r={5}
-                fill="#ff6b35"
-                stroke="#fff"
+                fill={Colors.gold}
+                stroke={Colors.primaryText}
                 strokeWidth={2}
               />
             ))}
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   heading: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontWeight: 'bold',
     fontSize: 16,
     marginBottom: 8,
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     width: 40,
   },
   yAxisText: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontSize: 12,
     opacity: 0.7,
   },
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   xAxisText: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontSize: 12,
     opacity: 0.7,
     minWidth: 24,

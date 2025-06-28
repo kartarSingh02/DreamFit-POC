@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text as RNText } from 'react-native';
+import Colors from '../../constants/Colors';
 
 const MODES = ['Day', 'Week', 'Month', 'Year'] as const;
 type Mode = typeof MODES[number];
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   axisLabel: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontWeight: 'bold',
     fontSize: 14,
     opacity: 0.8,
@@ -138,15 +139,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   segmentActive: {
-    backgroundColor: '#ff6b35',
+    backgroundColor: Colors.accent,
   },
   segmentText: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontWeight: '400',
     fontSize: 13,
   },
   segmentTextActive: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontWeight: '400',
   },
   graphArea: {
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
     width: 36,
   },
   yAxisText: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontSize: 12,
     opacity: 0.7,
   },
@@ -182,13 +183,13 @@ const styles = StyleSheet.create({
   },
   bar: {
     width: 18,
-    backgroundColor: '#ff6b35',
+    backgroundColor: Colors.accent,
     borderRadius: 6,
     marginBottom: 4,
     minHeight: 8,
   },
   xAxisText: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontSize: 12,
     marginTop: 2,
     opacity: 0.7,

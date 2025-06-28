@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { GlassCard } from '../ui/GlassCard';
 import { Ionicons } from '@expo/vector-icons';
+import Colors from '../../constants/Colors';
 
 const stats = {
   steps: 7890,
@@ -54,25 +55,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statValue: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontWeight: 'bold',
     fontSize: 18,
     marginTop: 2,
   },
   statLabel: {
-    color: '#ff6b35',
+    color: Colors.accent,
     fontSize: 13,
     marginTop: 1,
   },
   rankText: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 10,
     marginTop: 2,
   },
   rankHighlight: {
-    color: '#ff6b35',
+    color: Colors.accent,
     fontWeight: 'bold',
   },
 }); 

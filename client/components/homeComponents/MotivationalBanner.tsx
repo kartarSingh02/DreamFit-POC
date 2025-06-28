@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Colors from '../../constants/Colors';
 
 export const MotivationalBanner: React.FC = () => (
   <View style={styles.banner}>
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ff6b35',
+    backgroundColor: Colors.accent,
     borderRadius: 12,
     paddingVertical: 10,
     paddingHorizontal: 16,
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   text: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontSize: 15,
     fontWeight: '500',
     flex: 1,

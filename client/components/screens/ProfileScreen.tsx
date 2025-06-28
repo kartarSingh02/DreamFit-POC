@@ -4,6 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Text } from '../ui/Text';
 import { StepCounter } from '../StepCounter';
 import { GlassCard } from '../ui/GlassCard';
+import Colors from '../../constants/Colors';
 
 interface UserProfile {
   name: string;
@@ -257,7 +258,7 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     borderWidth: 3,
-    borderColor: '#ff6b35',
+    borderColor: Colors.accent,
   },
   imageOverlay: {
     position: 'absolute',
@@ -278,14 +279,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   nameInput: {
-    color: '#ffffff',
+    color: Colors.primaryText,
     textAlign: 'center',
     fontSize: 24,
     fontWeight: '700',
-    backgroundColor: '#1a1a1a',
+    backgroundColor: Colors.cardBackground,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ff6b35',
+    borderColor: Colors.accent,
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
@@ -298,20 +299,20 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   bioInput: {
-    color: '#9ca3af',
+    color: Colors.secondaryText,
     textAlign: 'center',
     lineHeight: 24,
     fontSize: 16,
     minHeight: 60,
     padding: 8,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: Colors.cardBackground,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ff6b35',
+    borderColor: Colors.accent,
     width: '100%',
   },
   infoCard: {
-    backgroundColor: '#2d2d2d',
+    backgroundColor: Colors.cardBackground,
     borderRadius: 16,
     padding: 20,
     marginBottom: 20,
@@ -320,7 +321,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   infoTitle: {
-    color: '#ffffff',
+    color: Colors.primaryText,
   },
   infoGrid: {
     gap: 16,
@@ -329,19 +330,19 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   editableText: {
-    color: '#ffffff',
+    color: Colors.primaryText,
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,
   },
   textInput: {
-    color: '#ffffff',
-    backgroundColor: '#1a1a1a',
+    color: Colors.primaryText,
+    backgroundColor: Colors.backgroundGradient[1],
     borderRadius: 4,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: '#ff6b35',
+    borderColor: Colors.accent,
     fontSize: 16,
   },
 }); 

@@ -11,6 +11,7 @@ import { QuickStats } from '../homeComponents/QuickStats';
 import { TrendingChallengesPreview } from '../homeComponents/TrendingChallengesPreview';
 import { MotivationalBanner } from '../homeComponents/MotivationalBanner';
 import { HeartbeatLineChart } from '../homeComponents/HeartbeatLineChart';
+import Colors from '../../constants/Colors';
 
 const stats = {
   calories: 1234,
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
     height: 80,
     marginLeft: 16,
     borderRadius: 40,
-    backgroundColor: '#18181b',
+    backgroundColor: Colors.cardBackground,
   },
   indicatorContainer: {
     flexDirection: 'row',
@@ -92,12 +93,12 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 5,
     marginHorizontal: 5, 
-    backgroundColor: '#fff',
+    backgroundColor: Colors.primaryText,
     opacity: 0.3,
   },
   indicatorDotActive: {
     opacity: 1,
-    backgroundColor: '#ff6b35',
+    backgroundColor: Colors.accent,
   },
   headerRow: {
     flexDirection: 'row',
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   helloText: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontSize: 20,
     marginLeft: 0,
   },
@@ -116,8 +117,8 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     borderWidth: 2,
-    borderColor: '#ff6b35',
-    backgroundColor: '#23272f',
+    borderColor: Colors.accent,
+    backgroundColor: Colors.cardBackground,
   },
 });
 
@@ -244,7 +245,7 @@ export const HomeScreen: React.FC = () => {
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingLeft: 0, paddingRight: 0 }}
+          contentContainerStyle={{ paddingLeft: 24, paddingRight: 24 }}
           snapToInterval={CARD_WIDTH + CARD_SPACING}
           decelerationRate="fast"
           onMomentumScrollEnd={e => {
@@ -256,7 +257,6 @@ export const HomeScreen: React.FC = () => {
           style={{ flexGrow: 0 }}
           contentOffset={{ x: 0, y: 0 }}
         >
-          <View style={{ width: SIDE_MARGIN }} />
           {cardData.map((card, idx) => (
             <View key={card.key} style={{ width: CARD_WIDTH, marginRight: idx === cardData.length - 1 ? 0 : CARD_SPACING }}>
               <GlassCard style={{ height: 180, padding: 0 }}>
@@ -276,7 +276,6 @@ export const HomeScreen: React.FC = () => {
               </GlassCard>
             </View>
           ))}
-          <View style={{ width: SIDE_MARGIN }} />
         </ScrollView>
         {/* Carousel Indicator */}
         <View style={styles.indicatorContainer}>

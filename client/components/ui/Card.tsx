@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, ViewProps, StyleSheet } from 'react-native';
+import Colors from '../../constants/Colors';
 
 interface CardProps extends ViewProps {
   variant?: 'primary' | 'secondary';
@@ -29,7 +30,7 @@ export const Card: React.FC<CardProps> = ({
 
 const styles = StyleSheet.create({
   primary: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: Colors.cardBackground,
     borderRadius: 16,
   },
   secondary: {

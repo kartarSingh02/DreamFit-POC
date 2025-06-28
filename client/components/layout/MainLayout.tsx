@@ -9,6 +9,7 @@ import {
   ProfileScreen 
 } from '../screens';
 import { LinearGradient } from 'expo-linear-gradient';
+import Colors from '../../constants/Colors';
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -68,12 +69,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   debugIndicator: {
-    backgroundColor: '#ff6b35',
+    backgroundColor: Colors.accent,
     padding: 8,
     alignItems: 'center',
   },
   debugText: {
-    color: 'white',
+    color: Colors.primaryText,
     fontWeight: 'bold',
   },
 }); 

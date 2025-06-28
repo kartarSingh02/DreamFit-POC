@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { GlassCard } from '../ui/GlassCard';
+import Colors from '../../constants/Colors';
 
 const challenges = [
   {
@@ -62,12 +63,12 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   heading: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontWeight: 'bold',
     fontSize: 18,
   },
   seeAll: {
-    color: '#ff6b35',
+    color: Colors.accent,
     fontWeight: 'bold',
     fontSize: 14,
   },
@@ -89,27 +90,27 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   challengeName: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontWeight: 'bold',
     fontSize: 15,
     marginBottom: 2,
     textAlign: 'center',
   },
   detail: {
-    color: '#ff6b35',
+    color: Colors.accent,
     fontSize: 13,
     marginBottom: 6,
     textAlign: 'center',
   },
   button: {
-    backgroundColor: '#ff6b35',
+    backgroundColor: Colors.accent,
     borderRadius: 8,
     paddingVertical: 6,
     paddingHorizontal: 18,
     marginBottom: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontWeight: 'bold',
     fontSize: 14,
   },

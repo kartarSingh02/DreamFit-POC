@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { GlassCard } from '../ui/GlassCard';
+import Colors from '../../constants/Colors';
 
 const pools = [
   {
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   heading: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontWeight: 'bold',
     fontSize: 18,
     marginBottom: 8,
@@ -61,24 +62,24 @@ const styles = StyleSheet.create({
     padding: 18,
   },
   time: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontWeight: 'bold',
     fontSize: 16,
     marginBottom: 2,
   },
   detail: {
-    color: '#ff6b35',
+    color: Colors.accent,
     fontSize: 13,
     marginBottom: 2,
   },
   button: {
-    backgroundColor: '#ff6b35',
+    backgroundColor: Colors.accent,
     borderRadius: 8,
     paddingVertical: 6,
     paddingHorizontal: 18,
   },
   buttonText: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontWeight: 'bold',
     fontSize: 14,
   },
