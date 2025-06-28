@@ -13,7 +13,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({ style, children }) => (
   <View style={[styles.outer, style]}>
     <BlurView intensity={60} tint="dark" style={StyleSheet.absoluteFill} />
     <LinearGradient
-      colors={["rgba(255,255,255,0.22)", "rgba(255,255,255,0.10)"]}
+      colors={[Colors.cardBackground, Colors.cardBackground]}
       style={StyleSheet.absoluteFill}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
