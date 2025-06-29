@@ -5,6 +5,7 @@ import { Text } from '../ui/Text';
 import { StepCounter } from '../StepCounter';
 import { GlassCard } from '../ui/GlassCard';
 import Colors from '../../constants/Colors';
+import { ChallengeJoinModal } from '../modals/ChallengeJoinModal';
 
 interface UserProfile {
   name: string;
@@ -75,6 +76,15 @@ export const ProfileScreen: React.FC = () => {
     gender: 'Male',
     imageUri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
   });
+  const [modalVisible, setModalVisible] = useState(false);
+  const [walkPermission, setWalkPermission] = useState(true);
+  const challenge = {
+    time: 'Anytime',
+    description: 'Profile special challenge! Join and test your limits.',
+    totalUsers: 500,
+    entryFee: 20,
+    image: require('../../assets/images/partial-react-logo.png'),
+  };
 
   const updateProfile = (field: keyof UserProfile, value: string) => {
     setProfile(prev => ({ ...prev, [field]: value }));
@@ -185,6 +195,22 @@ export const ProfileScreen: React.FC = () => {
               </TouchableOpacity>
             )}
           </View>
+
+          {/* Join Challenge Button */}
+          <TouchableOpacity style={{ backgroundColor: Colors.accent, borderRadius: 8, padding: 12, marginVertical: 16, alignItems: 'center' }} onPress={() => setModalVisible(true)}>
+            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Join Profile Challenge</Text>
+          </TouchableOpacity>
+
+          <ChallengeJoinModal
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+            time={challenge.time}
+            description={challenge.description}
+            totalUsers={challenge.totalUsers}
+            entryFee={challenge.entryFee}
+            image={challenge.image}
+            onRegister={() => setModalVisible(false)}
+          />
 
           {/* Basic Information Card */}
           <GlassCard style={{ marginBottom: 20 }}>

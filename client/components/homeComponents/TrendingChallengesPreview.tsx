@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { GlassCard } from '../ui/GlassCard';
 import Colors from '../../constants/Colors';
+import { ChallengeJoinModal } from '../modals/ChallengeJoinModal';
 
 const challenges = [
   {
@@ -10,6 +11,9 @@ const challenges = [
     entry: 30,
     prize: 300,
     image: require('../../assets/images/partial-react-logo.png'),
+    time: '6:00 AM - 8:00 AM',
+    description: 'Start your day with a marathon! Join and compete with others to win big.',
+    totalUsers: 1000,
   },
   {
     id: 2,
@@ -17,6 +21,9 @@ const challenges = [
     entry: 50,
     prize: 500,
     image: require('../../assets/images/adaptive-icon.png'),
+    time: '6:00 PM - 7:00 PM',
+    description: 'A quick sprint to end your day. Join and win exciting prizes!',
+    totalUsers: 800,
   },
   {
     id: 3,
@@ -24,31 +31,64 @@ const challenges = [
     entry: 100,
     prize: 1000,
     image: require('../../assets/images/react-logo.png'),
+    time: 'Sunday 7:00 AM',
+    description: 'Weekend challenge for the warriors! Show your stamina and win.',
+    totalUsers: 1200,
   },
 ];
 
-export const TrendingChallengesPreview: React.FC = () => (
-  <View style={styles.container}>
-    <View style={styles.headerRow}>
-      <Text style={styles.heading}>Trending Challenges</Text>
-      <TouchableOpacity>
-        <Text style={styles.seeAll}>See All</Text>
-      </TouchableOpacity>
+export const TrendingChallengesPreview: React.FC = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedChallenge, setSelectedChallenge] = useState<any>(null);
+  const [walkPermission, setWalkPermission] = useState(true);
+
+  const handleJoin = (challenge: any) => {
+    setSelectedChallenge(challenge);
+    setModalVisible(true);
+  };
+
+  const handleClose = () => {
+    setModalVisible(false);
+    setSelectedChallenge(null);
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.headerRow}>
+        <Text style={styles.heading}>Trending Challenges</Text>
+        <TouchableOpacity>
+          <Text style={styles.seeAll}>See All</Text>
+        </TouchableOpacity>
+      </View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollRow}>
+        {challenges.map((c) => (
+          <GlassCard key={c.id} style={styles.challengeCard}>
+            <Image source={c.image} style={styles.image} />
+            <Text style={styles.challengeName}>{c.name}</Text>
+            <Text style={styles.detail}>Entry: ₹{c.entry} | Prize: ₹{c.prize}</Text>
+            <TouchableOpacity style={styles.button} onPress={() => handleJoin(c)}>
+              <Text style={styles.buttonText}>Join</Text>
+            </TouchableOpacity>
+          </GlassCard>
+        ))}
+      </ScrollView>
+      {selectedChallenge && (
+        <ChallengeJoinModal
+          visible={modalVisible}
+          onClose={handleClose}
+          time={selectedChallenge.time}
+          description={selectedChallenge.description}
+          totalUsers={selectedChallenge.totalUsers}
+          entryFee={selectedChallenge.entry}
+          image={selectedChallenge.image}
+          walkPermission={walkPermission}
+          onToggleWalkPermission={setWalkPermission}
+          onRegister={() => { setModalVisible(false); }}
+        />
+      )}
     </View>
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollRow}>
-      {challenges.map((c) => (
-        <GlassCard key={c.id} style={styles.challengeCard}>
-          <Image source={c.image} style={styles.image} />
-          <Text style={styles.challengeName}>{c.name}</Text>
-          <Text style={styles.detail}>Entry: ₹{c.entry} | Prize: ₹{c.prize}</Text>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Join</Text>
-          </TouchableOpacity>
-        </GlassCard>
-      ))}
-    </ScrollView>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
