@@ -9,6 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Platform, PermissionsAndroid } from 'react-native';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { StepCounterProvider } from '../components/StepCounterContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -52,12 +53,14 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="light" />
-    </ThemeProvider>
+    <StepCounterProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="light" />
+      </ThemeProvider>
+    </StepCounterProvider>
   );
 }

@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   inner: {
-    padding: 24,
+    padding: 16,
     borderRadius: 22,
   },
 }); 

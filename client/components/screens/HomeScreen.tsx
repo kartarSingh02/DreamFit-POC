@@ -28,10 +28,7 @@ const user = {
   imageUri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
 };
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH * 0.88;
-const CARD_SPACING = 16;
-const SIDE_MARGIN = (SCREEN_WIDTH - CARD_WIDTH) / 2;
+const CARD_MARGIN = 16;
 
 const styles = StyleSheet.create({
   gradientBg: {
@@ -49,7 +46,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    width: CARD_WIDTH,
     height: 180,
     borderRadius: 22,
     padding: 28,
@@ -119,6 +115,12 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.accent,
     backgroundColor: Colors.cardBackground,
+  },
+  carouselContainer: {
+    marginBottom: 16,
+  },
+  cardWrapper: {
+    // width will be set inline via style prop
   },
 });
 
@@ -208,6 +210,26 @@ const cardData = [
 export const HomeScreen: React.FC = () => {
   const scrollRef = useRef<ScrollView>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [cardWidth, setCardWidth] = useState(() => {
+    const screenWidth = Dimensions.get('window').width;
+    return screenWidth * 0.88;
+  });
+  const [sideMargin, setSideMargin] = useState(() => {
+    const screenWidth = Dimensions.get('window').width;
+    return (screenWidth - screenWidth * 0.88) / 2;
+  });
+
+  useEffect(() => {
+    const onChange = ({ window }: { window: { width: number } }) => {
+      const newCardWidth = window.width * 0.88;
+      setCardWidth(newCardWidth);
+      setSideMargin((window.width - newCardWidth) / 2);
+    };
+    const sub = Dimensions.addEventListener('change', onChange);
+    return () => {
+      if (typeof sub?.remove === 'function') sub.remove();
+    };
+  }, []);
 
   // Auto-scroll logic
   useEffect(() => {
@@ -215,12 +237,12 @@ export const HomeScreen: React.FC = () => {
       const nextIndex = (activeIndex + 1) % cardData.length;
       setActiveIndex(nextIndex);
       scrollRef.current?.scrollTo({
-        x: nextIndex * (CARD_WIDTH + CARD_SPACING),
+        x: nextIndex * cardWidth,
         animated: true,
       });
     }, 3000);
     return () => clearInterval(interval);
-  }, [activeIndex]);
+  }, [activeIndex, cardWidth]);
 
   return (
     <LinearGradient
@@ -240,55 +262,62 @@ export const HomeScreen: React.FC = () => {
             resizeMode="cover"
           />
         </View>
-        <ScrollView
-          ref={scrollRef}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingLeft: 24, paddingRight: 24 }}
-          snapToInterval={CARD_WIDTH + CARD_SPACING}
-          decelerationRate="fast"
-          onMomentumScrollEnd={e => {
-            const index = Math.round(
-              (e.nativeEvent.contentOffset.x - SIDE_MARGIN) / (CARD_WIDTH + CARD_SPACING)
-            );
-            setActiveIndex(index);
-          }}
-          style={{ flexGrow: 0 }}
-          contentOffset={{ x: 0, y: 0 }}
-        >
-          {cardData.map((card, idx) => (
-            <View key={card.key} style={{ width: CARD_WIDTH, marginRight: idx === cardData.length - 1 ? 0 : CARD_SPACING }}>
-              <GlassCard style={{ height: 180, padding: 0 }}>
-                <View style={styles.cardContentRow}>
-                  <View style={{ flex: 1 }}>{card.content}</View>
-                  {card.image && (
-                    <Image
-                      source={card.image}
-                      style={styles.cardImage}
-                      resizeMode="contain"
-                    />
-                  )}
-                  {card.icon && (
-                    <Ionicons name={card.icon as any} size={54} color="#fff" style={{ marginLeft: 10, opacity: 0.9 }} />
-                  )}
-                </View>
-              </GlassCard>
-            </View>
-          ))}
-        </ScrollView>
-        {/* Carousel Indicator */}
-        <View style={styles.indicatorContainer}>
-          {cardData.map((_, idx) => (
-            <View
-              key={idx}
-              style={[
-                styles.indicatorDot,
-                idx === activeIndex && styles.indicatorDotActive,
-              ]}
-            />
-          ))}
+        
+        {/* Responsive Card Carousel */}
+        <View style={styles.carouselContainer}>
+          <ScrollView
+            ref={scrollRef}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={cardWidth}
+            decelerationRate="fast"
+            onMomentumScrollEnd={e => {
+              const index = Math.round(
+                (e.nativeEvent.contentOffset.x) / cardWidth
+              );
+              setActiveIndex(Math.max(0, Math.min(index, cardData.length - 1)));
+            }}
+            style={{ flexGrow: 0 }}
+            contentContainerStyle={{
+              paddingHorizontal: sideMargin,
+            }}
+          >
+            {cardData.map((card, idx) => (
+              <View key={card.key} style={[styles.cardWrapper, { width: cardWidth }] }>
+                <GlassCard style={{ height: 180, padding: 0 }}>
+                  <View style={styles.cardContentRow}>
+                    <View style={{ flex: 1 }}>{card.content}</View>
+                    {card.image && (
+                      <Image
+                        source={card.image}
+                        style={styles.cardImage}
+                        resizeMode="contain"
+                      />
+                    )}
+                    {card.icon && (
+                      <Ionicons name={card.icon as any} size={54} color="#fff" style={{ marginLeft: 10, opacity: 0.9 }} />
+                    )}
+                  </View>
+                </GlassCard>
+              </View>
+            ))}
+          </ScrollView>
+          
+          {/* Carousel Indicator */}
+          <View style={styles.indicatorContainer}>
+            {cardData.map((_, idx) => (
+              <View
+                key={idx}
+                style={[
+                  styles.indicatorDot,
+                  idx === activeIndex && styles.indicatorDotActive,
+                ]}
+              />
+            ))}
+          </View>
         </View>
+
         <View style={{ marginBottom: 16 }}><MotivationalBanner /></View>
         <View style={{ marginBottom: 16 }}><StepBarGraph /></View>
         <View style={{ marginBottom: 16 }}><HeartbeatLineChart /></View>
