@@ -47,10 +47,6 @@ export const ChallengeJoinModal: React.FC<ChallengeJoinModalProps> = ({
                 <Text style={styles.timeText}>{time}</Text>
                 <View style={{ width: 28 }} /> {/* Placeholder for alignment */}
               </View>
-              {/* Register Button */}
-              <TouchableOpacity style={styles.registerButton} onPress={onRegister}>
-                <Text style={styles.registerButtonText}>Register</Text>
-              </TouchableOpacity>
               {/* Description */}
               <Text style={styles.description}>{description}</Text>
               {/* Total Winnings */}
@@ -59,6 +55,10 @@ export const ChallengeJoinModal: React.FC<ChallengeJoinModalProps> = ({
               </Text>
               {/* Image */}
               <Image source={image} style={styles.challengeImage} resizeMode="contain" />
+              {/* Register Button */}
+              <TouchableOpacity style={styles.registerButton} onPress={onRegister}>
+                <Text style={styles.registerButtonText}>Register</Text>
+              </TouchableOpacity>
             </View>
           </TouchableWithoutFeedback>
         </View>

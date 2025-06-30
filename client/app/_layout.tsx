@@ -6,10 +6,11 @@ import 'react-native-reanimated';
 import { useEffect } from 'react';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
-import { Platform, PermissionsAndroid } from 'react-native';
-
+import { Platform, PermissionsAndroid, View } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { StepCounterProvider } from '../components/StepCounterContext';
+import { LinearGradient } from 'expo-linear-gradient';
+import Colors from '../constants/Colors';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -34,16 +35,13 @@ export default function RootLayout() {
             }
           );
         }
-        
         // Request camera roll permissions
         await ImagePicker.requestMediaLibraryPermissionsAsync();
-        
         console.log('All permissions requested successfully');
       } catch (error) {
         console.log('Error requesting permissions:', error);
       }
     };
-
     requestPermissions();
   }, []);
 
@@ -53,14 +51,21 @@ export default function RootLayout() {
   }
 
   return (
-    <StepCounterProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="light" />
-      </ThemeProvider>
-    </StepCounterProvider>
+    <LinearGradient
+      colors={Colors.backgroundGradient as [string, string]}
+      style={{ flex: 1 }}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+    >
+      <StepCounterProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="light" />
+        </ThemeProvider>
+      </StepCounterProvider>
+    </LinearGradient>
   );
 }

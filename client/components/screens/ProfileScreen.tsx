@@ -196,21 +196,6 @@ export const ProfileScreen: React.FC = () => {
             )}
           </View>
 
-          {/* Join Challenge Button */}
-          <TouchableOpacity style={{ backgroundColor: Colors.accent, borderRadius: 8, padding: 12, marginVertical: 16, alignItems: 'center' }} onPress={() => setModalVisible(true)}>
-            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Join Profile Challenge</Text>
-          </TouchableOpacity>
-
-          <ChallengeJoinModal
-            visible={modalVisible}
-            onClose={() => setModalVisible(false)}
-            time={challenge.time}
-            description={challenge.description}
-            totalUsers={challenge.totalUsers}
-            entryFee={challenge.entryFee}
-            image={challenge.image}
-            onRegister={() => setModalVisible(false)}
-          />
 
           {/* Basic Information Card */}
           <GlassCard style={{ marginBottom: 20 }}>

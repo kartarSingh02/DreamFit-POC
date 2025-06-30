@@ -10,7 +10,7 @@ export const MotivationalBanner: React.FC = () => (
       <Text style={styles.bold}>Tip:</Text> Stay hydrated! Invite friends to earn bonus cash. Take the stairs!
     </Text>
   </View>
-);
+); 
 
 const styles = StyleSheet.create({
   banner: {

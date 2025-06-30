@@ -12,6 +12,8 @@ import { TrendingChallengesPreview } from '../homeComponents/TrendingChallengesP
 import { MotivationalBanner } from '../homeComponents/MotivationalBanner';
 import { HeartbeatLineChart } from '../homeComponents/HeartbeatLineChart';
 import Colors from '../../constants/Colors';
+import { Carousel } from '../ui/Carousel';
+import { ScreenContainer } from '../layout/ScreenContainer';
 
 const stats = {
   calories: 1234,
@@ -245,85 +247,50 @@ export const HomeScreen: React.FC = () => {
   }, [activeIndex, cardWidth]);
 
   return (
-    <LinearGradient
-      colors={['#18181b', '#23272f']}
-      style={styles.gradientBg}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
-      <ScrollView style={styles.container} contentContainerStyle={{ padding: 24, paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
-        <View style={styles.headerRow}>
-          <Text variant="h2" weight="bold" style={[styles.helloText, { marginLeft: 0 }]}>
-            Hello, {user.name}
-          </Text>
-          <Image
-            source={{ uri: user.imageUri }}
-            style={styles.profilePhoto}
-            resizeMode="cover"
-          />
-        </View>
-        
-        {/* Responsive Card Carousel */}
-        <View style={styles.carouselContainer}>
-          <ScrollView
-            ref={scrollRef}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            snapToInterval={cardWidth}
-            decelerationRate="fast"
-            onMomentumScrollEnd={e => {
-              const index = Math.round(
-                (e.nativeEvent.contentOffset.x) / cardWidth
-              );
-              setActiveIndex(Math.max(0, Math.min(index, cardData.length - 1)));
-            }}
-            style={{ flexGrow: 0 }}
-            contentContainerStyle={{
-              paddingHorizontal: sideMargin,
-            }}
-          >
-            {cardData.map((card, idx) => (
-              <View key={card.key} style={[styles.cardWrapper, { width: cardWidth }] }>
-                <GlassCard style={{ height: 180, padding: 0 }}>
-                  <View style={styles.cardContentRow}>
-                    <View style={{ flex: 1 }}>{card.content}</View>
-                    {card.image && (
-                      <Image
-                        source={card.image}
-                        style={styles.cardImage}
-                        resizeMode="contain"
-                      />
-                    )}
-                    {card.icon && (
-                      <Ionicons name={card.icon as any} size={54} color="#fff" style={{ marginLeft: 10, opacity: 0.9 }} />
-                    )}
-                  </View>
-                </GlassCard>
-              </View>
-            ))}
-          </ScrollView>
-          
-          {/* Carousel Indicator */}
-          <View style={styles.indicatorContainer}>
-            {cardData.map((_, idx) => (
-              <View
-                key={idx}
-                style={[
-                  styles.indicatorDot,
-                  idx === activeIndex && styles.indicatorDotActive,
-                ]}
-              />
-            ))}
+    <View style={styles.gradientBg}>
+      <ScreenContainer>
+        <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
+          <View style={styles.headerRow}>
+            <Text variant="h2" weight="bold" style={[styles.helloText, { marginLeft: 0 }]}>
+              Hello, {user.name}
+            </Text>
+            <Image
+              source={{ uri: user.imageUri }}
+              style={styles.profilePhoto}
+              resizeMode="cover"
+            />
           </View>
-        </View>
+          
+          {/* Responsive Card Carousel */}
+          <Carousel
+            data={cardData}
+            cardHeight={180}
+            renderCard={card => (
+              <GlassCard style={{ height: 180, padding: 0 }}>
+                <View style={styles.cardContentRow}>
+                  <View style={{ flex: 1 }}>{card.content}</View>
+                  {card.image && (
+                    <Image
+                      source={card.image}
+                      style={styles.cardImage}
+                      resizeMode="contain"
+                    />
+                  )}
+                  {card.icon && (
+                    <Ionicons name={card.icon as any} size={54} color="#fff" style={{ marginLeft: 10, opacity: 0.9 }} />
+                  )}
+                </View>
+              </GlassCard>
+            )}
+          />
 
-        <View style={{ marginBottom: 16 }}><MotivationalBanner /></View>
-        <View style={{ marginBottom: 16 }}><StepBarGraph /></View>
-        <View style={{ marginBottom: 16 }}><HeartbeatLineChart /></View>
-        <View style={{ marginBottom: 16 }}><ActivePools /></View>
-        <View style={{ marginBottom: 16 }}><TrendingChallengesPreview /></View>
-      </ScrollView>
-    </LinearGradient>
+          <View style={{ marginBottom: 16 }}><MotivationalBanner /></View>
+          <View style={{ marginBottom: 16 }}><StepBarGraph /></View>
+          <View style={{ marginBottom: 16 }}><HeartbeatLineChart /></View>
+          <View style={{ marginBottom: 16 }}><ActivePools /></View>
+          <View style={{ marginBottom: 16 }}><TrendingChallengesPreview /></View>
+        </ScrollView>
+      </ScreenContainer>
+    </View>
   );
 }; 
