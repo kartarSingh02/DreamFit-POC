@@ -6,6 +6,7 @@ import { GlassCard } from '../ui/GlassCard';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
 import { ScreenContainer } from '../layout/ScreenContainer';
+import { useNavigation } from '@react-navigation/native';
 
 const trendingCards = [
   {
@@ -111,6 +112,7 @@ export const TrendingScreen: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [timeRangeModalVisible, setTimeRangeModalVisible] = useState(false);
   const [selectedTimeRange, setSelectedTimeRange] = useState<typeof TIME_RANGES[0] | null>(null);
+  const navigation = useNavigation();
 
   // Show pools only if both date and time range are selected
   const filteredPools = selectedTimeRange
@@ -129,9 +131,17 @@ export const TrendingScreen: React.FC = () => {
 
   return (
     <ScreenContainer>
-      <Text variant="h2" weight="bold" style={styles.title}>
-        Trending
-      </Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <Text variant="h2" weight="bold" style={styles.title}>
+          Trending
+        </Text>
+        <TouchableOpacity onPress={() => (navigation as any).navigate('Wallet')} style={{ padding: 4 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="wallet" size={28} color={Colors.primaryText} />
+            <Ionicons name="add" size={18} color={Colors.primaryText} style={{ marginLeft: -10, marginTop: -8 }} />
+          </View>
+        </TouchableOpacity>
+      </View>
       <Text variant="body" color="secondary" style={{ color: Colors.secondaryText, marginBottom: 16 }}>
         Hot workouts and challenges
       </Text>

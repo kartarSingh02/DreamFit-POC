@@ -6,6 +6,7 @@ import { StepCounter } from '../StepCounter';
 import { GlassCard } from '../ui/GlassCard';
 import Colors from '../../constants/Colors';
 import { ChallengeJoinModal } from '../modals/ChallengeJoinModal';
+import { Ionicons } from '@expo/vector-icons';
 
 interface UserProfile {
   name: string;
@@ -196,6 +197,20 @@ export const ProfileScreen: React.FC = () => {
             )}
           </View>
 
+          {/* Wallet Card */}
+          <GlassCard style={{ marginBottom: 20 }}>
+            <View style={{ width: '100%' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                <Text variant="h3" weight="semibold" style={{ color: '#fff' }}>Wallet</Text>
+                <Ionicons name="wallet" size={34} color={Colors.primaryText} />
+              </View>
+              <Text variant="h1" weight="bold" style={{ color: '#ff6b35' }}>$1,250.00</Text>
+              <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, alignSelf: 'flex-start', backgroundColor: '#ff6b35', borderRadius: 8, paddingVertical: 6, paddingHorizontal: 14 }}>
+                <Ionicons name="add" size={20} color="#fff" style={{ marginRight: 6 }} />
+                <Text variant="body" weight="medium" style={{ color: '#fff' }}>Add Money</Text>
+              </TouchableOpacity>
+            </View>
+          </GlassCard>
 
           {/* Basic Information Card */}
           <GlassCard style={{ marginBottom: 20 }}>

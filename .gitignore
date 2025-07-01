@@ -1,0 +1,5 @@
+node_modules/
+client/node_modules/
+.expo/
+.expo/types/
+.expo/devices.json 
