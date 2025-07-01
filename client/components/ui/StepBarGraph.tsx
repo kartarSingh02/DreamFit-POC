@@ -54,6 +54,7 @@ export const StepBarGraph: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* Y-axis label */}
+      <RNText style={styles.heading}>Steps Count</RNText>
       <View style={styles.yAxisLabelRow}>
         <RNText style={styles.axisLabel}>Steps</RNText>
       </View>
@@ -105,6 +106,13 @@ const styles = StyleSheet.create({
   container: {
     // margin: 18,
     backgroundColor: 'transparent',
+  },
+  heading: {
+    color: Colors.primaryText,
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 8,
+    marginLeft: 4,
   },
   yAxisLabelRow: {
     flexDirection: 'row',

@@ -11,6 +11,12 @@ const Colors = {
   secondaryText: '#B0B0B0',
   accent: '#FF8C00', // Or '#FFA500' if you prefer lighter
   gold: '#FFD700', // Special highlight/glow
+  borderColor: 'rgba(255, 215, 0, 0.15)',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.3,
+  shadowRadius: 8,
+  elevation: 6, // Android
 };
 
 export default Colors;
