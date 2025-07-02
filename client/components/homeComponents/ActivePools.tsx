@@ -43,7 +43,7 @@ export const ActivePools: React.FC = () => (
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 18,
+    marginTop: 18,
   },
   heading: {
     color: Colors.primaryText,

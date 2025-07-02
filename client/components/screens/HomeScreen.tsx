@@ -248,7 +248,7 @@ export const HomeScreen: React.FC = () => {
   return (
     <View style={styles.gradientBg}>
       <ScreenContainer>
-        <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
           <View style={styles.headerRow}>
             <Text variant="h2" weight="bold" style={[styles.helloText, { marginLeft: 0 }]}>
               Hello, {user.name}
@@ -287,7 +287,7 @@ export const HomeScreen: React.FC = () => {
           <View style={{ marginBottom: 16 }}><StepBarGraph /></View>
           <View style={{ marginBottom: 16 }}><HeartbeatLineChart /></View>
           <View style={{ marginBottom: 16 }}><ActivePools /></View>
-          <View style={{ marginBottom: 16 }}><TrendingChallengesPreview /></View>
+          {/* <View style={{ marginBottom: 16 }}><TrendingChallengesPreview /></View> */}
         </ScrollView>
       </ScreenContainer>
     </View>

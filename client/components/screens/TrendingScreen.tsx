@@ -131,7 +131,7 @@ export const TrendingScreen: React.FC = () => {
 
   return (
     <ScreenContainer>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <Text variant="h2" weight="bold" style={styles.title}>
           Trending
         </Text>
