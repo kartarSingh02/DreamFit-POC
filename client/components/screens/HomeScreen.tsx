@@ -264,6 +264,8 @@ export const HomeScreen: React.FC = () => {
           <Carousel
             data={cardData}
             cardHeight={180}
+            cardWidthPercent={0.85}
+            gap={20}
             renderCard={card => (
               <GlassCard style={{ height: 180, padding: 0 }}>
                 <View style={styles.cardContentRow}>

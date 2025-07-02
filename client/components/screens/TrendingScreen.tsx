@@ -150,8 +150,8 @@ export const TrendingScreen: React.FC = () => {
           data={trendingCards}
           cardHeight={160}
           autoScroll={true}
-          cardWidthPercent={0.88}
-          gap={16}
+          cardWidthPercent={0.85}
+          gap={20}
           renderCard={card => (
             <GlassCard style={{ height: 160, padding: 0 }}>
               <View style={styles.cardContentRow}>
