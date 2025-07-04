@@ -7,6 +7,7 @@ import Colors from '../../constants/Colors';
 import { ScreenContainer } from '../layout/ScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { TrendingChallenges } from '../challengeComponents/TrendingChallenges';
+import { AddMoneyModal } from '../ui/AddMoneyModal';
 
 // Enhanced trending challenges data
 const enhancedTrendingChallenges = [
@@ -213,6 +214,7 @@ const FeaturedChallengeCard: React.FC<FeaturedChallengeCardProps> = ({ challenge
 
 export const TrendingScreen: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [addMoneyVisible, setAddMoneyVisible] = useState(false);
   const navigation = useNavigation();
 
   const handleJoinChallenge = (challenge: any) => {
@@ -248,7 +250,7 @@ export const TrendingScreen: React.FC = () => {
               Discover hot challenges and compete with others
             </Text>
           </View>
-          <TouchableOpacity onPress={() => (navigation as any).navigate('Wallet')} style={styles.walletButton}>
+          <TouchableOpacity onPress={() => setAddMoneyVisible(true)} style={styles.walletButton}>
             <Ionicons name="wallet" size={24} color={Colors.primaryText} />
             <Ionicons name="add" size={16} color={Colors.primaryText} style={styles.addIcon} />
         </TouchableOpacity>
@@ -388,6 +390,7 @@ export const TrendingScreen: React.FC = () => {
           </View>
         </View>
       </ScrollView>
+      <AddMoneyModal visible={addMoneyVisible} onClose={() => setAddMoneyVisible(false)} />
     </ScreenContainer>
   );
 };

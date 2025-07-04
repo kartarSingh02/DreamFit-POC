@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Image, TouchableOpacity, Alert } from 'react-native';
 import { Text } from '../ui/Text';
 import { Card } from '../ui/Card';
 import Colors from '../../constants/Colors';
 import { ScreenContainer } from '../layout/ScreenContainer';
 import { Ionicons } from '@expo/vector-icons';
+import { AddMoneyModal } from '../ui/AddMoneyModal';
 
 // Mock user and stats
 const user = {
@@ -73,17 +74,10 @@ const ActiveChallengeCard = ({ challenge }: ActiveChallengeCardProps) => (
 );
 
 export const HomeScreen: React.FC = () => {
+  const [addMoneyVisible, setAddMoneyVisible] = useState(false);
+
   const handleAddMoney = () => {
-    Alert.alert(
-      'Add Money to Wallet',
-      'How much would you like to add?',
-      [
-        { text: '₹100', onPress: () => Alert.alert('Success', '₹100 added to wallet!') },
-        { text: '₹500', onPress: () => Alert.alert('Success', '₹500 added to wallet!') },
-        { text: '₹1000', onPress: () => Alert.alert('Success', '₹1000 added to wallet!') },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
+    setAddMoneyVisible(true);
   };
 
   const handleJoinPool = () => {
@@ -200,6 +194,7 @@ export const HomeScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
         </ScrollView>
+        <AddMoneyModal visible={addMoneyVisible} onClose={() => setAddMoneyVisible(false)} />
       </ScreenContainer>
     </View>
   );
