@@ -1,247 +1,697 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image, ScrollView, Modal, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Text } from '../ui/Text';
-import { Carousel } from '../ui/Carousel';
-import { GlassCard } from '../ui/GlassCard';
+import { Card } from '../ui/Card';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
 import { ScreenContainer } from '../layout/ScreenContainer';
 import { useNavigation } from '@react-navigation/native';
+import { TrendingChallenges } from '../challengeComponents/TrendingChallenges';
 
-const trendingCards = [
+// Enhanced trending challenges data
+const enhancedTrendingChallenges = [
   {
-    key: 'marathon',
-    content: (
-      <>
-        <Text variant="h3" weight="bold" style={{ color: Colors.primaryText, marginBottom: 6 }}>
-          Weekend Marathon
-        </Text>
-        <Text variant="body" style={{ color: Colors.primaryText }}>
-          Join the 10K step challenge this weekend and win exciting rewards!
-        </Text>
-      </>
-    ),
-    image: require('../../assets/images/splash-icon.png'),
+    id: '1',
+    name: 'Weekend Warrior',
+    participants: 1247,
+    reward: '1000 Points + Crown',
+    type: 'steps',
+    difficulty: 'medium',
+    timeLimit: '48h',
+    category: 'popular',
+    trending: true,
   },
   {
-    key: 'new-challenge',
-    content: (
-      <>
-        <Text variant="h3" weight="bold" style={{ color: Colors.primaryText, marginBottom: 6 }}>
-          Yoga Flex Challenge
-        </Text>
-        <Text variant="body" style={{ color: Colors.primaryText }}>
-          Try our new yoga challenge and improve your flexibility.
-        </Text>
-      </>
-    ),
-    image: require('../../assets/images/partial-react-logo.png'),
+    id: '2',
+    name: 'Calorie Crusher',
+    participants: 892,
+    reward: 'Ring + 500 Points',
+    type: 'calories',
+    difficulty: 'hard',
+    timeLimit: '24h',
+    category: 'trending',
+    trending: true,
   },
   {
-    key: 'prizes',
-    content: (
-      <>
-        <Text variant="h3" weight="bold" style={{ color: Colors.primaryText, marginBottom: 6 }}>
-          Prizes & Vouchers
-        </Text>
-        <Text variant="body" style={{ color: Colors.primaryText }}>
-          Participate in trending challenges and win Amazon vouchers!
-        </Text>
-      </>
-    ),
-    icon: 'gift',
+    id: '3',
+    name: 'Speed Demon',
+    participants: 567,
+    reward: 'Voucher + 300 Points',
+    type: 'distance',
+    difficulty: 'easy',
+    timeLimit: '12h',
+    category: 'new',
+    trending: true,
+  },
+  {
+    id: '4',
+    name: 'Morning Glory',
+    participants: 2341,
+    reward: 'Crown + 800 Points',
+    type: 'steps',
+    difficulty: 'medium',
+    timeLimit: '6h',
+    category: 'featured',
+    trending: true,
   },
 ];
 
-// Add a constant for challenge time slots
-const TIME_RANGES = [
-  { label: 'Morning', start: '05:00', end: '09:00' },
-  { label: 'Evening', start: '18:00', end: '22:00' },
+// Featured challenges with special rewards
+const featuredChallenges = [
+  {
+    id: 'f1',
+    name: 'Marathon Master',
+    description: 'Complete a full marathon distance in 7 days',
+    participants: 156,
+    reward: 'Legendary Ring + 2000 Points',
+    type: 'distance',
+    difficulty: 'legendary',
+    timeLimit: '7 days',
+    specialReward: '🏆 Trophy',
+    category: 'featured',
+  },
+  {
+    id: 'f2',
+    name: 'Calorie King',
+    description: 'Burn 10,000 calories in one week',
+    participants: 89,
+    reward: 'Epic Crown + 1500 Points',
+    type: 'calories',
+    difficulty: 'epic',
+    timeLimit: '7 days',
+    specialReward: '👑 Golden Crown',
+    category: 'featured',
+  },
 ];
 
-// Dummy challenge data (should be moved to a constants file in a real app)
-const CHALLENGES = [
-  { id: 1, date: '2024-06-10', time: '05:10', description: 'Pool 1: Early riser challenge' },
-  { id: 2, date: '2024-06-10', time: '06:20', description: 'Pool 2: Sunrise steps' },
-  { id: 3, date: '2024-06-10', time: '18:10', description: 'Pool 3: Evening energy' },
-  { id: 4, date: '2024-06-11', time: '05:30', description: 'Pool 4: Morning boost' },
-  { id: 5, date: '2024-06-11', time: '19:00', description: 'Pool 5: Night owl steps' },
+// Leaderboard data
+const leaderboardData = [
+  { rank: 1, name: 'Sarah Johnson', points: 15420, avatar: '👑', streak: 15 },
+  { rank: 2, name: 'Mike Chen', points: 12850, avatar: '🥈', streak: 12 },
+  { rank: 3, name: 'Emma Davis', points: 11230, avatar: '🥉', streak: 8 },
+  { rank: 4, name: 'Alex Rodriguez', points: 9870, avatar: '4️⃣', streak: 6 },
+  { rank: 5, name: 'Lisa Wang', points: 8540, avatar: '5️⃣', streak: 10 },
 ];
 
-// 10 pool data
-const POOLS = [
-  { time: '5:00 am - 5:10 am', description: 'Start your day strong! Join the early risers.' },
-  { time: '5:10 am - 5:20 am', description: 'Keep the momentum going, every step counts.' },
-  { time: '5:20 am - 5:30 am', description: 'Push your limits, you are unstoppable.' },
-  { time: '5:30 am - 5:40 am', description: 'Consistency is the key to success.' },
-  { time: '5:40 am - 5:50 am', description: 'Rise and shine, let\'s get moving!' },
-  { time: '5:50 am - 6:00 am', description: 'A new day, a new challenge.' },
-  { time: '6:00 pm - 6:10 pm', description: 'Evening energy boost, let\'s go!' },
-  { time: '6:10 pm - 6:20 pm', description: 'Finish strong, you\'re almost there.' },
-  { time: '6:20 pm - 6:30 pm', description: 'Every step brings you closer to your goal.' },
-  { time: '6:30 pm - 6:40 pm', description: 'Celebrate your progress, keep moving!' },
+// Categories for filtering
+const challengeCategories = [
+  { id: 'all', name: 'All', icon: '🏆' },
+  { id: 'trending', name: 'Trending', icon: '🔥' },
+  { id: 'popular', name: 'Popular', icon: '⭐' },
+  { id: 'new', name: 'New', icon: '🆕' },
+  { id: 'featured', name: 'Featured', icon: '💎' },
 ];
 
-type PoolCardProps = {
-  time: string;
-  description: string;
-};
-const PoolCard = ({ time, description }: PoolCardProps) => (
-  <View style={{
-    backgroundColor: Colors.cardBackground,
-    borderRadius: 14,
-    padding: 24,
-    marginBottom: 14,
-    flexDirection: 'column',
-    minWidth: 0,
-    borderWidth: 1,
-    borderColor: Colors.borderColor,
-    shadowColor: Colors.shadowColor,
-    shadowOffset: Colors.shadowOffset,
-    shadowOpacity: Colors.shadowOpacity,
-    shadowRadius: Colors.shadowRadius,
-    elevation: Colors.elevation,
-  }}>
-    <Text variant="caption" color="accent" style={{ fontWeight: 'bold', marginBottom: 8 }}>{time}</Text>
-    <Text variant="body" style={{ color: Colors.primaryText }}>{description}</Text>
+interface LeaderboardItemProps {
+  item: {
+    rank: number;
+    name: string;
+    points: number;
+    avatar: string;
+    streak: number;
+  };
+}
+
+const LeaderboardItem: React.FC<LeaderboardItemProps> = ({ item }) => (
+  <View style={styles.leaderboardItem}>
+    <View style={styles.rankContainer}>
+      <Text style={styles.rankText}>{item.rank}</Text>
+      <Text style={styles.avatarText}>{item.avatar}</Text>
+    </View>
+    <View style={styles.userInfo}>
+      <Text style={styles.userName}>{item.name}</Text>
+      <Text style={styles.streakText}>{item.streak} day streak</Text>
+    </View>
+    <View style={styles.pointsContainer}>
+      <Text style={styles.pointsText}>{item.points.toLocaleString()}</Text>
+      <Text style={styles.pointsLabel}>points</Text>
+    </View>
   </View>
 );
 
+interface FeaturedChallengeCardProps {
+  challenge: any;
+  onJoin: (challenge: any) => void;
+}
+
+const FeaturedChallengeCard: React.FC<FeaturedChallengeCardProps> = ({ challenge, onJoin }) => {
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'easy':
+        return '#4CAF50';
+      case 'medium':
+        return '#FF9800';
+      case 'hard':
+        return '#F44336';
+      case 'epic':
+        return '#9C27B0';
+      case 'legendary':
+        return '#FFD700';
+      default:
+        return Colors.accent;
+    }
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'steps':
+        return '👟';
+      case 'calories':
+        return '🔥';
+      case 'distance':
+        return '🏃';
+      default:
+        return '🎯';
+    }
+  };
+
+  return (
+    <Card style={styles.featuredCard}>
+      <View style={styles.featuredHeader}>
+        <View style={styles.featuredIcon}>
+          <Text style={styles.featuredIconText}>{getTypeIcon(challenge.type)}</Text>
+        </View>
+        <View style={styles.featuredInfo}>
+          <Text style={styles.featuredName}>{challenge.name}</Text>
+          <Text style={styles.featuredDescription}>{challenge.description}</Text>
+        </View>
+        <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(challenge.difficulty) }]}>
+          <Text style={styles.difficultyText}>{challenge.difficulty.toUpperCase()}</Text>
+        </View>
+      </View>
+      
+      <View style={styles.featuredStats}>
+        <View style={styles.statItem}>
+          <Text style={styles.featuredStatLabel}>Participants</Text>
+          <Text style={styles.statValue}>{challenge.participants}</Text>
+        </View>
+        <View style={styles.statItem}>
+          <Text style={styles.featuredStatLabel}>Time Limit</Text>
+          <Text style={styles.statValue}>{challenge.timeLimit}</Text>
+        </View>
+        <View style={styles.statItem}>
+          <Text style={styles.featuredStatLabel}>Special Reward</Text>
+          <Text style={styles.statValue}>{challenge.specialReward}</Text>
+        </View>
+      </View>
+      
+      <View style={styles.featuredFooter}>
+        <View style={styles.rewardContainer}>
+          <Text style={styles.rewardLabel}>Reward:</Text>
+          <Text style={styles.rewardText}>{challenge.reward}</Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.joinButton}
+          onPress={() => onJoin(challenge)}
+        >
+          <Text style={styles.joinButtonText}>Join Challenge</Text>
+        </TouchableOpacity>
+      </View>
+    </Card>
+  );
+};
+
 export const TrendingScreen: React.FC = () => {
-  const [datePickerVisible, setDatePickerVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [timeRangeModalVisible, setTimeRangeModalVisible] = useState(false);
-  const [selectedTimeRange, setSelectedTimeRange] = useState<typeof TIME_RANGES[0] | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const navigation = useNavigation();
 
-  // Show pools only if both date and time range are selected
-  const filteredPools = selectedTimeRange
-    ? POOLS.filter(pool => {
-        // Parse pool start time
-        const poolStart = pool.time.split(' - ')[0];
-        // Check if pool is in selected time range
-        return (
-          poolStart >= selectedTimeRange.start && poolStart < selectedTimeRange.end
-        );
-      })
-    : POOLS;
+  const handleJoinChallenge = (challenge: any) => {
+    Alert.alert(
+      'Join Challenge',
+      `Are you sure you want to join "${challenge.name}"?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Join', 
+          onPress: () => {
+            Alert.alert('Success', `You've joined ${challenge.name}!`);
+          }
+        },
+      ]
+    );
+  };
 
-  // Format selected date for display
-  const formattedDate = selectedDate ? selectedDate.toLocaleDateString() : 'Select Date';
+  const filteredChallenges = selectedCategory === 'all' 
+    ? enhancedTrendingChallenges 
+    : enhancedTrendingChallenges.filter(challenge => challenge.category === selectedCategory);
 
   return (
     <ScreenContainer>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Text variant="h2" weight="bold" style={styles.title}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Text variant="h1" weight="bold" style={styles.title}>
           Trending
         </Text>
-        <TouchableOpacity onPress={() => (navigation as any).navigate('Wallet')} style={{ padding: 4 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Ionicons name="wallet" size={28} color={Colors.primaryText} />
-            <Ionicons name="add" size={18} color={Colors.primaryText} style={{ marginLeft: -10, marginTop: -8 }} />
+            <Text variant="body" color="secondary" style={styles.subtitle}>
+              Discover hot challenges and compete with others
+            </Text>
           </View>
+          <TouchableOpacity onPress={() => (navigation as any).navigate('Wallet')} style={styles.walletButton}>
+            <Ionicons name="wallet" size={24} color={Colors.primaryText} />
+            <Ionicons name="add" size={16} color={Colors.primaryText} style={styles.addIcon} />
         </TouchableOpacity>
       </View>
-      <Text variant="body" color="secondary" style={{ color: Colors.secondaryText, marginBottom: 16 }}>
-        Hot workouts and challenges
+
+        {/* Category Filter */}
+        <View style={styles.categoryContainer}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {challengeCategories.map((category) => (
+              <TouchableOpacity
+                key={category.id}
+                style={[
+                  styles.categoryButton,
+                  selectedCategory === category.id && styles.categoryButtonActive
+                ]}
+                onPress={() => setSelectedCategory(category.id)}
+              >
+                <Text style={styles.categoryIcon}>{category.icon}</Text>
+                <Text style={[
+                  styles.categoryText,
+                  selectedCategory === category.id && styles.categoryTextActive
+                ]}>
+                  {category.name}
       </Text>
-      <ScrollView contentContainerStyle={{ paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
-        <Carousel
-          data={trendingCards}
-          cardHeight={160}
-          autoScroll={true}
-          cardWidthPercent={0.85}
-          gap={20}
-          renderCard={card => (
-            <GlassCard style={{ height: 160, padding: 0 }}>
-              <View style={styles.cardContentRow}>
-                <View style={{ flex: 1 }}>{card.content}</View>
-                {card.image && (
-                  <Image source={card.image} style={styles.cardImage} resizeMode="contain" />
-                )}
-                {card.icon && (
-                  <Ionicons name={card.icon as any} size={54} color={Colors.accent} style={{ marginLeft: 10, opacity: 0.9 }} />
-                )}
-              </View>
-            </GlassCard>
-          )}
-        />
-        {/* More Challenges heading with calendar icon */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 24, marginBottom: 8 }}>
-          <Text variant="h2" weight="bold">More Challenges</Text>
-          <TouchableOpacity onPress={() => setDatePickerVisible(true)}>
-            <Ionicons name="calendar" size={28} color={Colors.primaryText} />
-          </TouchableOpacity>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
-        {/* Show selected date and time range, and button to pick time range if date is picked */}
-        {selectedDate && (
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-            <Text variant="body" style={{ marginRight: 12 }}>{formattedDate}</Text>
-            <TouchableOpacity onPress={() => setTimeRangeModalVisible(true)} style={{ backgroundColor: Colors.accent, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 4 }}>
-              <Text variant="body" style={{ color: Colors.primaryText }}>{selectedTimeRange ? selectedTimeRange.label : 'Select Time Range'}</Text>
+
+        {/* Featured Challenges */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>💎 Featured Challenges</Text>
+            <TouchableOpacity>
+              <Text style={styles.viewAllText}>View All</Text>
+            </TouchableOpacity>
+              </View>
+          {featuredChallenges.map((challenge) => (
+            <FeaturedChallengeCard 
+              key={challenge.id} 
+              challenge={challenge} 
+              onJoin={handleJoinChallenge}
+            />
+          ))}
+        </View>
+
+        {/* Trending Challenges */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>🔥 Trending Challenges</Text>
+            <TouchableOpacity>
+              <Text style={styles.viewAllText}>View All</Text>
             </TouchableOpacity>
           </View>
-        )}
-        {/* Time Range Modal */}
-        {timeRangeModalVisible && (
-          <Modal
-            visible={timeRangeModalVisible}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setTimeRangeModalVisible(false)}
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScroll}
           >
-            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', alignItems: 'center' }}>
-              <View style={{ backgroundColor: Colors.cardBackground, borderRadius: 12, padding: 24, minWidth: 220 }}>
-                <Text variant="h3" style={{ marginBottom: 12, color: Colors.primaryText }}>Select Time Range</Text>
-                {TIME_RANGES.map(range => (
+            {filteredChallenges.map((challenge) => (
+              <View key={challenge.id} style={styles.challengeCardContainer}>
+                <Card style={styles.challengeCard}>
+                  <View style={styles.challengeHeader}>
+                    <View style={styles.challengeIcon}>
+                      <Text style={styles.challengeIconText}>
+                        {challenge.type === 'steps' ? '👟' : challenge.type === 'calories' ? '🔥' : '🏃'}
+                      </Text>
+                    </View>
+                    <View style={styles.challengeInfo}>
+                      <Text style={styles.challengeName}>{challenge.name}</Text>
+                      <View style={styles.challengeMeta}>
+                        <View style={[styles.difficultyBadge, { backgroundColor: challenge.difficulty === 'easy' ? '#4CAF50' : challenge.difficulty === 'medium' ? '#FF9800' : '#F44336' }]}>
+                          <Text style={styles.difficultyText}>{challenge.difficulty.toUpperCase()}</Text>
+                        </View>
+                        <Text style={styles.timeLimit}>{challenge.timeLimit}</Text>
+                      </View>
+                    </View>
+                    <View style={styles.participantsContainer}>
+                      <Text style={styles.participantsText}>{challenge.participants}</Text>
+                      <Text style={styles.participantsLabel}>participants</Text>
+                    </View>
+                  </View>
+                  
+                  <View style={styles.challengeFooter}>
+                    <View style={styles.rewardContainer}>
+                      <Text style={styles.rewardLabel}>Reward:</Text>
+                      <Text style={styles.rewardText}>{challenge.reward}</Text>
+                    </View>
                   <TouchableOpacity
-                    key={range.label}
-                    onPress={() => {
-                      setSelectedTimeRange(range);
-                      setTimeRangeModalVisible(false);
-                    }}
-                    style={{ marginBottom: 10 }}
-                  >
-                    <Text variant="body" style={{ color: Colors.primaryText }}>{range.label}: {range.start} - {range.end}</Text>
+                      style={styles.joinButton}
+                      onPress={() => handleJoinChallenge(challenge)}
+                    >
+                      <Text style={styles.joinButtonText}>Join</Text>
                   </TouchableOpacity>
-                ))}
-                <TouchableOpacity onPress={() => setTimeRangeModalVisible(false)} style={{ marginTop: 18 }}>
-                  <Text variant="body" color="accent">Cancel</Text>
-                </TouchableOpacity>
+                  </View>
+                </Card>
               </View>
+            ))}
+          </ScrollView>
+        </View>
+
+        {/* Leaderboard */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>🏆 Top Performers</Text>
+            <TouchableOpacity>
+              <Text style={styles.viewAllText}>View All</Text>
+            </TouchableOpacity>
             </View>
-          </Modal>
-        )}
-        {/* List of pools (filtered by time range if selected) */}
-        {filteredPools.map((pool, idx) => (
-          <PoolCard key={idx} time={pool.time} description={pool.description} />
-        ))}
+          <Card style={styles.leaderboardCard}>
+            {leaderboardData.map((item) => (
+              <LeaderboardItem key={item.rank} item={item} />
+            ))}
+          </Card>
+        </View>
+
+        {/* Quick Stats */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>📊 Quick Stats</Text>
+          <View style={styles.statsGrid}>
+            <Card style={styles.statCard}>
+              <Text style={styles.statNumber}>2,847</Text>
+              <Text style={styles.statLabel}>Active Users</Text>
+            </Card>
+            <Card style={styles.statCard}>
+              <Text style={styles.statNumber}>156</Text>
+              <Text style={styles.statLabel}>Active Challenges</Text>
+            </Card>
+            <Card style={styles.statCard}>
+              <Text style={styles.statNumber}>89,420</Text>
+              <Text style={styles.statLabel}>Total Steps Today</Text>
+            </Card>
+            <Card style={styles.statCard}>
+              <Text style={styles.statNumber}>12,450</Text>
+              <Text style={styles.statLabel}>Calories Burned</Text>
+            </Card>
+          </View>
+        </View>
       </ScrollView>
     </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 24,
+  },
+  headerLeft: {
     flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    paddingTop: 32,
-    // backgroundColor: Colors.cardBackground, // removed for gradient
   },
   title: {
     color: Colors.primaryText,
+    marginBottom: 4,
   },
-  cardContentRow: {
+  subtitle: {
+    color: Colors.secondaryText,
+  },
+  walletButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: '100%',
+    padding: 8,
   },
-  cardImage: {
-    width: 60,
-    height: 60,
-    marginLeft: 16,
-    borderRadius: 30,
-    backgroundColor: Colors.backgroundGradient[1],
+  addIcon: {
+    marginLeft: -8,
+    marginTop: -6,
+  },
+  categoryContainer: {
+    marginBottom: 24,
+  },
+  categoryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.cardBackground,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 12,
+    borderWidth: 1,
+    borderColor: Colors.borderColor,
+  },
+  categoryButtonActive: {
+    backgroundColor: Colors.accent,
+    borderColor: Colors.accent,
+  },
+  categoryIcon: {
+    fontSize: 16,
+    marginRight: 6,
+  },
+  categoryText: {
+    fontSize: 14,
+    color: Colors.secondaryText,
+    fontWeight: '500',
+  },
+  categoryTextActive: {
+    color: Colors.primaryText,
+    fontWeight: 'bold',
+  },
+  section: {
+    marginBottom: 32,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+  },
+  viewAllText: {
+    fontSize: 14,
+    color: Colors.accent,
+    fontWeight: '600',
+  },
+  horizontalScroll: {
+    paddingHorizontal: 20,
+  },
+  challengeCardContainer: {
+    marginRight: 16,
+    width: 280,
+  },
+  challengeCard: {
+    borderWidth: 1,
+    borderColor: Colors.borderColor,
+  },
+  challengeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  challengeIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.accent,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  challengeIconText: {
+    fontSize: 20,
+  },
+  challengeInfo: {
+    flex: 1,
+  },
+  challengeName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+    marginBottom: 4,
+  },
+  challengeMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  difficultyBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  difficultyText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+  },
+  timeLimit: {
+    fontSize: 12,
+    color: Colors.secondaryText,
+  },
+  participantsContainer: {
+    alignItems: 'center',
+  },
+  participantsText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+  },
+  participantsLabel: {
+    fontSize: 10,
+    color: Colors.secondaryText,
+  },
+  challengeFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  rewardContainer: {
+    flex: 1,
+  },
+  rewardLabel: {
+    fontSize: 12,
+    color: Colors.secondaryText,
+    marginBottom: 2,
+  },
+  rewardText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Colors.gold,
+  },
+  joinButton: {
+    backgroundColor: Colors.accent,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  joinButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+  },
+  featuredCard: {
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.borderColor,
+  },
+  featuredHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  featuredIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: Colors.accent,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  featuredIconText: {
+    fontSize: 24,
+  },
+  featuredInfo: {
+    flex: 1,
+  },
+  featuredName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+    marginBottom: 4,
+  },
+  featuredDescription: {
+    fontSize: 14,
+    color: Colors.secondaryText,
+    lineHeight: 20,
+  },
+  featuredStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  featuredStatLabel: {
+    fontSize: 12,
+    color: Colors.secondaryText,
+    marginBottom: 4,
+  },
+  statValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+  },
+  featuredFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  leaderboardCard: {
+    padding: 16,
+  },
+  leaderboardItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderColor,
+  },
+  rankContainer: {
+    alignItems: 'center',
+    marginRight: 16,
+    width: 40,
+  },
+  rankText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+  },
+  avatarText: {
+    fontSize: 20,
+  },
+  userInfo: {
+    flex: 1,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.primaryText,
+    marginBottom: 2,
+  },
+  streakText: {
+    fontSize: 12,
+    color: Colors.secondaryText,
+  },
+  pointsContainer: {
+    alignItems: 'flex-end',
+  },
+  pointsText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.accent,
+  },
+  pointsLabel: {
+    fontSize: 12,
+    color: Colors.secondaryText,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  statCard: {
+    width: '48%',
+    alignItems: 'center',
+    padding: 16,
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: Colors.accent,
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: Colors.secondaryText,
+    textAlign: 'center',
   },
 }); 

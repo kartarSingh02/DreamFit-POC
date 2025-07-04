@@ -3,10 +3,11 @@ import { View, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput, Touch
 import * as ImagePicker from 'expo-image-picker';
 import { Text } from '../ui/Text';
 import { StepCounter } from '../StepCounter';
-import { GlassCard } from '../ui/GlassCard';
+import { Card } from '../ui/Card';
 import Colors from '../../constants/Colors';
 import { ChallengeJoinModal } from '../modals/ChallengeJoinModal';
 import { Ionicons } from '@expo/vector-icons';
+import { ScreenContainer } from '../layout/ScreenContainer';
 
 interface UserProfile {
   name: string;
@@ -136,135 +137,107 @@ export const ProfileScreen: React.FC = () => {
     }
   };
 
+  // Mock stats, rewards, and activity
+  const stats = { steps: 7890, calories: 1234, distance: 6.2, streak: 7 };
+  const rewards = { points: 1250, crowns: 2, rings: 5, badges: 8 };
+  const activity = [
+    { type: 'challenge', text: 'Joined Step Challenge', time: '2h ago' },
+    { type: 'badge', text: 'Earned "Early Bird" badge', time: '1d ago' },
+    { type: 'reward', text: 'Won 500 Points', time: '3d ago' },
+  ];
+
   return (
-    <TouchableWithoutFeedback onPress={handleOutsidePress}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <View style={styles.profileContainer}>
-          {/* Profile Image - Clickable */}
-          <View style={styles.imageContainer}>
-            <TouchableOpacity onPress={pickImage} activeOpacity={0.8}>
-              <Image
-                source={{ uri: profile.imageUri }}
-                style={styles.profileImage}
-              />
-              <View style={styles.imageOverlay}>
-                <Text variant="caption" color="primary" weight="medium">
-                  Tap to change
-                </Text>
+    <ScreenContainer>
+      <TouchableWithoutFeedback onPress={handleOutsidePress}>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          <View style={styles.profileContainer}>
+            {/* Header: Avatar, Name, Edit/Settings */}
+            <View style={styles.headerRow}>
+              <TouchableOpacity onPress={pickImage} activeOpacity={0.8}>
+                <Image source={{ uri: profile.imageUri }} style={styles.profileImage} />
+              </TouchableOpacity>
+              <View style={{ flex: 1, marginLeft: 16 }}>
+                {editingField === 'name' ? (
+                  <TextInput
+                    value={profile.name}
+                    onChangeText={(value) => setProfile(prev => ({ ...prev, name: value }))}
+                    onBlur={() => setEditingField(null)}
+                    style={styles.nameInput}
+                    autoFocus
+                    selectTextOnFocus
+                  />
+                ) : (
+                  <TouchableOpacity onPress={() => handleFieldPress('name')} activeOpacity={0.7}>
+                    <Text variant="h2" weight="bold" style={styles.name}>{profile.name}</Text>
+                  </TouchableOpacity>
+                )}
+                <Text style={styles.bio} numberOfLines={2}>{profile.bio}</Text>
               </View>
-            </TouchableOpacity>
-          </View>
-
-          {/* Name - Centered without label */}
-          <View style={styles.nameContainer}>
-            {editingField === 'name' ? (
-              <TextInput
-                value={profile.name}
-                onChangeText={(value) => setProfile(prev => ({ ...prev, name: value }))}
-                onBlur={() => setEditingField(null)}
-                style={styles.nameInput}
-                autoFocus
-                selectTextOnFocus
-              />
-            ) : (
-              <TouchableOpacity onPress={() => handleFieldPress('name')} activeOpacity={0.7}>
-                <Text variant="h2" weight="bold" style={styles.name}>
-                  {profile.name}
-                </Text>
+              <TouchableOpacity style={styles.settingsBtn} onPress={() => Alert.alert('Settings')}>
+                <Ionicons name="settings" size={24} color={Colors.accent} />
               </TouchableOpacity>
-            )}
-          </View>
+            </View>
 
-          {/* Bio - Centered */}
-          <View style={styles.bioContainer}>
-            {editingField === 'bio' ? (
-              <TextInput
-                value={profile.bio}
-                onChangeText={(value) => setProfile(prev => ({ ...prev, bio: value }))}
-                onBlur={() => setEditingField(null)}
-                style={styles.bioInput}
-                multiline
-                numberOfLines={3}
-                autoFocus
-                selectTextOnFocus
-              />
-            ) : (
-              <TouchableOpacity onPress={() => handleFieldPress('bio')} activeOpacity={0.7}>
-                <Text variant="body" color="secondary" style={styles.bio}>
-                  {profile.bio}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
+            {/* Stats Summary */}
+            <Card style={styles.statsCard}>
+              <View style={styles.statsRow}>
+                <View style={styles.statItem}><Ionicons name="walk" size={20} color={Colors.accent} /><Text style={styles.statValue}>{stats.steps}</Text><Text style={styles.statLabel}>Steps</Text></View>
+                <View style={styles.statItem}><Ionicons name="flame" size={20} color={Colors.accent} /><Text style={styles.statValue}>{stats.calories}</Text><Text style={styles.statLabel}>Calories</Text></View>
+                <View style={styles.statItem}><Ionicons name="map" size={20} color={Colors.accent} /><Text style={styles.statValue}>{stats.distance} km</Text><Text style={styles.statLabel}>Distance</Text></View>
+                <View style={styles.statItem}><Ionicons name="flame" size={20} color={Colors.accent} /><Text style={styles.statValue}>{stats.streak}d</Text><Text style={styles.statLabel}>Streak</Text></View>
+              </View>
+            </Card>
 
-          {/* Wallet Card */}
-          <GlassCard style={{ marginBottom: 20 }}>
-            <View style={{ width: '100%' }}>
+            {/* Rewards & Achievements */}
+            <Card style={styles.rewardsCard}>
+              <View style={styles.rewardsRow}>
+                <View style={styles.rewardItem}><Text style={styles.rewardIcon}>💎</Text><Text style={styles.rewardValue}>{rewards.points}</Text><Text style={styles.rewardLabel}>Points</Text></View>
+                <View style={styles.rewardItem}><Text style={styles.rewardIcon}>👑</Text><Text style={styles.rewardValue}>{rewards.crowns}</Text><Text style={styles.rewardLabel}>Crowns</Text></View>
+                <View style={styles.rewardItem}><Text style={styles.rewardIcon}>💍</Text><Text style={styles.rewardValue}>{rewards.rings}</Text><Text style={styles.rewardLabel}>Rings</Text></View>
+                <View style={styles.rewardItem}><Text style={styles.rewardIcon}>🏅</Text><Text style={styles.rewardValue}>{rewards.badges}</Text><Text style={styles.rewardLabel}>Badges</Text></View>
+              </View>
+            </Card>
+
+            {/* Recent Activity */}
+            <Card style={styles.activityCard}>
+              <Text style={styles.activityTitle}>Recent Activity</Text>
+              {activity.map((a, idx) => (
+                <View key={idx} style={styles.activityItem}>
+                  <Ionicons name={a.type === 'challenge' ? 'trophy' : a.type === 'badge' ? 'ribbon' : 'star'} size={18} color={Colors.accent} style={{ marginRight: 8 }} />
+                  <Text style={styles.activityText}>{a.text}</Text>
+                  <Text style={styles.activityTime}>{a.time}</Text>
+                </View>
+              ))}
+            </Card>
+
+            {/* Editable Info */}
+            <Card style={styles.infoCard}>
+              <Text style={styles.infoTitle}>Basic Information</Text>
+              <View style={styles.infoGrid}>
+                <EditableField label="Location" value={profile.location} onSave={(value) => updateProfile('location', value)} isEditing={editingField === 'location'} onPress={() => handleFieldPress('location')} />
+                <EditableField label="Height" value={profile.height} onSave={(value) => updateProfile('height', value)} isEditing={editingField === 'height'} onPress={() => handleFieldPress('height')} />
+                <EditableField label="Weight" value={profile.weight} onSave={(value) => updateProfile('weight', value)} isEditing={editingField === 'weight'} onPress={() => handleFieldPress('weight')} />
+                <EditableField label="Age" value={profile.age} onSave={(value) => updateProfile('age', value)} isEditing={editingField === 'age'} onPress={() => handleFieldPress('age')} />
+                <EditableField label="Gender" value={profile.gender} onSave={(value) => updateProfile('gender', value)} isEditing={editingField === 'gender'} onPress={() => handleFieldPress('gender')} />
+              </View>
+            </Card>
+
+            {/* Wallet Card */}
+            <Card style={styles.walletCard}>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                <Text variant="h3" weight="semibold" style={{ color: '#fff' }}>Wallet</Text>
-                <Ionicons name="wallet" size={34} color={Colors.primaryText} />
+                <Text style={styles.walletTitle}>Wallet</Text>
+                <Ionicons name="wallet" size={28} color={Colors.primaryText} />
               </View>
-              <Text variant="h1" weight="bold" style={{ color: '#ff6b35' }}>$1,250.00</Text>
-              <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, alignSelf: 'flex-start', backgroundColor: '#ff6b35', borderRadius: 8, paddingVertical: 6, paddingHorizontal: 14 }}>
+              <Text style={styles.walletBalance}>$1,250.00</Text>
+              <TouchableOpacity style={styles.addMoneyBtn}>
                 <Ionicons name="add" size={20} color="#fff" style={{ marginRight: 6 }} />
-                <Text variant="body" weight="medium" style={{ color: '#fff' }}>Add Money</Text>
+                <Text style={styles.addMoneyText}>Add Money</Text>
               </TouchableOpacity>
-            </View>
-          </GlassCard>
-
-          {/* Basic Information Card */}
-          <GlassCard style={{ marginBottom: 20 }}>
-            <View style={styles.infoHeader}>
-              <Text variant="h3" weight="semibold" style={[styles.infoTitle, { color: '#fff' }]}>
-                Basic Information
-              </Text>
-            </View>
-            <View style={styles.infoGrid}>
-              <EditableField
-                label="Location"
-                value={profile.location}
-                onSave={(value) => updateProfile('location', value)}
-                isEditing={editingField === 'location'}
-                onPress={() => handleFieldPress('location')}
-              />
-              <EditableField
-                label="Height"
-                value={profile.height}
-                onSave={(value) => updateProfile('height', value)}
-                isEditing={editingField === 'height'}
-                onPress={() => handleFieldPress('height')}
-              />
-              <EditableField
-                label="Weight"
-                value={profile.weight}
-                onSave={(value) => updateProfile('weight', value)}
-                isEditing={editingField === 'weight'}
-                onPress={() => handleFieldPress('weight')}
-              />
-              <EditableField
-                label="Age"
-                value={profile.age}
-                onSave={(value) => updateProfile('age', value)}
-                isEditing={editingField === 'age'}
-                onPress={() => handleFieldPress('age')}
-              />
-              <EditableField
-                label="Gender"
-                value={profile.gender}
-                onSave={(value) => updateProfile('gender', value)}
-                isEditing={editingField === 'gender'}
-                onPress={() => handleFieldPress('gender')}
-              />
-            </View>
-          </GlassCard>
-
-          {/* Step Counter Card */}
-          <GlassCard style={{ marginBottom: 20 }}>
-            <StepCounter />
-          </GlassCard>
-        </View>
-      </ScrollView>
-    </TouchableWithoutFeedback>
+            </Card>
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </ScreenContainer>
   );
 };
 
@@ -370,5 +343,101 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.accent,
     fontSize: 16,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  settingsBtn: {
+    padding: 8,
+  },
+  statsCard: {
+    marginBottom: 20,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 4,
+  },
+  statLabel: {
+    fontSize: 14,
+    color: Colors.secondaryText,
+  },
+  rewardsCard: {
+    marginBottom: 20,
+  },
+  rewardsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  rewardItem: {
+    alignItems: 'center',
+  },
+  rewardIcon: {
+    fontSize: 18,
+    marginRight: 8,
+  },
+  rewardValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 4,
+  },
+  rewardLabel: {
+    fontSize: 14,
+    color: Colors.secondaryText,
+  },
+  activityCard: {
+    marginBottom: 20,
+  },
+  activityTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  activityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  activityText: {
+    flex: 1,
+  },
+  activityTime: {
+    fontSize: 14,
+    color: Colors.secondaryText,
+  },
+  walletCard: {
+    marginBottom: 20,
+  },
+  walletTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  walletBalance: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  addMoneyBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+    backgroundColor: '#ff6b35',
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+  },
+  addMoneyText: {
+    fontSize: 16,
+    fontWeight: 'medium',
+    color: '#fff',
   },
 }); 

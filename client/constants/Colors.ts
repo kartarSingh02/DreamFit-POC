@@ -11,6 +11,8 @@ const Colors = {
   secondaryText: '#B0B0B0',
   accent: '#FF8C00', // Or '#FFA500' if you prefer lighter
   gold: '#FFD700', // Special highlight/glow
+  silver: '#C0C0C0', // For 2nd place podium
+  bronze: '#CD7F32', // For 3rd place podium
   borderColor: 'rgba(255, 215, 0, 0.15)',
   shadowColor: '#000',
   shadowOffset: { width: 0, height: 4 },
@@ -20,3 +22,4 @@ const Colors = {
 };
 
 export default Colors;
+export { Colors };
