@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput, TouchableWithoutFeedback, Keyboard, Alert, Modal } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Text } from '../ui/Text';
 import { StepCounter } from '../StepCounter';
@@ -87,6 +87,9 @@ export const ProfileScreen: React.FC = () => {
     entryFee: 20,
     image: require('../../assets/images/partial-react-logo.png'),
   };
+  const [stepTestVisible, setStepTestVisible] = useState(false);
+  const [testSteps, setTestSteps] = useState(0);
+  const [stepPermissionChecked, setStepPermissionChecked] = useState(false);
 
   const updateProfile = (field: keyof UserProfile, value: string) => {
     setProfile(prev => ({ ...prev, [field]: value }));
@@ -146,6 +149,34 @@ export const ProfileScreen: React.FC = () => {
     { type: 'reward', text: 'Won 500 Points', time: '3d ago' },
   ];
 
+  // Request activity/fitness permission when opening step counter test
+  const requestStepPermission = async () => {
+    // For demo: always allow, but show a message the first time
+    if (!stepPermissionChecked) {
+      Alert.alert(
+        'Permission Required',
+        'Please enable activity/fitness permissions to count your steps.',
+        [{ text: 'OK' }]
+      );
+      setStepPermissionChecked(true);
+    }
+    return true;
+  };
+
+  const handleStartTest = async () => {
+    const granted = await requestStepPermission();
+    if (!granted) return;
+    setTestSteps(0);
+    setStepTestVisible(true);
+  };
+  const handleCloseTest = () => setStepTestVisible(false);
+  const handleSimulateStep = () => setTestSteps(s => s + 1);
+  const handleResetTest = () => setTestSteps(0);
+  const handleStopTest = () => {
+    setStepTestVisible(false);
+    Alert.alert('Woho!', `You walked ${testSteps} steps!`);
+  };
+
   return (
     <ScreenContainer>
       <TouchableWithoutFeedback onPress={handleOutsidePress}>
@@ -186,7 +217,38 @@ export const ProfileScreen: React.FC = () => {
                 <View style={styles.statItem}><Ionicons name="map" size={20} color={Colors.accent} /><Text style={styles.statValue}>{stats.distance} km</Text><Text style={styles.statLabel}>Distance</Text></View>
                 <View style={styles.statItem}><Ionicons name="flame" size={20} color={Colors.accent} /><Text style={styles.statValue}>{stats.streak}d</Text><Text style={styles.statLabel}>Streak</Text></View>
               </View>
+              <TouchableOpacity style={styles.stepTestBtn} onPress={handleStartTest}>
+                <Ionicons name="walk" size={18} color="#fff" style={{ marginRight: 6 }} />
+                <Text style={styles.stepTestBtnText}>Test Step Counter</Text>
+              </TouchableOpacity>
             </Card>
+
+            {/* Step Counter Test Modal */}
+            <Modal
+              visible={stepTestVisible}
+              animationType="slide"
+              transparent
+              onRequestClose={handleCloseTest}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.stepTestModal}>
+                  <Text style={styles.stepTestTitle}>Step Counter Test</Text>
+                  <Text style={styles.stepTestDesc}>Walk around and see if the app counts your steps accurately.</Text>
+                  <Text style={styles.stepTestCount}>{testSteps} steps</Text>
+                  <View style={styles.stepTestBtnRow}>
+                    <TouchableOpacity style={styles.stepTestActionBtn} onPress={handleSimulateStep}>
+                      <Text style={styles.stepTestActionText}>Simulate Step</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.stepTestActionBtn} onPress={handleResetTest}>
+                      <Text style={styles.stepTestActionText}>Reset</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity style={styles.stepTestCloseBtn} onPress={handleStopTest}>
+                    <Text style={styles.stepTestCloseText}>Stop</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
 
             {/* Rewards & Achievements */}
             <Card style={styles.rewardsCard}>
@@ -222,18 +284,7 @@ export const ProfileScreen: React.FC = () => {
               </View>
             </Card>
 
-            {/* Wallet Card */}
-            <Card style={styles.walletCard}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                <Text style={styles.walletTitle}>Wallet</Text>
-                <Ionicons name="wallet" size={28} color={Colors.primaryText} />
-              </View>
-              <Text style={styles.walletBalance}>$1,250.00</Text>
-              <TouchableOpacity style={styles.addMoneyBtn}>
-                <Ionicons name="add" size={20} color="#fff" style={{ marginRight: 6 }} />
-                <Text style={styles.addMoneyText}>Add Money</Text>
-              </TouchableOpacity>
-            </Card>
+          
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
@@ -426,18 +477,76 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  addMoneyBtn: {
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stepTestModal: {
+    backgroundColor: Colors.cardBackground,
+    borderRadius: 16,
+    padding: 28,
+    alignItems: 'center',
+    width: 300,
+  },
+  stepTestTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+    marginBottom: 8,
+  },
+  stepTestDesc: {
+    color: Colors.secondaryText,
+    fontSize: 14,
+    marginBottom: 18,
+    textAlign: 'center',
+  },
+  stepTestCount: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: Colors.accent,
+    marginBottom: 18,
+  },
+  stepTestBtnRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 18,
+  },
+  stepTestActionBtn: {
+    backgroundColor: Colors.accent,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    marginHorizontal: 8,
+  },
+  stepTestActionText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  stepTestCloseBtn: {
+    marginTop: 8,
+    alignSelf: 'center',
+  },
+  stepTestCloseText: {
+    color: Colors.accent,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  stepTestBtn: {
+    marginTop: 16,
+    backgroundColor: Colors.accent,
+    borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
-    backgroundColor: '#ff6b35',
-    borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 14,
+    alignSelf: 'center',
+    paddingHorizontal: 18,
+    paddingVertical: 10,
   },
-  addMoneyText: {
-    fontSize: 16,
-    fontWeight: 'medium',
+  stepTestBtnText: {
     color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 15,
   },
 }); 

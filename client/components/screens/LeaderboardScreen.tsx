@@ -104,39 +104,58 @@ const mockUserPools = [
   },
 ];
 
+// Add mock friends leaderboard data
+const friendsLeaderboard = [
+  {
+    id: 1,
+    name: 'You',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+    steps: 10980,
+    rank: 1,
+    earnings: 10,
+    isUser: true,
+  },
+  {
+    id: 2,
+    name: 'Mike Chen',
+    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+    steps: 10500,
+    rank: 2,
+    earnings: 8,
+    isUser: false,
+  },
+  {
+    id: 3,
+    name: 'Emma Davis',
+    avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
+    steps: 9800,
+    rank: 3,
+    earnings: 5,
+    isUser: false,
+  },
+];
+
 const userWalletBalance = 1250; // in rupees
 
-const PodiumCard: React.FC<{ user: any; position: number }> = ({ user, position }) => {
-  const getPodiumStyle = (position: number) => {
-    switch (position) {
-      case 1: return { backgroundColor: Colors.gold, height: 120 };
-      case 2: return { backgroundColor: Colors.silver, height: 100 };
-      case 3: return { backgroundColor: Colors.bronze, height: 80 };
-      default: return { backgroundColor: Colors.accent, height: 60 };
-    }
-  };
-
-  const getPodiumText = (position: number) => {
-    switch (position) {
-      case 1: return '🥇';
-      case 2: return '🥈';
-      case 3: return '🥉';
-      default: return `#${position}`;
-    }
-  };
-
-  return (
-    <View style={styles.podiumItem}>
-      <View style={[styles.podiumBar, getPodiumStyle(position)]}>
-        <Text style={styles.podiumRank}>{getPodiumText(position)}</Text>
+const TopPerformersList: React.FC<{ data: any[] }> = ({ data }) => (
+  <View style={styles.topPerformersList}>
+    {data.slice(0, 5).map((user, idx) => (
+      <View key={user.id} style={styles.topPerformerItem}>
+        <View style={styles.topPerformerAvatarWrapper}>
+          <Image source={{ uri: user.avatar }} style={styles.topPerformerAvatar} />
+          {idx < 3 && (
+            <Text style={styles.topPerformerMedal}>
+              {idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}
+            </Text>
+          )}
+        </View>
+        <Text style={styles.topPerformerName}>{user.name}</Text>
+        <Text style={styles.topPerformerSteps}>{user.steps.toLocaleString()} steps</Text>
+        <Text style={styles.topPerformerEarnings}>₹{user.earnings}</Text>
       </View>
-      <Image source={{ uri: user.avatar }} style={styles.podiumAvatar} />
-      <Text style={styles.podiumName}>{user.name}</Text>
-      <Text style={styles.podiumSteps}>{user.steps.toLocaleString()} steps</Text>
-      <Text style={styles.podiumEarnings}>₹{user.earnings}</Text>
-    </View>
-  );
-};
+    ))}
+  </View>
+);
 
 const UserPoolCard: React.FC<{ pool: any }> = ({ pool }) => {
   const getStatusColor = (status: string) => {
@@ -188,40 +207,12 @@ const UserPoolCard: React.FC<{ pool: any }> = ({ pool }) => {
   );
 };
 
-const WalletCard: React.FC = () => {
-  const handleWithdraw = () => {
-    Alert.alert(
-      'Withdraw Earnings',
-      'How much would you like to withdraw?',
-      [
-        { text: '₹100', onPress: () => Alert.alert('Success', '₹100 withdrawn to your bank account!') },
-        { text: '₹500', onPress: () => Alert.alert('Success', '₹500 withdrawn to your bank account!') },
-        { text: 'All (₹1250)', onPress: () => Alert.alert('Success', '₹1250 withdrawn to your bank account!') },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
-  };
-
-  return (
-    <Card style={styles.walletCard}>
-      <View style={styles.walletHeader}>
-        <View>
-          <Text style={styles.walletTitle}>Pool Earnings</Text>
-          <Text style={styles.walletBalance}>₹{userWalletBalance}</Text>
-        </View>
-        <TouchableOpacity style={styles.withdrawBtn} onPress={handleWithdraw}>
-          <Ionicons name="card" size={16} color={Colors.primaryText} />
-          <Text style={styles.withdrawText}>Withdraw</Text>
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.walletSubtext}>Total earnings from pool competitions</Text>
-    </Card>
-  );
-};
-
 export const LeaderboardScreen: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState('daily');
   const [showFriends, setShowFriends] = useState(false);
+  const leaderboardData = showFriends ? friendsLeaderboard : mockLeaderboard;
+  // Find the user object for the 'Your Rank' card
+  const userObj = leaderboardData.find(u => u.isUser);
 
   return (
     <ScreenContainer>
@@ -236,12 +227,10 @@ export const LeaderboardScreen: React.FC = () => {
             style={[styles.friendsToggle, showFriends && styles.friendsToggleActive]}
             onPress={() => setShowFriends(!showFriends)}
           >
-            <Ionicons name="people" size={20} color={showFriends ? Colors.primaryText : Colors.secondaryText} />
+            <Ionicons name={showFriends ? 'people' : 'earth'} size={20} color={showFriends ? Colors.primaryText : Colors.secondaryText} />
+            <Text style={styles.friendsToggleText}>{showFriends ? 'Friends' : 'Global'}</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Wallet Card */}
-        <WalletCard />
 
         {/* Tab Navigation */}
         <View style={styles.tabContainer}>
@@ -258,29 +247,31 @@ export const LeaderboardScreen: React.FC = () => {
           ))}
         </View>
 
-        {/* Podium */}
-        <Card style={styles.podiumCard}>
-          <Text style={styles.podiumTitle}>Top 3 Performers</Text>
-          <View style={styles.podiumContainer}>
-            <PodiumCard user={mockLeaderboard[1]} position={2} />
-            <PodiumCard user={mockLeaderboard[0]} position={1} />
-            <PodiumCard user={mockLeaderboard[2]} position={3} />
-          </View>
+        {/* Top 5 Performers List */}
+        <Card style={styles.topPerformersCard}>
+          <Text style={styles.podiumTitle}>Top 5 Performers</Text>
+          <TopPerformersList data={leaderboardData} />
         </Card>
 
         {/* User's Rank */}
         <Card style={styles.userRankCard}>
           <View style={styles.userRankHeader}>
             <Text style={styles.userRankTitle}>Your Rank</Text>
-            <Text style={styles.userRankNumber}>#{mockLeaderboard[4].rank}</Text>
+            <Text style={styles.userRankNumber}>{userObj ? `#${userObj.rank}` : '-'}</Text>
           </View>
           <View style={styles.userRankDetails}>
-            <Image source={{ uri: mockLeaderboard[4].avatar }} style={styles.userRankAvatar} />
-            <View style={styles.userRankInfo}>
-              <Text style={styles.userRankName}>{mockLeaderboard[4].name}</Text>
-              <Text style={styles.userRankSteps}>{mockLeaderboard[4].steps.toLocaleString()} steps</Text>
-              <Text style={styles.userRankEarnings}>₹{mockLeaderboard[4].earnings} earned</Text>
-            </View>
+            {userObj ? (
+              <>
+                <Image source={{ uri: userObj.avatar }} style={styles.userRankAvatar} />
+                <View style={styles.userRankInfo}>
+                  <Text style={styles.userRankName}>{userObj.name}</Text>
+                  <Text style={styles.userRankSteps}>{userObj.steps.toLocaleString()} steps</Text>
+                  <Text style={styles.userRankEarnings}>₹{userObj.earnings} earned</Text>
+                </View>
+              </>
+            ) : (
+              <Text style={styles.userRankName}>Not ranked</Text>
+            )}
           </View>
         </Card>
 
@@ -411,7 +402,7 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: Colors.primaryText,
   },
-  podiumCard: {
+  topPerformersCard: {
     marginBottom: 20,
     padding: 16,
   },
@@ -422,46 +413,45 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
   },
-  podiumContainer: {
+  topPerformersList: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'flex-end',
-    height: 140,
+    marginTop: 12,
   },
-  podiumItem: {
+  topPerformerItem: {
     alignItems: 'center',
     flex: 1,
+    marginHorizontal: 4,
   },
-  podiumBar: {
-    width: 60,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
+  topPerformerAvatarWrapper: {
+    position: 'relative',
+    marginBottom: 4,
   },
-  podiumRank: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.primaryText,
-  },
-  podiumAvatar: {
+  topPerformerAvatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginBottom: 4,
   },
-  podiumName: {
+  topPerformerMedal: {
+    position: 'absolute',
+    top: -12,
+    left: '50%',
+    transform: [{ translateX: -12 }],
+    fontSize: 18,
+  },
+  topPerformerName: {
     fontSize: 12,
     fontWeight: 'bold',
     color: Colors.primaryText,
     textAlign: 'center',
   },
-  podiumSteps: {
+  topPerformerSteps: {
     fontSize: 10,
     color: Colors.secondaryText,
     textAlign: 'center',
   },
-  podiumEarnings: {
+  topPerformerEarnings: {
     fontSize: 10,
     fontWeight: 'bold',
     color: Colors.gold,
@@ -595,5 +585,11 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+  },
+  friendsToggleText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+    marginLeft: 4,
   },
 }); 

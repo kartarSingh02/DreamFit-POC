@@ -145,37 +145,6 @@ const PoolCard: React.FC<{ pool: any; onJoin: (pool: any) => void }> = ({ pool, 
   );
 };
 
-const WalletCard: React.FC = () => {
-  const handleAddMoney = () => {
-    Alert.alert(
-      'Add Money to Wallet',
-      'How much would you like to add?',
-      [
-        { text: '₹100', onPress: () => Alert.alert('Success', '₹100 added to wallet!') },
-        { text: '₹500', onPress: () => Alert.alert('Success', '₹500 added to wallet!') },
-        { text: '₹1000', onPress: () => Alert.alert('Success', '₹1000 added to wallet!') },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
-  };
-
-  return (
-    <Card style={styles.walletCard}>
-      <View style={styles.walletHeader}>
-        <View>
-          <Text style={styles.walletTitle}>Wallet Balance</Text>
-          <Text style={styles.walletBalance}>₹{userWalletBalance}</Text>
-        </View>
-        <TouchableOpacity style={styles.addMoneyBtn} onPress={handleAddMoney}>
-          <Ionicons name="add" size={16} color={Colors.primaryText} />
-          <Text style={styles.addMoneyText}>Add Money</Text>
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.walletSubtext}>Available for pool entries (₹10 each)</Text>
-    </Card>
-  );
-};
-
 export const ChallengesScreen: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState('active');
 
@@ -225,9 +194,6 @@ export const ChallengesScreen: React.FC = () => {
             <Ionicons name="settings" size={24} color={Colors.primaryText} />
           </TouchableOpacity>
         </View>
-
-        {/* Wallet Card */}
-        <WalletCard />
 
         {/* Pool Schedule Info */}
         <Card style={styles.scheduleCard}>
@@ -310,45 +276,6 @@ const styles = StyleSheet.create({
   },
   settingsBtn: {
     padding: 8,
-  },
-  walletCard: {
-    marginBottom: 20,
-    padding: 16,
-  },
-  walletHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  walletTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.primaryText,
-  },
-  walletBalance: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.gold,
-    marginTop: 4,
-  },
-  addMoneyBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.accent,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  addMoneyText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: Colors.primaryText,
-    marginLeft: 4,
-  },
-  walletSubtext: {
-    fontSize: 12,
-    color: Colors.secondaryText,
   },
   scheduleCard: {
     marginBottom: 20,
