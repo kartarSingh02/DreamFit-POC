@@ -545,6 +545,7 @@ const styles = StyleSheet.create({
   },
   statsCard: {
     padding: 16,
+    marginTop: margin.lg,
   },
   statsTitle: {
     fontSize: 16,

@@ -32,10 +32,14 @@ const styles = StyleSheet.create({
   primary: {
     backgroundColor: Colors.cardBackground,
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.borderColor,
   },
   secondary: {
     backgroundColor: '#2d2d2d',
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.borderColor,
   },
   padding_small: {
     padding: 12,

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useRef, useCallback } from 'react';
+import { Platform } from 'react-native';
 import { Pedometer } from 'expo-sensors';
 
 // Context type
@@ -17,20 +18,44 @@ export const StepCounterProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [stepCount, setStepCount] = useState(0);
   const [lastResult, setLastResult] = useState<number | null>(null);
   const subscription = useRef<any>(null);
+  const mockInterval = useRef<NodeJS.Timeout | null>(null);
 
   const start = useCallback(() => {
-    if (subscription.current) return;
+    if (subscription.current || mockInterval.current) return;
     setStepCount(0);
     setIsActive(true);
-    subscription.current = Pedometer.watchStepCount((result) => {
-      setStepCount(result.steps);
-    });
+
+    // Check if we're on web or if Pedometer is not available
+    if (Platform.OS === 'web' || !Pedometer.isAvailableAsync) {
+      // Mock implementation for web/PC testing
+      console.log('Using mock step counter for web/PC testing');
+      mockInterval.current = setInterval(() => {
+        setStepCount(prev => prev + Math.floor(Math.random() * 3) + 1); // Simulate 1-3 steps per second
+      }, 1000);
+    } else {
+      // Real implementation for mobile devices
+      try {
+        subscription.current = Pedometer.watchStepCount((result) => {
+          setStepCount(result.steps);
+        });
+      } catch (error) {
+        console.log('Pedometer not available, using mock implementation');
+        // Fallback to mock if Pedometer fails
+        mockInterval.current = setInterval(() => {
+          setStepCount(prev => prev + Math.floor(Math.random() * 3) + 1);
+        }, 1000);
+      }
+    }
   }, []);
 
   const stop = useCallback(() => {
     if (subscription.current) {
       subscription.current.remove();
       subscription.current = null;
+    }
+    if (mockInterval.current) {
+      clearInterval(mockInterval.current);
+      mockInterval.current = null;
     }
     setIsActive(false);
     setLastResult(stepCount);

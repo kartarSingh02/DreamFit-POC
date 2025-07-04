@@ -43,10 +43,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <LinearGradient
-      colors={['#18181b', '#23272f']}
+      colors={Colors.backgroundGradient as [string, string, string]}
       style={styles.gradientBg}
       start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
+      end={{ x: 1, y: 1 }}
+      locations={[0, 0.5, 1]}
     >
       <SafeAreaView style={styles.container}>
         <View style={styles.content}>

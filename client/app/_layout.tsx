@@ -52,10 +52,11 @@ export default function RootLayout() {
 
   return (
     <LinearGradient
-      colors={Colors.backgroundGradient as [string, string]}
+      colors={Colors.backgroundGradient as [string, string, string]}
       style={{ flex: 1 }}
       start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
+      end={{ x: 1, y: 1 }}
+      locations={[0, 0.5, 1]}
     >
       <StepCounterProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

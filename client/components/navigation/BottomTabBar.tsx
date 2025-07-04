@@ -56,7 +56,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
 }) => {
   return (
     <LinearGradient
-      colors={['#18181b', '#23272f']}
+      colors={['#0A1A1A', '#1A2E2E']}
       style={styles.container}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
@@ -74,7 +74,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
               <Ionicons
                 name={tab.icon}
                 size={iconSize.md}
-                color={isActive ? '#ff6b35' : '#9ca3af'}
+                color={isActive ? '#4A9B8F' : '#9ca3af'}
               />
               <Text
                 variant="caption"
@@ -95,8 +95,11 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
 const styles = StyleSheet.create({
   container: {
     borderTopWidth: 1,
-    borderTopColor: '#2d2d2d',
+    borderTopColor: 'rgba(74, 155, 143, 0.15)',
     width: '100%',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: 'hidden',
   },
   tabContainer: {
     flexDirection: 'row' as const,

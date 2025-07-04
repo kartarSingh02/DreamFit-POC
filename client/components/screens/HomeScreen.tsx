@@ -209,7 +209,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   welcomeBanner: {
-    marginTop: 24,
     marginBottom: 24,
     padding: 20,
     borderRadius: 18,

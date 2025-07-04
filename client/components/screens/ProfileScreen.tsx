@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput, TouchableWithoutFeedback, Keyboard, Alert, Modal } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput, TouchableWithoutFeedback, Keyboard, Alert, Modal, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Text } from '../ui/Text';
 import { StepCounter } from '../StepCounter';
@@ -9,6 +9,7 @@ import { ChallengeJoinModal } from '../modals/ChallengeJoinModal';
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenContainer } from '../layout/ScreenContainer';
 import { padding, margin, fontSize, spacing } from '../../constants/Responsive';
+import { useStepCounter } from '../StepCounterContext';
 
 interface UserProfile {
   name: string;
@@ -89,8 +90,10 @@ export const ProfileScreen: React.FC = () => {
     image: require('../../assets/images/partial-react-logo.png'),
   };
   const [stepTestVisible, setStepTestVisible] = useState(false);
-  const [testSteps, setTestSteps] = useState(0);
   const [stepPermissionChecked, setStepPermissionChecked] = useState(false);
+
+  // Use real step counter
+  const { isActive, stepCount, start, stop, lastResult } = useStepCounter();
 
   const updateProfile = (field: keyof UserProfile, value: string) => {
     setProfile(prev => ({ ...prev, [field]: value }));
@@ -167,15 +170,31 @@ export const ProfileScreen: React.FC = () => {
   const handleStartTest = async () => {
     const granted = await requestStepPermission();
     if (!granted) return;
-    setTestSteps(0);
+    
+    // Show platform-specific message
+    if (Platform.OS === 'web') {
+      Alert.alert(
+        'Testing Mode',
+        'You\'re testing on PC/Web. Step counting will be simulated for demonstration purposes. On a real device, it will use actual step sensors.',
+        [{ text: 'OK' }]
+      );
+    }
+    
     setStepTestVisible(true);
+    start(); // Start real step counting (or mock on web)
   };
-  const handleCloseTest = () => setStepTestVisible(false);
-  const handleSimulateStep = () => setTestSteps(s => s + 1);
-  const handleResetTest = () => setTestSteps(0);
+
+  const handleCloseTest = () => {
+    setStepTestVisible(false);
+    stop(); // Stop step counting
+  };
+
   const handleStopTest = () => {
     setStepTestVisible(false);
-    Alert.alert('Woho!', `You walked ${testSteps} steps!`);
+    stop(); // Stop step counting and show result
+    if (lastResult) {
+      Alert.alert('Woho!', `You walked ${lastResult} steps!`);
+    }
   };
 
   return (
@@ -200,80 +219,111 @@ export const ProfileScreen: React.FC = () => {
                   />
                 ) : (
                   <TouchableOpacity onPress={() => handleFieldPress('name')} activeOpacity={0.7}>
-                    <Text variant="h2" weight="bold" style={styles.name}>{profile.name}</Text>
+                    <Text style={styles.profileName}>{profile.name}</Text>
                   </TouchableOpacity>
                 )}
-                <Text style={styles.bio} numberOfLines={2}>{profile.bio}</Text>
+                <Text style={styles.profileBio}>{profile.bio}</Text>
               </View>
-              <TouchableOpacity style={styles.settingsBtn} onPress={() => Alert.alert('Settings')}>
-                <Ionicons name="settings" size={24} color={Colors.accent} />
+              <TouchableOpacity style={styles.editButton}>
+                <Text style={styles.editButtonText}>Edit</Text>
               </TouchableOpacity>
             </View>
 
-            {/* Stats Summary */}
+            {/* Stats Card */}
             <Card style={styles.statsCard}>
-              <View style={styles.statsRow}>
-                <View style={styles.statItem}><Ionicons name="walk" size={20} color={Colors.accent} /><Text style={styles.statValue}>{stats.steps}</Text><Text style={styles.statLabel}>Steps</Text></View>
-                <View style={styles.statItem}><Ionicons name="flame" size={20} color={Colors.accent} /><Text style={styles.statValue}>{stats.calories}</Text><Text style={styles.statLabel}>Calories</Text></View>
-                <View style={styles.statItem}><Ionicons name="map" size={20} color={Colors.accent} /><Text style={styles.statValue}>{stats.distance} km</Text><Text style={styles.statLabel}>Distance</Text></View>
-                <View style={styles.statItem}><Ionicons name="flame" size={20} color={Colors.accent} /><Text style={styles.statValue}>{stats.streak}d</Text><Text style={styles.statLabel}>Streak</Text></View>
-              </View>
-              <TouchableOpacity style={styles.stepTestBtn} onPress={handleStartTest}>
-                <Ionicons name="walk" size={18} color="#fff" style={{ marginRight: 6 }} />
-                <Text style={styles.stepTestBtnText}>Test Step Counter</Text>
-              </TouchableOpacity>
-            </Card>
-
-            {/* Step Counter Test Modal */}
-            <Modal
-              visible={stepTestVisible}
-              animationType="slide"
-              transparent
-              onRequestClose={handleCloseTest}
-            >
-              <View style={styles.modalOverlay}>
-                <View style={styles.stepTestModal}>
-                  <Text style={styles.stepTestTitle}>Step Counter Test</Text>
-                  <Text style={styles.stepTestDesc}>Walk around and see if the app counts your steps accurately.</Text>
-                  <Text style={styles.stepTestCount}>{testSteps} steps</Text>
-                  <View style={styles.stepTestBtnRow}>
-                    <TouchableOpacity style={styles.stepTestActionBtn} onPress={handleSimulateStep}>
-                      <Text style={styles.stepTestActionText}>Simulate Step</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.stepTestActionBtn} onPress={handleResetTest}>
-                      <Text style={styles.stepTestActionText}>Reset</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <TouchableOpacity style={styles.stepTestCloseBtn} onPress={handleStopTest}>
-                    <Text style={styles.stepTestCloseText}>Stop</Text>
-                  </TouchableOpacity>
+              <Text style={styles.statsTitle}>Your Stats</Text>
+              <View style={styles.statsGrid}>
+                <View style={styles.statItem}>
+                  <Text style={styles.statValue}>{stats.steps.toLocaleString()}</Text>
+                  <Text style={styles.statLabel}>Steps Today</Text>
+                </View>
+                <View style={styles.statItem}>
+                  <Text style={styles.statValue}>{stats.calories}</Text>
+                  <Text style={styles.statLabel}>Calories</Text>
+                </View>
+                <View style={styles.statItem}>
+                  <Text style={styles.statValue}>{stats.distance}km</Text>
+                  <Text style={styles.statLabel}>Distance</Text>
+                </View>
+                <View style={styles.statItem}>
+                  <Text style={styles.statValue}>{stats.streak}</Text>
+                  <Text style={styles.statLabel}>Day Streak</Text>
                 </View>
               </View>
-            </Modal>
+            </Card>
 
-            {/* Rewards & Achievements */}
+            {/* Rewards Card */}
             <Card style={styles.rewardsCard}>
-              <View style={styles.rewardsRow}>
-                <View style={styles.rewardItem}><Text style={styles.rewardIcon}>💎</Text><Text style={styles.rewardValue}>{rewards.points}</Text><Text style={styles.rewardLabel}>Points</Text></View>
-                <View style={styles.rewardItem}><Text style={styles.rewardIcon}>👑</Text><Text style={styles.rewardValue}>{rewards.crowns}</Text><Text style={styles.rewardLabel}>Crowns</Text></View>
-                <View style={styles.rewardItem}><Text style={styles.rewardIcon}>💍</Text><Text style={styles.rewardValue}>{rewards.rings}</Text><Text style={styles.rewardLabel}>Rings</Text></View>
-                <View style={styles.rewardItem}><Text style={styles.rewardIcon}>🏅</Text><Text style={styles.rewardValue}>{rewards.badges}</Text><Text style={styles.rewardLabel}>Badges</Text></View>
+              <Text style={styles.rewardsTitle}>Your Rewards</Text>
+              <View style={styles.rewardsGrid}>
+                <View style={styles.rewardItem}>
+                  <Text style={styles.rewardIcon}>👑</Text>
+                  <Text style={styles.rewardValue}>{rewards.crowns}</Text>
+                  <Text style={styles.rewardLabel}>Crowns</Text>
+                </View>
+                <View style={styles.rewardItem}>
+                  <Text style={styles.rewardIcon}>💍</Text>
+                  <Text style={styles.rewardValue}>{rewards.rings}</Text>
+                  <Text style={styles.rewardLabel}>Rings</Text>
+                </View>
+                <View style={styles.rewardItem}>
+                  <Text style={styles.rewardIcon}>🏆</Text>
+                  <Text style={styles.rewardValue}>{rewards.badges}</Text>
+                  <Text style={styles.rewardLabel}>Badges</Text>
+                </View>
+                <View style={styles.rewardItem}>
+                  <Text style={styles.rewardIcon}>⭐</Text>
+                  <Text style={styles.rewardValue}>{rewards.points}</Text>
+                  <Text style={styles.rewardLabel}>Points</Text>
+                </View>
               </View>
+            </Card>
+
+            {/* Wallet Card */}
+            <Card style={styles.walletCard}>
+              <View style={styles.walletHeader}>
+                <Text style={styles.walletTitle}>Wallet Balance</Text>
+                <TouchableOpacity style={styles.withdrawBtn}>
+                  <Ionicons name="arrow-up" size={16} color={Colors.primaryText} />
+                  <Text style={styles.withdrawText}>Withdraw</Text>
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.walletBalance}>₹1,250</Text>
+              <Text style={styles.walletSubtext}>Available for pools and rewards</Text>
             </Card>
 
             {/* Recent Activity */}
             <Card style={styles.activityCard}>
               <Text style={styles.activityTitle}>Recent Activity</Text>
-              {activity.map((a, idx) => (
-                <View key={idx} style={styles.activityItem}>
-                  <Ionicons name={a.type === 'challenge' ? 'trophy' : a.type === 'badge' ? 'ribbon' : 'star'} size={18} color={Colors.accent} style={{ marginRight: 8 }} />
-                  <Text style={styles.activityText}>{a.text}</Text>
-                  <Text style={styles.activityTime}>{a.time}</Text>
+              {activity.map((item, index) => (
+                <View key={index} style={styles.activityItem}>
+                  <View style={styles.activityIcon}>
+                    <Ionicons 
+                      name={item.type === 'challenge' ? 'trophy' : item.type === 'badge' ? 'star' : 'gift'} 
+                      size={16} 
+                      color={Colors.primaryText} 
+                    />
+                  </View>
+                  <View style={styles.activityContent}>
+                    <Text style={styles.activityText}>{item.text}</Text>
+                    <Text style={styles.activityTime}>{item.time}</Text>
+                  </View>
                 </View>
               ))}
             </Card>
 
-            {/* Editable Info */}
+            {/* Step Counter Test */}
+            <Card style={styles.stepTestCard}>
+              <Text style={styles.stepTestTitle}>Test Step Counter</Text>
+              <Text style={{ fontSize: fontSize.sm, color: Colors.secondaryText, marginBottom: spacing.md, textAlign: 'center' }}>
+                Test your step counter to ensure accurate tracking for walking pools
+              </Text>
+              <TouchableOpacity style={styles.stepTestButton} onPress={handleStartTest}>
+                <Text style={styles.stepTestButtonText}>Start Step Counter Test</Text>
+              </TouchableOpacity>
+            </Card>
+
+            {/* Basic Information */}
             <Card style={styles.infoCard}>
               <Text style={styles.infoTitle}>Basic Information</Text>
               <View style={styles.infoGrid}>
@@ -285,10 +335,49 @@ export const ProfileScreen: React.FC = () => {
               </View>
             </Card>
 
-          
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
+
+      {/* Step Counter Test Modal */}
+      <Modal
+        visible={stepTestVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={handleCloseTest}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Step Counter Test</Text>
+            <Text style={{ fontSize: fontSize.sm, color: Colors.secondaryText, marginBottom: spacing.lg, textAlign: 'center' }}>
+              {Platform.OS === 'web' 
+                ? 'Testing on PC/Web - Step counting is simulated. On a real device, it will detect actual steps.'
+                : 'Start walking to test your step counter. The counter will automatically detect your steps.'
+              }
+            </Text>
+            
+            <View style={styles.stepCountContainer}>
+              <Text style={styles.modalSteps}>{stepCount}</Text>
+              <Text style={{ fontSize: fontSize.md, color: Colors.secondaryText }}>steps</Text>
+            </View>
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.modalButtonSecondary]} 
+                onPress={handleCloseTest}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.modalButtonPrimary]} 
+                onPress={handleStopTest}
+              >
+                <Text style={styles.modalButtonText}>Stop Test</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScreenContainer>
   );
 };
@@ -586,5 +675,115 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold' as const,
     fontSize: fontSize.md,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: Colors.cardBackground,
+    borderRadius: 16,
+    padding: padding.xl,
+    alignItems: 'center',
+    width: 300,
+  },
+  modalTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: 'bold' as const,
+    color: Colors.primaryText,
+    marginBottom: spacing.md,
+  },
+  stepCountContainer: {
+    marginBottom: spacing.md,
+  },
+  modalSteps: {
+    fontSize: fontSize.xxxl,
+    fontWeight: 'bold' as const,
+    color: Colors.accent,
+  },
+  modalButtons: {
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    width: '100%',
+  },
+  modalButton: {
+    padding: padding.md,
+    borderRadius: 8,
+    backgroundColor: Colors.accent,
+  },
+  modalButtonSecondary: {
+    backgroundColor: Colors.accent,
+  },
+  modalButtonPrimary: {
+    backgroundColor: Colors.accent,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontWeight: 'bold' as const,
+    fontSize: fontSize.md,
+  },
+  profileName: {
+    fontSize: fontSize.xl,
+    fontWeight: 'bold' as const,
+    color: Colors.primaryText,
+  },
+  profileBio: {
+    fontSize: fontSize.sm,
+    color: Colors.secondaryText,
+  },
+  editButton: {
+    padding: padding.md,
+  },
+  editButtonText: {
+    fontSize: fontSize.xs,
+    fontWeight: 'bold' as const,
+    color: Colors.accent,
+  },
+  statsTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: 'bold' as const,
+    color: Colors.primaryText,
+    marginBottom: spacing.md,
+  },
+  statsGrid: {
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+  },
+  rewardsTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: 'bold' as const,
+    color: Colors.primaryText,
+    marginBottom: spacing.md,
+  },
+  rewardsGrid: {
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+  },
+  stepTestCard: {
+    marginBottom: margin.lg,
+    padding: padding.lg,
+  },
+  stepTestButton: {
+    marginTop: spacing.md,
+    backgroundColor: Colors.accent,
+    borderRadius: 8,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    alignSelf: 'center',
+    paddingHorizontal: padding.lg,
+    paddingVertical: padding.md,
+  },
+  stepTestButtonText: {
+    color: '#fff',
+    fontWeight: 'bold' as const,
+    fontSize: fontSize.md,
+  },
+  activityIcon: {
+    marginRight: spacing.md,
+  },
+  activityContent: {
+    flex: 1,
   },
 }); 
