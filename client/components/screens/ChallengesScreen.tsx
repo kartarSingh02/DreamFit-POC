@@ -6,6 +6,7 @@ import { ScreenContainer } from '../layout/ScreenContainer';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
 import { AddMoneyModal } from '../ui/AddMoneyModal';
+import { padding, margin, fontSize, spacing } from '../../constants/Responsive';
 
 // Generate upcoming pools for next 10 slots
 const generateUpcomingPools = () => {
@@ -217,6 +218,205 @@ const PoolCard: React.FC<{ pool: any; onJoin: (pool: any) => void }> = ({ pool, 
     </Card>
   );
 };
+
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    marginBottom: margin.lg,
+  },
+  headerTitle: {
+    fontSize: fontSize.xxxl,
+    fontWeight: 'bold' as const,
+    color: Colors.primaryText,
+    marginBottom: spacing.xs,
+  },
+  headerSubtitle: {
+    fontSize: fontSize.md,
+    color: Colors.secondaryText,
+  },
+  searchContainer: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    backgroundColor: Colors.cardBackground,
+    borderRadius: 12,
+    paddingHorizontal: padding.lg,
+    paddingVertical: padding.md,
+    marginBottom: margin.lg,
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: spacing.md,
+    fontSize: fontSize.md,
+    color: Colors.primaryText,
+  },
+  scheduleCard: {
+    marginBottom: margin.lg,
+    padding: padding.lg,
+  },
+  scheduleHeader: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    marginBottom: spacing.md,
+  },
+  scheduleTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: 'bold' as const,
+    color: Colors.primaryText,
+    marginLeft: spacing.sm,
+  },
+  scheduleDetails: {
+    gap: spacing.xs,
+  },
+  scheduleText: {
+    fontSize: fontSize.sm,
+    color: Colors.secondaryText,
+  },
+  tabsContainer: {
+    flexDirection: 'row' as const,
+    marginBottom: margin.lg,
+    backgroundColor: Colors.cardBackground,
+    borderRadius: 12,
+    padding: spacing.xs,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: padding.md,
+    paddingHorizontal: padding.lg,
+    borderRadius: 8,
+    alignItems: 'center' as const,
+  },
+  activeTab: {
+    backgroundColor: Colors.accent,
+  },
+  tabText: {
+    fontSize: fontSize.sm,
+    fontWeight: '600' as const,
+    color: Colors.secondaryText,
+  },
+  activeTabText: {
+    color: Colors.primaryText,
+  },
+  poolsContainer: {
+    gap: spacing.md,
+  },
+  emptyCard: {
+    padding: padding.xl,
+    alignItems: 'center' as const,
+  },
+  emptyText: {
+    fontSize: fontSize.md,
+    color: Colors.secondaryText,
+    textAlign: 'center' as const,
+    marginTop: spacing.md,
+  },
+  poolCard: {
+    padding: padding.lg,
+  },
+  poolHeader: {
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    alignItems: 'center' as const,
+    marginBottom: spacing.md,
+  },
+  poolTitleRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    flex: 1,
+  },
+  poolName: {
+    fontSize: fontSize.md,
+    fontWeight: 'bold' as const,
+    color: Colors.primaryText,
+    marginLeft: spacing.sm,
+  },
+  statusBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: 6,
+  },
+  statusText: {
+    fontSize: fontSize.xs,
+    fontWeight: 'bold' as const,
+    color: Colors.primaryText,
+  },
+  poolDetails: {
+    gap: spacing.sm,
+    marginBottom: margin.lg,
+  },
+  detailRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+  },
+  detailText: {
+    fontSize: fontSize.sm,
+    color: Colors.secondaryText,
+    marginLeft: spacing.sm,
+  },
+  joinButton: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: Colors.accent,
+    paddingVertical: padding.md,
+    borderRadius: 8,
+    gap: spacing.sm,
+  },
+  joinButtonText: {
+    fontSize: fontSize.md,
+    fontWeight: 'bold' as const,
+    color: Colors.primaryText,
+  },
+  reminderButton: {
+    backgroundColor: Colors.gold,
+  },
+  countdownContainer: {
+    backgroundColor: Colors.accent,
+    padding: padding.md,
+    borderRadius: 8,
+    marginBottom: spacing.md,
+    alignItems: 'center' as const,
+  },
+  countdownLabel: {
+    fontSize: fontSize.xs,
+    color: Colors.primaryText,
+    marginBottom: spacing.xs,
+  },
+  countdownTime: {
+    fontSize: fontSize.lg,
+    fontWeight: 'bold' as const,
+    color: Colors.primaryText,
+  },
+  payoutInfo: {
+    backgroundColor: Colors.cardBackground,
+    padding: padding.md,
+    borderRadius: 8,
+    marginBottom: spacing.md,
+  },
+  payoutTitle: {
+    fontSize: fontSize.sm,
+    fontWeight: 'bold' as const,
+    color: Colors.primaryText,
+    marginBottom: spacing.sm,
+  },
+  payoutRow: {
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    marginBottom: spacing.xs,
+  },
+  payoutRank: {
+    fontSize: fontSize.xs,
+    color: Colors.secondaryText,
+  },
+  payoutAmount: {
+    fontSize: fontSize.xs,
+    fontWeight: 'bold' as const,
+    color: Colors.primaryText,
+  },
+});
 
 export const ChallengesScreen: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState('upcoming');
@@ -431,202 +631,4 @@ export const ChallengesScreen: React.FC = () => {
       <AddMoneyModal visible={addMoneyVisible} onClose={() => setAddMoneyVisible(false)} />
     </ScreenContainer>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  header: {
-    marginBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: Colors.primaryText,
-    marginBottom: 4,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: Colors.secondaryText,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.cardBackground,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 16,
-  },
-  searchInput: {
-    flex: 1,
-    marginLeft: 12,
-    fontSize: 16,
-    color: Colors.primaryText,
-  },
-  scheduleCard: {
-    marginBottom: 20,
-    padding: 16,
-  },
-  scheduleHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  scheduleTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.primaryText,
-    marginLeft: 8,
-  },
-  scheduleDetails: {
-    gap: 4,
-  },
-  scheduleText: {
-    fontSize: 14,
-    color: Colors.secondaryText,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    marginBottom: 16,
-    backgroundColor: Colors.cardBackground,
-    borderRadius: 12,
-    padding: 4,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  activeTab: {
-    backgroundColor: Colors.accent,
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.secondaryText,
-  },
-  activeTabText: {
-    color: Colors.primaryText,
-  },
-  poolsContainer: {
-    gap: 12,
-  },
-  emptyCard: {
-    padding: 32,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 16,
-    color: Colors.secondaryText,
-    textAlign: 'center',
-    marginTop: 12,
-  },
-  poolCard: {
-    padding: 16,
-  },
-  poolHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  poolTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  poolName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.primaryText,
-    marginLeft: 8,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  statusText: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: Colors.primaryText,
-  },
-  poolDetails: {
-    gap: 8,
-    marginBottom: 16,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  detailText: {
-    fontSize: 14,
-    color: Colors.secondaryText,
-    marginLeft: 8,
-  },
-  joinButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.accent,
-    paddingVertical: 12,
-    borderRadius: 8,
-    gap: 8,
-  },
-  joinButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.primaryText,
-  },
-  reminderButton: {
-    backgroundColor: Colors.gold,
-  },
-  countdownContainer: {
-    backgroundColor: Colors.accent,
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 12,
-    alignItems: 'center',
-  },
-  countdownLabel: {
-    fontSize: 12,
-    color: Colors.primaryText,
-    marginBottom: 4,
-  },
-  countdownTime: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.primaryText,
-  },
-  payoutInfo: {
-    backgroundColor: Colors.cardBackground,
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  payoutTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: Colors.primaryText,
-    marginBottom: 8,
-  },
-  payoutRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 4,
-  },
-  payoutRank: {
-    fontSize: 12,
-    color: Colors.secondaryText,
-  },
-  payoutAmount: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: Colors.primaryText,
-  },
-}); 
+}; 

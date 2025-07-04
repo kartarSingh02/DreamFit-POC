@@ -3,6 +3,7 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '../ui/Text';
 import { LinearGradient } from 'expo-linear-gradient';
+import { isSmallScreen, iconSize, fontSize, padding } from '../../constants/Responsive';
 
 interface TabItem {
   key: string;
@@ -72,14 +73,14 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
             >
               <Ionicons
                 name={tab.icon}
-                size={24}
+                size={iconSize.md}
                 color={isActive ? '#ff6b35' : '#9ca3af'}
               />
               <Text
                 variant="caption"
                 color={isActive ? 'accent' : 'secondary'}
                 weight="medium"
-                style={styles.tabText}
+                style={[styles.tabText, { fontSize: fontSize.xs }]}
               >
                 {tab.title}
               </Text>
@@ -98,22 +99,21 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   tabContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    alignItems: 'center' as const,
+    paddingVertical: padding.sm,
     paddingHorizontal: 0,
     width: '100%',
   },
   tabButton: {
-    alignItems: 'center',
+    alignItems: 'center' as const,
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: padding.sm,
     paddingHorizontal: 0,
     borderRadius: 8,
   },
   tabText: {
     marginTop: 4,
-    fontSize: 12,
   },
 }); 

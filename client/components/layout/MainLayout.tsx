@@ -16,7 +16,7 @@ interface MainLayoutProps {
 }
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState('home');
 
   const handleTabPress = (tabKey: string) => {
     console.log('Tab pressed:', tabKey);

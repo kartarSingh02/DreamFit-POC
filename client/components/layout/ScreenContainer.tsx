@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ViewProps } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/Colors';
+import { padding } from '../../constants/Responsive';
 
 export const ScreenContainer: React.FC<ViewProps> = ({ children, style, ...props }) => (
   <LinearGradient colors={Colors.backgroundGradient as [string, string]} style={styles.gradient}>
@@ -17,6 +18,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 24,
+    padding: padding.lg,
   },
 }); 
