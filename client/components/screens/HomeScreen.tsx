@@ -113,20 +113,7 @@ export const HomeScreen: React.FC = () => {
             </View>
           </Card>
 
-          {/* Wallet Balance */}
-          <Card style={styles.walletCard}>
-            <View style={styles.walletHeader}>
-              <Text style={styles.walletTitle}>Wallet Balance</Text>
-              <TouchableOpacity onPress={handleAddMoney} style={styles.addMoneyBtn}>
-                <Ionicons name="add" size={16} color={Colors.primaryText} />
-                <Text style={styles.addMoneyText}>Add Money</Text>
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.walletBalance}>₹{user.walletBalance}</Text>
-            <Text style={styles.walletSubtext}>Available for pool entries</Text>
-          </Card>
-
-          {/* Quick Stats */}
+          {/* Quick Stats - MOVED UP (HIGH PRIORITY) */}
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Quick Stats</Text>
             <TouchableOpacity><Text style={styles.sectionAction}>View All</Text></TouchableOpacity>
@@ -138,7 +125,7 @@ export const HomeScreen: React.FC = () => {
             <QuickStat icon={<Ionicons name="time" size={24} color={Colors.accent} />} label="Active" value={`${stats.activeTime}m`} />
           </View>
 
-          {/* Active Challenges Preview */}
+          {/* Active Challenges Preview - MOVED UP (HIGH PRIORITY) */}
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Active Challenges</Text>
             <TouchableOpacity><Text style={styles.sectionAction}>See All</Text></TouchableOpacity>
@@ -151,19 +138,36 @@ export const HomeScreen: React.FC = () => {
             ))}
           </ScrollView>
 
-          {/* Rewards & Achievements */}
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Rewards & Achievements</Text>
-            <TouchableOpacity><Text style={styles.sectionAction}>View</Text></TouchableOpacity>
-          </View>
-          <View style={styles.rewardsRow}>
-            <RewardItem icon="💎" value={rewards.points} label="Points" />
-            <RewardItem icon="👑" value={rewards.crowns} label="Crowns" />
-            <RewardItem icon="💍" value={rewards.rings} label="Rings" />
-            <RewardItem icon="🏅" value={rewards.badges} label="Badges" />
+          {/* Quick Actions - MOVED UP (HIGH PRIORITY) */}
+          <View style={styles.quickActionsRow}>
+            <TouchableOpacity style={styles.quickActionBtn} onPress={handleJoinPool}>
+              <Ionicons name="trophy" size={22} color={Colors.primaryText} />
+              <Text style={styles.quickActionText}>Join Pool</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.quickActionBtn}>
+              <Ionicons name="barbell" size={22} color={Colors.primaryText} />
+              <Text style={styles.quickActionText}>Start Workout</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.quickActionBtn}>
+              <Ionicons name="podium" size={22} color={Colors.primaryText} />
+              <Text style={styles.quickActionText}>Leaderboard</Text>
+            </TouchableOpacity>
           </View>
 
-          {/* Friends Activity Feed */}
+          {/* Wallet Balance - MOVED DOWN (MEDIUM PRIORITY) */}
+          <Card style={styles.walletCard}>
+            <View style={styles.walletHeader}>
+              <Text style={styles.walletTitle}>Wallet Balance</Text>
+              <TouchableOpacity onPress={handleAddMoney} style={styles.addMoneyBtn}>
+                <Ionicons name="add" size={16} color={Colors.primaryText} />
+                <Text style={styles.addMoneyText}>Add Money</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.walletBalance}>₹{user.walletBalance}</Text>
+            <Text style={styles.walletSubtext}>Available for pool entries</Text>
+          </Card>
+
+          {/* Friends Activity Feed - MEDIUM PRIORITY */}
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Friends Activity</Text>
             <TouchableOpacity><Text style={styles.sectionAction}>See All</Text></TouchableOpacity>
@@ -178,20 +182,16 @@ export const HomeScreen: React.FC = () => {
             ))}
           </ScrollView>
 
-          {/* Quick Actions */}
-          <View style={styles.quickActionsRow}>
-            <TouchableOpacity style={styles.quickActionBtn} onPress={handleJoinPool}>
-              <Ionicons name="trophy" size={22} color={Colors.primaryText} />
-              <Text style={styles.quickActionText}>Join Pool</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickActionBtn}>
-              <Ionicons name="barbell" size={22} color={Colors.primaryText} />
-              <Text style={styles.quickActionText}>Start Workout</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickActionBtn}>
-              <Ionicons name="podium" size={22} color={Colors.primaryText} />
-              <Text style={styles.quickActionText}>Leaderboard</Text>
-            </TouchableOpacity>
+          {/* Rewards & Achievements - MOVED DOWN (LOW PRIORITY) */}
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionTitle}>Rewards & Achievements</Text>
+            <TouchableOpacity><Text style={styles.sectionAction}>View</Text></TouchableOpacity>
+          </View>
+          <View style={styles.rewardsRow}>
+            <RewardItem icon="💎" value={rewards.points} label="Points" />
+            <RewardItem icon="👑" value={rewards.crowns} label="Crowns" />
+            <RewardItem icon="💍" value={rewards.rings} label="Rings" />
+            <RewardItem icon="🏅" value={rewards.badges} label="Badges" />
           </View>
         </ScrollView>
         <AddMoneyModal visible={addMoneyVisible} onClose={() => setAddMoneyVisible(false)} />

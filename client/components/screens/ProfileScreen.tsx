@@ -229,7 +229,7 @@ export const ProfileScreen: React.FC = () => {
               </TouchableOpacity>
             </View>
 
-            {/* Stats Card */}
+            {/* Stats Card - HIGH PRIORITY */}
             <Card style={styles.statsCard}>
               <Text style={styles.statsTitle}>Your Stats</Text>
               <View style={styles.statsGrid}>
@@ -252,7 +252,40 @@ export const ProfileScreen: React.FC = () => {
               </View>
             </Card>
 
-            {/* Rewards Card */}
+            {/* Wallet Card - HIGH PRIORITY */}
+            <Card style={styles.walletCard}>
+              <View style={styles.walletHeader}>
+                <Text style={styles.walletTitle}>Wallet Balance</Text>
+                <TouchableOpacity style={styles.withdrawBtn}>
+                  <Ionicons name="arrow-up" size={16} color={Colors.primaryText} />
+                  <Text style={styles.withdrawText}>Withdraw</Text>
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.walletBalance}>₹1,250</Text>
+              <Text style={styles.walletSubtext}>Available for pools and rewards</Text>
+            </Card>
+
+            {/* Recent Activity - HIGH PRIORITY */}
+            <Card style={styles.activityCard}>
+              <Text style={styles.activityTitle}>Recent Activity</Text>
+              {activity.map((item, index) => (
+                <View key={index} style={styles.activityItem}>
+                  <View style={styles.activityIcon}>
+                    <Ionicons 
+                      name={item.type === 'challenge' ? 'trophy' : item.type === 'badge' ? 'star' : 'gift'} 
+                      size={16} 
+                      color={Colors.primaryText} 
+                    />
+                  </View>
+                  <View style={styles.activityContent}>
+                    <Text style={styles.activityText}>{item.text}</Text>
+                    <Text style={styles.activityTime}>{item.time}</Text>
+                  </View>
+                </View>
+              ))}
+            </Card>
+
+            {/* Rewards Card - MEDIUM PRIORITY */}
             <Card style={styles.rewardsCard}>
               <Text style={styles.rewardsTitle}>Your Rewards</Text>
               <View style={styles.rewardsGrid}>
@@ -279,51 +312,7 @@ export const ProfileScreen: React.FC = () => {
               </View>
             </Card>
 
-            {/* Wallet Card */}
-            <Card style={styles.walletCard}>
-              <View style={styles.walletHeader}>
-                <Text style={styles.walletTitle}>Wallet Balance</Text>
-                <TouchableOpacity style={styles.withdrawBtn}>
-                  <Ionicons name="arrow-up" size={16} color={Colors.primaryText} />
-                  <Text style={styles.withdrawText}>Withdraw</Text>
-                </TouchableOpacity>
-              </View>
-              <Text style={styles.walletBalance}>₹1,250</Text>
-              <Text style={styles.walletSubtext}>Available for pools and rewards</Text>
-            </Card>
-
-            {/* Recent Activity */}
-            <Card style={styles.activityCard}>
-              <Text style={styles.activityTitle}>Recent Activity</Text>
-              {activity.map((item, index) => (
-                <View key={index} style={styles.activityItem}>
-                  <View style={styles.activityIcon}>
-                    <Ionicons 
-                      name={item.type === 'challenge' ? 'trophy' : item.type === 'badge' ? 'star' : 'gift'} 
-                      size={16} 
-                      color={Colors.primaryText} 
-                    />
-                  </View>
-                  <View style={styles.activityContent}>
-                    <Text style={styles.activityText}>{item.text}</Text>
-                    <Text style={styles.activityTime}>{item.time}</Text>
-                  </View>
-                </View>
-              ))}
-            </Card>
-
-            {/* Step Counter Test */}
-            <Card style={styles.stepTestCard}>
-              <Text style={styles.stepTestTitle}>Test Step Counter</Text>
-              <Text style={{ fontSize: fontSize.sm, color: Colors.secondaryText, marginBottom: spacing.md, textAlign: 'center' }}>
-                Test your step counter to ensure accurate tracking for walking pools
-              </Text>
-              <TouchableOpacity style={styles.stepTestButton} onPress={handleStartTest}>
-                <Text style={styles.stepTestButtonText}>Start Step Counter Test</Text>
-              </TouchableOpacity>
-            </Card>
-
-            {/* Basic Information */}
+            {/* Basic Information - MEDIUM PRIORITY */}
             <Card style={styles.infoCard}>
               <Text style={styles.infoTitle}>Basic Information</Text>
               <View style={styles.infoGrid}>
@@ -333,6 +322,17 @@ export const ProfileScreen: React.FC = () => {
                 <EditableField label="Age" value={profile.age} onSave={(value) => updateProfile('age', value)} isEditing={editingField === 'age'} onPress={() => handleFieldPress('age')} />
                 <EditableField label="Gender" value={profile.gender} onSave={(value) => updateProfile('gender', value)} isEditing={editingField === 'gender'} onPress={() => handleFieldPress('gender')} />
               </View>
+            </Card>
+
+            {/* Step Counter Test - LOW PRIORITY */}
+            <Card style={styles.stepTestCard}>
+              <Text style={styles.stepTestTitle}>Test Step Counter</Text>
+              <Text style={{ fontSize: fontSize.sm, color: Colors.secondaryText, marginBottom: spacing.md, textAlign: 'center' }}>
+                Test your step counter to ensure accurate tracking for walking pools
+              </Text>
+              <TouchableOpacity style={styles.stepTestButton} onPress={handleStartTest}>
+                <Text style={styles.stepTestButtonText}>Start Step Counter Test</Text>
+              </TouchableOpacity>
             </Card>
 
           </View>

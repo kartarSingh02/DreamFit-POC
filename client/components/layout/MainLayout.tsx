@@ -3,8 +3,8 @@ import { SafeAreaView, StyleSheet, View, Text } from 'react-native';
 import { BottomTabBar } from '../navigation/BottomTabBar';
 import { 
   HomeScreen, 
-  TrendingScreen, 
-  ChallengesScreen, 
+  ChallengesAndPoolsScreen, 
+  AnalyticsScreen,
   LeaderboardScreen, 
   ProfileScreen 
 } from '../screens';
@@ -28,10 +28,10 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     switch (activeTab) {
       case 'home':
         return <HomeScreen />;
-      case 'trending':
-        return <TrendingScreen />;
       case 'challenges':
-        return <ChallengesScreen />;
+        return <ChallengesAndPoolsScreen />;
+      case 'analytics':
+        return <AnalyticsScreen />;
       case 'leaderboard':
         return <LeaderboardScreen />;
       case 'profile':

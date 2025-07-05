@@ -25,21 +25,21 @@ const tabs: TabItem[] = [
     route: 'home'
   },
   {
-    key: 'trending',
-    title: 'Trending',
-    icon: 'flame',
-    route: 'trending'
-  },
-  {
     key: 'challenges',
     title: 'Challenges',
-    icon: 'locate',
+    icon: 'trophy',
     route: 'challenges'
+  },
+  {
+    key: 'analytics',
+    title: 'Analytics',
+    icon: 'analytics',
+    route: 'analytics'
   },
   {
     key: 'leaderboard',
     title: 'Leaderboard',
-    icon: 'trophy',
+    icon: 'podium',
     route: 'leaderboard'
   },
   {

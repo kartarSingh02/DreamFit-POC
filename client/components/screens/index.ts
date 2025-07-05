@@ -2,4 +2,6 @@ export { HomeScreen } from './HomeScreen';
 export { TrendingScreen } from './TrendingScreen';
 export { ChallengesScreen } from './ChallengesScreen';
 export { LeaderboardScreen } from './LeaderboardScreen';
-export { ProfileScreen } from './ProfileScreen'; 
+export { ProfileScreen } from './ProfileScreen';
+export { AnalyticsScreen } from './AnalyticsScreen';
+export { ChallengesAndPoolsScreen } from './ChallengesAndPoolsScreen'; 

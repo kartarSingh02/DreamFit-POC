@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useRef, useCallback } from 'react';
+import React, { createContext, useContext, useState, useRef, useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
 import { Pedometer } from 'expo-sensors';
 
@@ -9,6 +9,8 @@ type StepCounterContextType = {
   start: () => void;
   stop: () => void;
   lastResult: number | null;
+  hasActiveParticipation: boolean;
+  setActiveParticipation: (hasActive: boolean) => void;
 };
 
 const StepCounterContext = createContext<StepCounterContextType | undefined>(undefined);
@@ -17,8 +19,18 @@ export const StepCounterProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [isActive, setIsActive] = useState(false);
   const [stepCount, setStepCount] = useState(0);
   const [lastResult, setLastResult] = useState<number | null>(null);
+  const [hasActiveParticipation, setHasActiveParticipation] = useState(false);
   const subscription = useRef<any>(null);
   const mockInterval = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto-start tracking when user has active participation
+  useEffect(() => {
+    if (hasActiveParticipation && !isActive) {
+      start();
+    } else if (!hasActiveParticipation && isActive) {
+      stop();
+    }
+  }, [hasActiveParticipation, isActive]);
 
   const start = useCallback(() => {
     if (subscription.current || mockInterval.current) return;
@@ -63,8 +75,20 @@ export const StepCounterProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setTimeout(() => setLastResult(null), 5000);
   }, [stepCount]);
 
+  const setActiveParticipation = useCallback((hasActive: boolean) => {
+    setHasActiveParticipation(hasActive);
+  }, []);
+
   return (
-    <StepCounterContext.Provider value={{ isActive, stepCount, start, stop, lastResult }}>
+    <StepCounterContext.Provider value={{ 
+      isActive, 
+      stepCount, 
+      start, 
+      stop, 
+      lastResult, 
+      hasActiveParticipation,
+      setActiveParticipation
+    }}>
       {children}
     </StepCounterContext.Provider>
   );
