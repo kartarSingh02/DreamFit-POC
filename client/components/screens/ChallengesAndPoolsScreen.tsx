@@ -331,8 +331,40 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool, onJoin }) => {
   );
 };
 
+const MyParticipationTab: React.FC<{ myJoinedPools: any[]; myJoinedChallenges: any[]; styles: any; }> = ({ myJoinedPools, myJoinedChallenges, styles }) => (
+  <View style={styles.myParticipationContainer}>
+    <Text style={styles.sectionTitle}>My Joined Pools & Challenges</Text>
+    {myJoinedPools.length === 0 && myJoinedChallenges.length === 0 ? (
+      <Card style={styles.emptyCard}>
+        <Ionicons name="star-outline" size={48} color={Colors.secondaryText} />
+        <Text style={styles.emptyText}>You haven't joined any pools or challenges yet.</Text>
+      </Card>
+    ) : (
+      <>
+        {myJoinedPools.map(pool => (
+          <Card key={`pool-${pool.id}`} style={styles.myItemCard}>
+            <Text style={styles.myItemType}>🚶 Walking Pool</Text>
+            <Text style={styles.myItemName}>{pool.name}</Text>
+            <Text style={styles.myItemDetail}>Time: {pool.timeSlot}</Text>
+            <Text style={styles.myItemDetail}>Entry Fee: ₹{pool.entryFee}</Text>
+            <Text style={styles.myItemDetail}>Status: {pool.status === 'active' ? 'Live' : pool.status.charAt(0).toUpperCase() + pool.status.slice(1)}</Text>
+          </Card>
+        ))}
+        {myJoinedChallenges.map(challenge => (
+          <Card key={`challenge-${challenge.id}`} style={styles.myItemCard}>
+            <Text style={styles.myItemType}>🏆 Challenge</Text>
+            <Text style={styles.myItemName}>{challenge.name}</Text>
+            <Text style={styles.myItemDetail}>Reward: {challenge.reward}</Text>
+            <Text style={styles.myItemDetail}>Difficulty: {challenge.difficulty}</Text>
+          </Card>
+        ))}
+      </>
+    )}
+  </View>
+);
+
 export const ChallengesAndPoolsScreen: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'pools' | 'challenges'>('pools');
+  const [activeTab, setActiveTab] = useState<'pools' | 'challenges' | 'my'>('pools');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedPoolTab, setSelectedPoolTab] = useState<'upcoming' | 'active' | 'completed'>('upcoming');
   const [addMoneyVisible, setAddMoneyVisible] = useState(false);
@@ -435,6 +467,12 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
 
   const filteredPools = getFilteredPools();
 
+  // Helper to get joined pools/challenges data
+  const myJoinedPools = upcomingPools.filter(pool => joinedPools.includes(pool.id)).concat(
+    mockHistoryPools.filter(pool => joinedPools.includes(pool.id))
+  );
+  const myJoinedChallenges = trendingChallenges.filter(challenge => joinedChallenges.includes(challenge.id));
+
   return (
     <ScreenContainer>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -468,11 +506,80 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
               🏆 Challenges
             </Text>
           </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.mainTab, activeTab === 'my' && styles.mainTabActive]} 
+            onPress={() => setActiveTab('my')}
+          >
+            <Text style={[styles.mainTabText, activeTab === 'my' && styles.mainTabTextActive]}>
+              ⭐ My Participation
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        {activeTab === 'pools' ? (
-          // Walking Pools Tab Content
-          <View>
+        {activeTab === 'my' && (
+          <MyParticipationTab myJoinedPools={myJoinedPools} myJoinedChallenges={myJoinedChallenges} styles={styles} />
+        )}
+
+        {activeTab === 'challenges' && (
+          <>
+            {/* Category Filters */}
+            <View style={styles.categoryContainer}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {[
+                  { id: 'all', name: 'All', icon: '🏆' },
+                  { id: 'trending', name: 'Trending', icon: '🔥' },
+                  { id: 'new', name: 'New', icon: '🆕' },
+                ].map((category) => (
+                  <TouchableOpacity
+                    key={category.id}
+                    style={[
+                      styles.categoryButton,
+                      selectedCategory === category.id && styles.categoryButtonActive
+                    ]}
+                    onPress={() => setSelectedCategory(category.id)}
+                  >
+                    <Text style={styles.categoryIcon}>{category.icon}</Text>
+                    <Text style={[
+                      styles.categoryText,
+                      selectedCategory === category.id && styles.categoryTextActive
+                    ]}>
+                      {category.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+            {/* Featured Challenges */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>💎 Featured Challenges</Text>
+              {featuredChallenges.map((challenge) => (
+                <ChallengeCard 
+                  key={challenge.id} 
+                  challenge={challenge} 
+                  onJoin={handleJoinChallenge}
+                />
+              ))}
+            </View>
+            {/* Trending Challenges */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>🔥 Trending Challenges</Text>
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.horizontalScroll}
+              >
+                {filteredChallenges.map((challenge) => (
+                  <View key={challenge.id} style={styles.challengeCardContainer}>
+                    <ChallengeCard challenge={challenge} onJoin={handleJoinChallenge} />
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          </>
+        )}
+
+        {activeTab === 'pools' && (
+          <>
             {/* Search Bar */}
             <View style={styles.searchContainer}>
               <Ionicons name="search" size={20} color={Colors.secondaryText} />
@@ -541,91 +648,7 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
                 ))
               )}
             </View>
-          </View>
-        ) : (
-          // Challenges Tab Content
-          <View>
-            {/* My Challenges Section */}
-            {joinedChallenges.length > 0 && (
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>🎯 My Challenges</Text>
-                <Card style={styles.myChallengesCard}>
-                  {joinedChallenges.map((challengeId) => {
-                    const challenge = [...featuredChallenges, ...trendingChallenges].find(c => c.id === challengeId);
-                    if (!challenge) return null;
-                    return (
-                      <View key={challengeId} style={styles.myChallengeItem}>
-                        <View style={styles.myChallengeInfo}>
-                          <Text style={styles.myChallengeName}>{challenge.name}</Text>
-                          <Text style={styles.myChallengeReward}>{challenge.reward}</Text>
-                        </View>
-                        <View style={styles.myChallengeStatus}>
-                          <Text style={styles.myChallengeStatusText}>🟢 Active</Text>
-                          <Text style={styles.myChallengeStatusLabel}>Tracking Steps</Text>
-                        </View>
-                      </View>
-                    );
-                  })}
-                </Card>
-              </View>
-            )}
-
-            {/* Category Filter */}
-            <View style={styles.categoryContainer}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {[
-                  { id: 'all', name: 'All', icon: '🏆' },
-                  { id: 'trending', name: 'Trending', icon: '🔥' },
-                  { id: 'new', name: 'New', icon: '🆕' },
-                ].map((category) => (
-                  <TouchableOpacity
-                    key={category.id}
-                    style={[
-                      styles.categoryButton,
-                      selectedCategory === category.id && styles.categoryButtonActive
-                    ]}
-                    onPress={() => setSelectedCategory(category.id)}
-                  >
-                    <Text style={styles.categoryIcon}>{category.icon}</Text>
-                    <Text style={[
-                      styles.categoryText,
-                      selectedCategory === category.id && styles.categoryTextActive
-                    ]}>
-                      {category.name}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-
-            {/* Featured Challenges */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>💎 Featured Challenges</Text>
-              {featuredChallenges.map((challenge) => (
-                <ChallengeCard 
-                  key={challenge.id} 
-                  challenge={challenge} 
-                  onJoin={handleJoinChallenge}
-                />
-              ))}
-            </View>
-
-            {/* Trending Challenges */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>🔥 Trending Challenges</Text>
-              <ScrollView 
-                horizontal 
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.horizontalScroll}
-              >
-                {filteredChallenges.map((challenge) => (
-                  <View key={challenge.id} style={styles.challengeCardContainer}>
-                    <ChallengeCard challenge={challenge} onJoin={handleJoinChallenge} />
-                  </View>
-                ))}
-              </ScrollView>
-            </View>
-          </View>
+          </>
         )}
       </ScrollView>
       <AddMoneyModal visible={addMoneyVisible} onClose={() => setAddMoneyVisible(false)} />
@@ -994,41 +1017,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.gold,
   },
-  myChallengesCard: {
+  myItemCard: {
+    marginBottom: 12,
     padding: 16,
   },
-  myChallengeItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderColor,
+  myItemType: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+    marginBottom: 4,
   },
-  myChallengeInfo: {
-    flex: 1,
-  },
-  myChallengeName: {
+  myItemName: {
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.primaryText,
     marginBottom: 4,
   },
-  myChallengeReward: {
+  myItemDetail: {
     fontSize: 12,
-    color: Colors.gold,
-  },
-  myChallengeStatus: {
-    alignItems: 'flex-end',
-  },
-  myChallengeStatusText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: Colors.accent,
-    marginBottom: 2,
-  },
-  myChallengeStatusLabel: {
-    fontSize: 10,
     color: Colors.secondaryText,
+    marginBottom: 4,
   },
 }); 
