@@ -87,6 +87,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onTabSwitch }) => {
   // Use onTabSwitch for tab navigation
   const handleViewAllStats = () => onTabSwitch && onTabSwitch('analytics');
   const handleSeeAllChallenges = () => onTabSwitch && onTabSwitch('challenges');
+  const handleSeeAllFriends = () => onTabSwitch && onTabSwitch('leaderboard');
+  const handleViewAchievements = () => onTabSwitch && onTabSwitch('analytics');
 
   return (
     <View style={styles.bg}>
@@ -151,8 +153,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onTabSwitch }) => {
           {/* Friends Activity Feed - MEDIUM PRIORITY */}
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Friends Activity</Text>
-            {/* For now, just alert or navigate to placeholder */}
-            <TouchableOpacity onPress={() => Alert.alert('See All', 'Friends Activity screen coming soon!')}><Text style={styles.sectionAction}>See All</Text></TouchableOpacity>
+            <TouchableOpacity onPress={handleSeeAllFriends}><Text style={styles.sectionAction}>See All</Text></TouchableOpacity>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.friendsScroll}>
             {friends.map((friend, idx) => (
@@ -167,8 +168,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onTabSwitch }) => {
           {/* Rewards & Achievements - MOVED DOWN (LOW PRIORITY) */}
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Rewards & Achievements</Text>
-            {/* For now, just alert or navigate to placeholder */}
-            <TouchableOpacity onPress={() => Alert.alert('View', 'Achievements screen coming soon!')}><Text style={styles.sectionAction}>View</Text></TouchableOpacity>
+            <TouchableOpacity onPress={handleViewAchievements}><Text style={styles.sectionAction}>View</Text></TouchableOpacity>
           </View>
           <View style={styles.rewardsRow}>
             <RewardItem icon="💎" value={rewards.points} label="Points" />

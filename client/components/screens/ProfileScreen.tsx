@@ -25,46 +25,14 @@ interface UserProfile {
 interface EditableFieldProps {
   label: string;
   value: string;
-  onSave: (value: string) => void;
-  isEditing: boolean;
-  onPress: () => void;
 }
 
-const EditableField: React.FC<EditableFieldProps> = ({ label, value, onSave, isEditing, onPress }) => {
-  const [tempValue, setTempValue] = useState(value);
-
-  const handleSave = () => {
-    if (tempValue.trim() !== value) {
-      onSave(tempValue.trim());
-    }
-  };
-
-  const handleBlur = () => {
-    handleSave();
-  };
-
-  return (
-    <View style={styles.infoItem}>
-      <Text variant="caption" style={{ color: '#fff' }}>{label}</Text>
-      {isEditing ? (
-        <TextInput
-          value={tempValue}
-          onChangeText={setTempValue}
-          onBlur={handleBlur}
-          style={styles.textInput}
-          autoFocus
-          selectTextOnFocus
-        />
-      ) : (
-        <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-          <Text variant="body" weight="medium" style={[styles.editableText, { color: '#ff6b35' }]}>
-            {value}
-          </Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-};
+const EditableField: React.FC<EditableFieldProps> = ({ label, value }) => (
+  <View style={styles.infoItem}>
+    <Text variant="caption" style={{ color: '#fff' }}>{label}</Text>
+    <Text variant="body" weight="medium" style={[styles.infoValue, { color: Colors.primaryText }]}> {value}</Text>
+  </View>
+);
 
 export const ProfileScreen: React.FC = () => {
   console.log('ProfileScreen rendering...');
@@ -91,6 +59,8 @@ export const ProfileScreen: React.FC = () => {
   };
   const [stepTestVisible, setStepTestVisible] = useState(false);
   const [stepPermissionChecked, setStepPermissionChecked] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editProfile, setEditProfile] = useState<UserProfile>(profile);
 
   // Use real step counter
   const { isActive, stepCount, start, stop, lastResult } = useStepCounter();
@@ -197,143 +167,132 @@ export const ProfileScreen: React.FC = () => {
     }
   };
 
+  const handleEditField = (field: keyof UserProfile, value: string) => {
+    setEditProfile(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSaveProfile = () => {
+    setProfile(editProfile);
+    setShowEditModal(false);
+  };
+
   return (
     <ScreenContainer>
       <TouchableWithoutFeedback onPress={handleOutsidePress}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           <View style={styles.profileContainer}>
-            {/* Header: Avatar, Name, Edit/Settings */}
+            {/* Header: Avatar, Name, Bio, Contact */}
             <View style={styles.headerRow}>
               <TouchableOpacity onPress={pickImage} activeOpacity={0.8}>
                 <Image source={{ uri: profile.imageUri }} style={styles.profileImage} />
               </TouchableOpacity>
               <View style={{ flex: 1, marginLeft: 16 }}>
-                {editingField === 'name' ? (
-                  <TextInput
-                    value={profile.name}
-                    onChangeText={(value) => setProfile(prev => ({ ...prev, name: value }))}
-                    onBlur={() => setEditingField(null)}
-                    style={styles.nameInput}
-                    autoFocus
-                    selectTextOnFocus
-                  />
-                ) : (
-                  <TouchableOpacity onPress={() => handleFieldPress('name')} activeOpacity={0.7}>
-                    <Text style={styles.profileName}>{profile.name}</Text>
-                  </TouchableOpacity>
-                )}
+                <Text style={styles.profileName}>{profile.name}</Text>
                 <Text style={styles.profileBio}>{profile.bio}</Text>
+                <Text style={styles.profileContact}>{profile.location}</Text>
               </View>
-              <TouchableOpacity style={styles.editButton}>
-                <Text style={styles.editButtonText}>Edit</Text>
-              </TouchableOpacity>
             </View>
 
-            {/* Stats Card - HIGH PRIORITY */}
-            <Card style={styles.statsCard}>
-              <Text style={styles.statsTitle}>Your Stats</Text>
-              <View style={styles.statsGrid}>
-                <View style={styles.statItem}>
-                  <Text style={styles.statValue}>{stats.steps.toLocaleString()}</Text>
-                  <Text style={styles.statLabel}>Steps Today</Text>
-                </View>
-                <View style={styles.statItem}>
-                  <Text style={styles.statValue}>{stats.calories}</Text>
-                  <Text style={styles.statLabel}>Calories</Text>
-                </View>
-                <View style={styles.statItem}>
-                  <Text style={styles.statValue}>{stats.distance}km</Text>
-                  <Text style={styles.statLabel}>Distance</Text>
-                </View>
-                <View style={styles.statItem}>
-                  <Text style={styles.statValue}>{stats.streak}</Text>
-                  <Text style={styles.statLabel}>Day Streak</Text>
-                </View>
-              </View>
-            </Card>
-
-            {/* Wallet Card - HIGH PRIORITY */}
-            <Card style={styles.walletCard}>
-              <View style={styles.walletHeader}>
-                <Text style={styles.walletTitle}>Wallet Balance</Text>
-                <TouchableOpacity style={styles.withdrawBtn}>
-                  <Ionicons name="arrow-up" size={16} color={Colors.primaryText} />
-                  <Text style={styles.withdrawText}>Withdraw</Text>
-                </TouchableOpacity>
-              </View>
-              <Text style={styles.walletBalance}>₹1,250</Text>
-              <Text style={styles.walletSubtext}>Available for pools and rewards</Text>
-            </Card>
-
-            {/* Recent Activity - HIGH PRIORITY */}
-            <Card style={styles.activityCard}>
-              <Text style={styles.activityTitle}>Recent Activity</Text>
-              {activity.map((item, index) => (
-                <View key={index} style={styles.activityItem}>
-                  <View style={styles.activityIcon}>
-                    <Ionicons 
-                      name={item.type === 'challenge' ? 'trophy' : item.type === 'badge' ? 'star' : 'gift'} 
-                      size={16} 
-                      color={Colors.primaryText} 
-                    />
-                  </View>
-                  <View style={styles.activityContent}>
-                    <Text style={styles.activityText}>{item.text}</Text>
-                    <Text style={styles.activityTime}>{item.time}</Text>
-                  </View>
-                </View>
-              ))}
-            </Card>
-
-            {/* Rewards Card - MEDIUM PRIORITY */}
-            <Card style={styles.rewardsCard}>
-              <Text style={styles.rewardsTitle}>Your Rewards</Text>
-              <View style={styles.rewardsGrid}>
-                <View style={styles.rewardItem}>
-                  <Text style={styles.rewardIcon}>👑</Text>
-                  <Text style={styles.rewardValue}>{rewards.crowns}</Text>
-                  <Text style={styles.rewardLabel}>Crowns</Text>
-                </View>
-                <View style={styles.rewardItem}>
-                  <Text style={styles.rewardIcon}>💍</Text>
-                  <Text style={styles.rewardValue}>{rewards.rings}</Text>
-                  <Text style={styles.rewardLabel}>Rings</Text>
-                </View>
-                <View style={styles.rewardItem}>
-                  <Text style={styles.rewardIcon}>🏆</Text>
-                  <Text style={styles.rewardValue}>{rewards.badges}</Text>
-                  <Text style={styles.rewardLabel}>Badges</Text>
-                </View>
-                <View style={styles.rewardItem}>
-                  <Text style={styles.rewardIcon}>⭐</Text>
-                  <Text style={styles.rewardValue}>{rewards.points}</Text>
-                  <Text style={styles.rewardLabel}>Points</Text>
-                </View>
-              </View>
-            </Card>
-
-            {/* Basic Information - MEDIUM PRIORITY */}
+            {/* Basic Information - Modern, non-editable */}
             <Card style={styles.infoCard}>
               <Text style={styles.infoTitle}>Basic Information</Text>
               <View style={styles.infoGrid}>
-                <EditableField label="Location" value={profile.location} onSave={(value) => updateProfile('location', value)} isEditing={editingField === 'location'} onPress={() => handleFieldPress('location')} />
-                <EditableField label="Height" value={profile.height} onSave={(value) => updateProfile('height', value)} isEditing={editingField === 'height'} onPress={() => handleFieldPress('height')} />
-                <EditableField label="Weight" value={profile.weight} onSave={(value) => updateProfile('weight', value)} isEditing={editingField === 'weight'} onPress={() => handleFieldPress('weight')} />
-                <EditableField label="Age" value={profile.age} onSave={(value) => updateProfile('age', value)} isEditing={editingField === 'age'} onPress={() => handleFieldPress('age')} />
-                <EditableField label="Gender" value={profile.gender} onSave={(value) => updateProfile('gender', value)} isEditing={editingField === 'gender'} onPress={() => handleFieldPress('gender')} />
+                <EditableField label="Location" value={profile.location} />
+                <EditableField label="Height" value={profile.height} />
+                <EditableField label="Weight" value={profile.weight} />
+                <EditableField label="Age" value={profile.age} />
+                <EditableField label="Gender" value={profile.gender} />
               </View>
             </Card>
 
-            {/* Step Counter Test - LOW PRIORITY */}
-            <Card style={styles.stepTestCard}>
-              <Text style={styles.stepTestTitle}>Test Step Counter</Text>
-              <Text style={{ fontSize: fontSize.sm, color: Colors.secondaryText, marginBottom: spacing.md, textAlign: 'center' }}>
-                Test your step counter to ensure accurate tracking for walking pools
-              </Text>
-              <TouchableOpacity style={styles.stepTestButton} onPress={handleStartTest}>
-                <Text style={styles.stepTestButtonText}>Start Step Counter Test</Text>
+            {/* Settings Section */}
+            <Card style={styles.settingsCard}>
+              <Text style={styles.settingsTitle}>Settings</Text>
+              <TouchableOpacity style={styles.settingsItem} onPress={() => setShowEditModal(true)}>
+                <Ionicons name="person-circle-outline" size={20} color={Colors.accent} style={{ marginRight: 12 }} />
+                <Text style={styles.settingsText}>Edit Profile</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.settingsItem}>
+                <Ionicons name="notifications-outline" size={20} color={Colors.accent} style={{ marginRight: 12 }} />
+                <Text style={styles.settingsText}>Notifications</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.settingsItem}>
+                <Ionicons name="help-circle-outline" size={20} color={Colors.accent} style={{ marginRight: 12 }} />
+                <Text style={styles.settingsText}>Help & Support</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.settingsItem}>
+                <Ionicons name="log-out-outline" size={20} color={Colors.accent} style={{ marginRight: 12 }} />
+                <Text style={styles.settingsText}>Logout</Text>
               </TouchableOpacity>
             </Card>
+
+            {/* Edit Profile Modal */}
+            <Modal
+              visible={showEditModal}
+              transparent
+              animationType="slide"
+              onRequestClose={() => setShowEditModal(false)}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>Edit Profile</Text>
+                  <ScrollView>
+                    <Text style={styles.modalLabel}>Name</Text>
+                    <TextInput
+                      style={styles.modalInput}
+                      value={editProfile.name}
+                      onChangeText={text => handleEditField('name', text)}
+                    />
+                    <Text style={styles.modalLabel}>Bio</Text>
+                    <TextInput
+                      style={styles.modalInput}
+                      value={editProfile.bio}
+                      onChangeText={text => handleEditField('bio', text)}
+                      multiline
+                    />
+                    <Text style={styles.modalLabel}>Location</Text>
+                    <TextInput
+                      style={styles.modalInput}
+                      value={editProfile.location}
+                      onChangeText={text => handleEditField('location', text)}
+                    />
+                    <Text style={styles.modalLabel}>Height</Text>
+                    <TextInput
+                      style={styles.modalInput}
+                      value={editProfile.height}
+                      onChangeText={text => handleEditField('height', text)}
+                    />
+                    <Text style={styles.modalLabel}>Weight</Text>
+                    <TextInput
+                      style={styles.modalInput}
+                      value={editProfile.weight}
+                      onChangeText={text => handleEditField('weight', text)}
+                    />
+                    <Text style={styles.modalLabel}>Age</Text>
+                    <TextInput
+                      style={styles.modalInput}
+                      value={editProfile.age}
+                      onChangeText={text => handleEditField('age', text)}
+                      keyboardType="numeric"
+                    />
+                    <Text style={styles.modalLabel}>Gender</Text>
+                    <TextInput
+                      style={styles.modalInput}
+                      value={editProfile.gender}
+                      onChangeText={text => handleEditField('gender', text)}
+                    />
+                  </ScrollView>
+                  <View style={styles.modalButtonRow}>
+                    <TouchableOpacity style={[styles.modalButton, styles.modalCancel]} onPress={() => setShowEditModal(false)}>
+                      <Text style={styles.modalButtonText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.modalButton, styles.modalSave]} onPress={handleSaveProfile}>
+                      <Text style={styles.modalButtonText}>Save</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
 
           </View>
         </ScrollView>
@@ -346,7 +305,7 @@ export const ProfileScreen: React.FC = () => {
         animationType="fade"
         onRequestClose={handleCloseTest}
       >
-        <View style={styles.modalContainer}>
+        <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Step Counter Test</Text>
             <Text style={{ fontSize: fontSize.sm, color: Colors.secondaryText, marginBottom: spacing.lg, textAlign: 'center' }}>
@@ -357,7 +316,7 @@ export const ProfileScreen: React.FC = () => {
             </Text>
             
             <View style={styles.stepCountContainer}>
-              <Text style={styles.modalSteps}>{stepCount}</Text>
+              <Text style={{ fontSize: fontSize.xxxl, fontWeight: 'bold', color: Colors.accent }}>{stepCount}</Text>
               <Text style={{ fontSize: fontSize.md, color: Colors.secondaryText }}>steps</Text>
             </View>
 
@@ -606,123 +565,74 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  stepTestModal: {
-    backgroundColor: Colors.cardBackground,
-    borderRadius: 16,
-    padding: padding.xl,
-    alignItems: 'center',
-    width: 300,
-  },
-  stepTestTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: 'bold' as const,
-    color: Colors.primaryText,
-    marginBottom: spacing.md,
-  },
-  stepTestDesc: {
-    color: Colors.secondaryText,
-    fontSize: fontSize.sm,
-    marginBottom: spacing.md,
-    textAlign: 'center',
-  },
-  stepTestCount: {
-    fontSize: fontSize.xxxl,
-    fontWeight: 'bold' as const,
-    color: Colors.accent,
-    marginBottom: spacing.md,
-  },
-  stepTestBtnRow: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    width: '100%',
-    marginBottom: spacing.md,
-  },
-  stepTestActionBtn: {
-    backgroundColor: Colors.accent,
-    borderRadius: 8,
-    paddingHorizontal: padding.lg,
-    paddingVertical: padding.md,
-    marginHorizontal: padding.md,
-  },
-  stepTestActionText: {
-    color: '#fff',
-    fontWeight: 'bold' as const,
-  },
-  stepTestCloseBtn: {
-    marginTop: spacing.md,
-    alignSelf: 'center',
-  },
-  stepTestCloseText: {
-    color: Colors.accent,
-    fontWeight: 'bold' as const,
-    fontSize: fontSize.md,
-  },
-  stepTestBtn: {
-    marginTop: spacing.md,
-    backgroundColor: Colors.accent,
-    borderRadius: 8,
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    alignSelf: 'center',
-    paddingHorizontal: padding.lg,
-    paddingVertical: padding.md,
-  },
-  stepTestBtnText: {
-    color: '#fff',
-    fontWeight: 'bold' as const,
-    fontSize: fontSize.md,
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
     backgroundColor: Colors.cardBackground,
     borderRadius: 16,
-    padding: padding.xl,
-    alignItems: 'center',
-    width: 300,
+    padding: 24,
+    width: '90%',
+    maxWidth: 400,
+    maxHeight: '80%',
   },
   modalTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: 'bold' as const,
+    fontSize: 20,
+    fontWeight: 'bold',
     color: Colors.primaryText,
-    marginBottom: spacing.md,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  modalLabel: {
+    fontSize: 14,
+    color: Colors.secondaryText,
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  modalInput: {
+    backgroundColor: '#1a2d2d',
+    color: '#fff',
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 15,
+    marginBottom: 4,
+  },
+  modalButtonRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 16,
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginLeft: 12,
+  },
+  modalCancel: {
+    backgroundColor: Colors.secondaryText,
+  },
+  modalSave: {
+    backgroundColor: Colors.accent,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 15,
   },
   stepCountContainer: {
     marginBottom: spacing.md,
-  },
-  modalSteps: {
-    fontSize: fontSize.xxxl,
-    fontWeight: 'bold' as const,
-    color: Colors.accent,
   },
   modalButtons: {
     flexDirection: 'row' as const,
     justifyContent: 'space-between' as const,
     width: '100%',
   },
-  modalButton: {
-    padding: padding.md,
-    borderRadius: 8,
-    backgroundColor: Colors.accent,
-  },
   modalButtonSecondary: {
     backgroundColor: Colors.accent,
   },
   modalButtonPrimary: {
     backgroundColor: Colors.accent,
-  },
-  modalButtonText: {
-    color: '#fff',
-    fontWeight: 'bold' as const,
-    fontSize: fontSize.md,
   },
   profileName: {
     fontSize: fontSize.xl,
@@ -785,5 +695,37 @@ const styles = StyleSheet.create({
   },
   activityContent: {
     flex: 1,
+  },
+  infoValue: {
+    fontSize: 15,
+    color: Colors.primaryText,
+    marginTop: 2,
+  },
+  settingsCard: {
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: Colors.cardBackground,
+  },
+  settingsTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+    marginBottom: 12,
+  },
+  settingsItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderColor,
+  },
+  settingsText: {
+    fontSize: 15,
+    color: Colors.primaryText,
+  },
+  profileContact: {
+    fontSize: 13,
+    color: Colors.secondaryText,
+    marginTop: 2,
   },
 }); 

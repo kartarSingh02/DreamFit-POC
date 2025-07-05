@@ -41,6 +41,13 @@ const performanceInsights = [
   { title: 'Active Days This Month', value: '28/30', icon: '📅', color: '#2196F3' },
 ];
 
+const rewards = {
+  points: 1250,
+  crowns: 2,
+  rings: 5,
+  badges: 8,
+};
+
 interface GoalCardProps {
   goal: {
     id: number;
@@ -231,6 +238,17 @@ export const AnalyticsScreen: React.FC = () => {
           {goals.map((goal) => (
             <GoalCard key={goal.id} goal={goal} />
           ))}
+        </View>
+
+        {/* Rewards & Achievements */}
+        <View style={styles.rewardsSection}>
+          <Text style={styles.sectionTitle}>Rewards</Text>
+          <View style={styles.rewardsRow}>
+            <View style={styles.rewardItem}><Text style={styles.rewardIcon}>💎</Text><Text style={styles.rewardValue}>{rewards.points}</Text><Text style={styles.rewardLabel}>Points</Text></View>
+            <View style={styles.rewardItem}><Text style={styles.rewardIcon}>👑</Text><Text style={styles.rewardValue}>{rewards.crowns}</Text><Text style={styles.rewardLabel}>Crowns</Text></View>
+            <View style={styles.rewardItem}><Text style={styles.rewardIcon}>💍</Text><Text style={styles.rewardValue}>{rewards.rings}</Text><Text style={styles.rewardLabel}>Rings</Text></View>
+            <View style={styles.rewardItem}><Text style={styles.rewardIcon}>🏅</Text><Text style={styles.rewardValue}>{rewards.badges}</Text><Text style={styles.rewardLabel}>Badges</Text></View>
+          </View>
         </View>
 
         {/* Achievements */}
@@ -502,6 +520,31 @@ const styles = StyleSheet.create({
   },
   stepCounterStatus: {
     fontSize: 14,
+    color: Colors.secondaryText,
+  },
+  rewardsSection: {
+    marginBottom: 24,
+  },
+  rewardsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  rewardItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  rewardIcon: {
+    fontSize: 22,
+    marginBottom: 2,
+  },
+  rewardValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+  },
+  rewardLabel: {
+    fontSize: 12,
     color: Colors.secondaryText,
   },
 }); 
