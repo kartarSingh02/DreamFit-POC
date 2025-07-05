@@ -24,9 +24,11 @@ type AuthState = 'unauthenticated' | 'register' | 'authenticated' | 'permissions
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [activeTab, setActiveTab] = useState('home');
   const [authState, setAuthState] = useState<AuthState>('unauthenticated');
+  const [analyticsScrollTo, setAnalyticsScrollTo] = useState<string | undefined>(undefined);
 
   const handleTabPress = (tabKey: string) => {
     setActiveTab(tabKey);
+    if (tabKey !== 'analytics') setAnalyticsScrollTo(undefined);
   };
 
   // Auth flow handlers
@@ -47,8 +49,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   };
 
   // Pass tab switch handler to HomeScreen
-  const handleTabSwitch = (tabKey: string) => {
+  const handleTabSwitch = (tabKey: string, section?: string) => {
     setActiveTab(tabKey);
+    if (tabKey === 'analytics' && section) {
+      setAnalyticsScrollTo(section);
+    } else {
+      setAnalyticsScrollTo(undefined);
+    }
   };
 
   // Render auth screens
@@ -116,7 +123,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               case 'challenges':
                 return <ChallengesAndPoolsScreen />;
               case 'analytics':
-                return <AnalyticsScreen />;
+                return <AnalyticsScreen scrollToSection={analyticsScrollTo} />;
               case 'leaderboard':
                 return <LeaderboardScreen />;
               case 'profile':

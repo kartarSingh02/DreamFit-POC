@@ -74,7 +74,7 @@ const ActiveChallengeCard = ({ challenge }: ActiveChallengeCardProps) => (
 );
 
 interface HomeScreenProps {
-  onTabSwitch?: (tabKey: string) => void;
+  onTabSwitch?: (tabKey: string, section?: string) => void;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ onTabSwitch }) => {
@@ -88,7 +88,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onTabSwitch }) => {
   const handleViewAllStats = () => onTabSwitch && onTabSwitch('analytics');
   const handleSeeAllChallenges = () => onTabSwitch && onTabSwitch('challenges');
   const handleSeeAllFriends = () => onTabSwitch && onTabSwitch('leaderboard');
-  const handleViewAchievements = () => onTabSwitch && onTabSwitch('analytics');
+  const handleViewAchievements = () => onTabSwitch && onTabSwitch('analytics', 'rewards');
 
   return (
     <View style={styles.bg}>

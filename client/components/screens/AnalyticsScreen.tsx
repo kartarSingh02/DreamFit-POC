@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Text } from '../ui/Text';
 import { Card } from '../ui/Card';
@@ -128,9 +128,37 @@ const InsightCard: React.FC<InsightCardProps> = ({ insight }) => (
   </Card>
 );
 
-export const AnalyticsScreen: React.FC = () => {
+interface AnalyticsScreenProps {
+  scrollToSection?: string;
+}
+
+export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ scrollToSection }) => {
   const { stepCount, isActive, hasActiveParticipation } = useStepCounter();
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week');
+  const scrollViewRef = useRef<ScrollView>(null);
+  const rewardsSectionRef = useRef<View>(null);
+
+  useEffect(() => {
+    if (
+      scrollToSection === 'rewards' &&
+      rewardsSectionRef.current &&
+      scrollViewRef.current &&
+      typeof scrollViewRef.current.getInnerViewNode === 'function'
+    ) {
+      setTimeout(() => {
+        if (rewardsSectionRef.current && scrollViewRef.current && typeof scrollViewRef.current.getInnerViewNode === 'function') {
+          rewardsSectionRef.current.measureLayout(
+            scrollViewRef.current.getInnerViewNode(),
+            (x, y) => {
+              if (scrollViewRef.current) {
+                scrollViewRef.current.scrollTo({ y, animated: true });
+              }
+            }
+          );
+        }
+      }, 300);
+    }
+  }, [scrollToSection]);
 
   const getPeriodData = () => {
     switch (selectedPeriod) {
@@ -170,7 +198,7 @@ export const AnalyticsScreen: React.FC = () => {
 
   return (
     <ScreenContainer>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView ref={scrollViewRef} style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <View>
@@ -241,7 +269,7 @@ export const AnalyticsScreen: React.FC = () => {
         </View>
 
         {/* Rewards & Achievements */}
-        <View style={styles.rewardsSection}>
+        <View style={styles.rewardsSection} ref={rewardsSectionRef}>
           <Text style={styles.sectionTitle}>Rewards</Text>
           <View style={styles.rewardsRow}>
             <View style={styles.rewardItem}><Text style={styles.rewardIcon}>💎</Text><Text style={styles.rewardValue}>{rewards.points}</Text><Text style={styles.rewardLabel}>Points</Text></View>

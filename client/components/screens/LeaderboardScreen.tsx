@@ -248,6 +248,25 @@ export const LeaderboardScreen: React.FC = () => {
           ))}
         </View>
 
+        {/* Performance Summary - moved to top */}
+        <Card style={styles.statsCard}>
+          <Text style={styles.statsTitle}>Performance Summary</Text>
+          <View style={styles.statsRow}>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>5</Text>
+              <Text style={styles.statLabel}>Pools Joined</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>₹301</Text>
+              <Text style={styles.statLabel}>Total Earned</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>3</Text>
+              <Text style={styles.statLabel}>Top 3 Finishes</Text>
+            </View>
+          </View>
+        </Card>
+
         {/* Top 5 Performers List */}
         <Card style={styles.topPerformersCard}>
           <Text style={styles.podiumTitle}>Top 5 Performers</Text>
@@ -287,25 +306,6 @@ export const LeaderboardScreen: React.FC = () => {
             <UserPoolCard key={pool.id} pool={pool} />
           ))}
         </View>
-
-        {/* Quick Stats */}
-        <Card style={styles.statsCard}>
-          <Text style={styles.statsTitle}>Performance Summary</Text>
-          <View style={styles.statsRow}>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>5</Text>
-              <Text style={styles.statLabel}>Pools Joined</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>₹301</Text>
-              <Text style={styles.statLabel}>Total Earned</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>3</Text>
-              <Text style={styles.statLabel}>Top 3 Finishes</Text>
-            </View>
-          </View>
-        </Card>
       </ScrollView>
     </ScreenContainer>
   );
@@ -545,7 +545,7 @@ const styles = StyleSheet.create({
   },
   statsCard: {
     padding: 16,
-    marginTop: margin.lg,
+    marginBottom: margin.lg,
   },
   statsTitle: {
     fontSize: 16,

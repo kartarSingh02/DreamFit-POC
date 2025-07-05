@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput, TouchableWithoutFeedback, Keyboard, Alert, Modal, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput, TouchableWithoutFeedback, Keyboard, Alert, Modal, Platform, Switch } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Text } from '../ui/Text';
 import { StepCounter } from '../StepCounter';
@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ScreenContainer } from '../layout/ScreenContainer';
 import { padding, margin, fontSize, spacing } from '../../constants/Responsive';
 import { useStepCounter } from '../StepCounterContext';
+import * as Linking from 'expo-linking';
 
 interface UserProfile {
   name: string;
@@ -61,6 +62,14 @@ export const ProfileScreen: React.FC = () => {
   const [stepPermissionChecked, setStepPermissionChecked] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editProfile, setEditProfile] = useState<UserProfile>(profile);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showNotificationsModal, setShowNotificationsModal] = useState(false);
+  const [notifPrefs, setNotifPrefs] = useState({
+    challengeReminders: true,
+    poolStartAlerts: true,
+    rewards: true,
+  });
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // Use real step counter
   const { isActive, stepCount, start, stop, lastResult } = useStepCounter();
@@ -176,6 +185,40 @@ export const ProfileScreen: React.FC = () => {
     setShowEditModal(false);
   };
 
+  const faqs = [
+    {
+      question: 'How do I join a challenge or pool?',
+      answer: 'Go to the Challenges tab, select a challenge or pool, and tap Join. You may need enough wallet balance to enter.'
+    },
+    {
+      question: 'How do I withdraw my winnings?',
+      answer: 'Go to your Wallet, tap Withdraw, and follow the instructions to transfer money to your account.'
+    },
+    {
+      question: 'How is step tracking handled?',
+      answer: 'Step tracking is automatic when you join a challenge or pool. Make sure you have granted activity permissions.'
+    },
+    {
+      question: 'How do I contact support?',
+      answer: 'Tap the Contact Support button below to email us.'
+    },
+  ];
+
+  const handleContactSupport = () => {
+    Linking.openURL('mailto:support@dreamfit.com?subject=DreamFit App Support');
+  };
+
+  const handleToggleNotif = (key: keyof typeof notifPrefs) => {
+    setNotifPrefs(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleLogout = () => {
+    // TODO: Add real logout logic (clear user data, navigate to sign-in)
+    setShowLogoutModal(false);
+    Alert.alert('Logged out', 'You have been logged out.');
+    // navigation.navigate('SignIn');
+  };
+
   return (
     <ScreenContainer>
       <TouchableWithoutFeedback onPress={handleOutsidePress}>
@@ -212,15 +255,15 @@ export const ProfileScreen: React.FC = () => {
                 <Ionicons name="person-circle-outline" size={20} color={Colors.accent} style={{ marginRight: 12 }} />
                 <Text style={styles.settingsText}>Edit Profile</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.settingsItem}>
+              <TouchableOpacity style={styles.settingsItem} onPress={() => setShowNotificationsModal(true)}>
                 <Ionicons name="notifications-outline" size={20} color={Colors.accent} style={{ marginRight: 12 }} />
                 <Text style={styles.settingsText}>Notifications</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.settingsItem}>
+              <TouchableOpacity style={styles.settingsItem} onPress={() => setShowHelpModal(true)}>
                 <Ionicons name="help-circle-outline" size={20} color={Colors.accent} style={{ marginRight: 12 }} />
                 <Text style={styles.settingsText}>Help & Support</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.settingsItem}>
+              <TouchableOpacity style={styles.settingsItem} onPress={() => setShowLogoutModal(true)}>
                 <Ionicons name="log-out-outline" size={20} color={Colors.accent} style={{ marginRight: 12 }} />
                 <Text style={styles.settingsText}>Logout</Text>
               </TouchableOpacity>
@@ -288,6 +331,122 @@ export const ProfileScreen: React.FC = () => {
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.modalButton, styles.modalSave]} onPress={handleSaveProfile}>
                       <Text style={styles.modalButtonText}>Save</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+
+            {/* Notifications Modal */}
+            <Modal
+              visible={showNotificationsModal}
+              transparent
+              animationType="slide"
+              onRequestClose={() => setShowNotificationsModal(false)}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>Notification Preferences</Text>
+                  <View style={styles.notifItem}>
+                    <View style={styles.notifRow}>
+                      <View style={styles.notifTextCol}>
+                        <Text style={styles.notifLabel}>Challenge Reminders</Text>
+                        <Text style={styles.notifDescription}>Get notified about upcoming challenges and deadlines</Text>
+                      </View>
+                      <Switch
+                        value={notifPrefs.challengeReminders}
+                        onValueChange={() => handleToggleNotif('challengeReminders')}
+                        trackColor={{ false: Colors.secondaryText, true: Colors.accent }}
+                        thumbColor={notifPrefs.challengeReminders ? Colors.accent : '#ccc'}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.notifItem}>
+                    <View style={styles.notifRow}>
+                      <View style={styles.notifTextCol}>
+                        <Text style={styles.notifLabel}>Pool Start Alerts</Text>
+                        <Text style={styles.notifDescription}>Receive alerts when walking pools begin</Text>
+                      </View>
+                      <Switch
+                        value={notifPrefs.poolStartAlerts}
+                        onValueChange={() => handleToggleNotif('poolStartAlerts')}
+                        trackColor={{ false: Colors.secondaryText, true: Colors.accent }}
+                        thumbColor={notifPrefs.poolStartAlerts ? Colors.accent : '#ccc'}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.notifItem}>
+                    <View style={styles.notifRow}>
+                      <View style={styles.notifTextCol}>
+                        <Text style={styles.notifLabel}>Rewards & Achievements</Text>
+                        <Text style={styles.notifDescription}>Celebrate your wins with achievement notifications</Text>
+                      </View>
+                      <Switch
+                        value={notifPrefs.rewards}
+                        onValueChange={() => handleToggleNotif('rewards')}
+                        trackColor={{ false: Colors.secondaryText, true: Colors.accent }}
+                        thumbColor={notifPrefs.rewards ? Colors.accent : '#ccc'}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.helpButtonRow}>
+                    <TouchableOpacity style={[styles.modalButton, styles.modalSave]} onPress={() => setShowNotificationsModal(false)}>
+                      <Text style={styles.modalButtonText}>Save</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+
+            {/* Help & Support Modal */}
+            <Modal
+              visible={showHelpModal}
+              transparent
+              animationType="slide"
+              onRequestClose={() => setShowHelpModal(false)}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>Help & Support</Text>
+                  <ScrollView style={{ maxHeight: 300 }}>
+                    {faqs.map((faq, idx) => (
+                      <View key={idx} style={styles.faqItem}>
+                        <Text style={styles.faqQuestion}>{faq.question}</Text>
+                        <Text style={styles.faqAnswer}>{faq.answer}</Text>
+                      </View>
+                    ))}
+                  </ScrollView>
+                  <View style={styles.helpButtonRow}>
+                    <TouchableOpacity style={[styles.modalButton, styles.modalSave, styles.helpButton]} onPress={handleContactSupport}>
+                      <Text style={styles.modalButtonText}>Contact Support</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.modalButton, styles.modalCancel]} onPress={() => setShowHelpModal(false)}>
+                      <Text style={styles.modalButtonText}>Close</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+
+            {/* Logout Confirmation Modal */}
+            <Modal
+              visible={showLogoutModal}
+              transparent
+              animationType="fade"
+              onRequestClose={() => setShowLogoutModal(false)}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>Confirm Logout</Text>
+                  <Text style={{ color: Colors.secondaryText, fontSize: 15, textAlign: 'center', marginVertical: 16 }}>
+                    Are you sure you want to logout?
+                  </Text>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+                    <TouchableOpacity style={[styles.modalButton, styles.modalCancel, { flex: 1, marginRight: 8 }]} onPress={() => setShowLogoutModal(false)}>
+                      <Text style={styles.modalButtonText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.modalButton, styles.modalSave, { flex: 1, marginLeft: 8 }]} onPress={handleLogout}>
+                      <Text style={styles.modalButtonText}>Logout</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -608,6 +767,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 8,
     marginLeft: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   modalCancel: {
     backgroundColor: Colors.secondaryText,
@@ -728,4 +889,34 @@ const styles = StyleSheet.create({
     color: Colors.secondaryText,
     marginTop: 2,
   },
+  faqItem: {
+    marginBottom: 16,
+  },
+  faqQuestion: {
+    fontWeight: 'bold',
+    color: Colors.primaryText,
+    marginBottom: 4,
+    fontSize: 15,
+  },
+  faqAnswer: {
+    color: Colors.secondaryText,
+    fontSize: 14,
+    marginBottom: 2,
+  },
+  helpButtonRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16,
+    width: '100%',
+  },
+  helpButton: {
+    minWidth: 120,
+    marginHorizontal: 8,
+  },
+  notifTextCol: { flex: 1 },
+  notifRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
+  notifItem: { marginBottom: 12 },
+  notifLabel: { fontWeight: 'bold', color: Colors.primaryText, fontSize: 15 },
+  notifDescription: { color: Colors.secondaryText, fontSize: 13, marginTop: 2 },
 }); 
