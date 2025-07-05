@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     overflow: 'hidden',
+    paddingBottom: 8, // Extra padding for home indicator
   },
   tabContainer: {
     flexDirection: 'row' as const,

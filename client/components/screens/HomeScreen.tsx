@@ -80,17 +80,6 @@ export const HomeScreen: React.FC = () => {
     setAddMoneyVisible(true);
   };
 
-  const handleJoinPool = () => {
-    Alert.alert(
-      'Join Pool',
-      'Entry fee: ₹10\n\nPayout Structure:\n🥇 1st: 10% of pool\n🥈 2nd: 5% of pool\n🥉 3rd: 3% of pool\n4th-50th: Return ₹10\n\nJoin now?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Join Pool', onPress: () => Alert.alert('Success', 'You\'ve joined the pool! Good luck!') },
-      ]
-    );
-  };
-
   return (
     <View style={styles.bg}>
       <ScreenContainer>
@@ -113,7 +102,7 @@ export const HomeScreen: React.FC = () => {
             </View>
           </Card>
 
-          {/* Quick Stats - MOVED UP (HIGH PRIORITY) */}
+          {/* Quick Stats - HIGH PRIORITY */}
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Quick Stats</Text>
             <TouchableOpacity><Text style={styles.sectionAction}>View All</Text></TouchableOpacity>
@@ -125,36 +114,7 @@ export const HomeScreen: React.FC = () => {
             <QuickStat icon={<Ionicons name="time" size={24} color={Colors.accent} />} label="Active" value={`${stats.activeTime}m`} />
           </View>
 
-          {/* Active Challenges Preview - MOVED UP (HIGH PRIORITY) */}
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Active Challenges</Text>
-            <TouchableOpacity><Text style={styles.sectionAction}>See All</Text></TouchableOpacity>
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.activeChallengesScroll}>
-            {activeChallenges.map(challenge => (
-              <View key={challenge.id} style={styles.activeChallengeCardWrapper}>
-                <ActiveChallengeCard challenge={challenge} />
-              </View>
-            ))}
-          </ScrollView>
-
-          {/* Quick Actions - MOVED UP (HIGH PRIORITY) */}
-          <View style={styles.quickActionsRow}>
-            <TouchableOpacity style={styles.quickActionBtn} onPress={handleJoinPool}>
-              <Ionicons name="trophy" size={22} color={Colors.primaryText} />
-              <Text style={styles.quickActionText}>Join Pool</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickActionBtn}>
-              <Ionicons name="barbell" size={22} color={Colors.primaryText} />
-              <Text style={styles.quickActionText}>Start Workout</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickActionBtn}>
-              <Ionicons name="podium" size={22} color={Colors.primaryText} />
-              <Text style={styles.quickActionText}>Leaderboard</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Wallet Balance - MOVED DOWN (MEDIUM PRIORITY) */}
+          {/* Wallet Balance - MOVED UP (HIGH PRIORITY) */}
           <Card style={styles.walletCard}>
             <View style={styles.walletHeader}>
               <Text style={styles.walletTitle}>Wallet Balance</Text>
@@ -166,6 +126,19 @@ export const HomeScreen: React.FC = () => {
             <Text style={styles.walletBalance}>₹{user.walletBalance}</Text>
             <Text style={styles.walletSubtext}>Available for pool entries</Text>
           </Card>
+
+          {/* Active Challenges Preview - HIGH PRIORITY */}
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionTitle}>Active Challenges</Text>
+            <TouchableOpacity><Text style={styles.sectionAction}>See All</Text></TouchableOpacity>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.activeChallengesScroll}>
+            {activeChallenges.map(challenge => (
+              <View key={challenge.id} style={styles.activeChallengeCardWrapper}>
+                <ActiveChallengeCard challenge={challenge} />
+              </View>
+            ))}
+          </ScrollView>
 
           {/* Friends Activity Feed - MEDIUM PRIORITY */}
           <View style={styles.sectionHeaderRow}>
@@ -308,17 +281,19 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 14,
     backgroundColor: Colors.cardBackground,
+    height: 120,
   },
   activeChallengeHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   activeChallengeName: {
     color: Colors.primaryText,
     fontWeight: 'bold',
     fontSize: 15,
+    flex: 1,
   },
   activeChallengeReward: {
     color: Colors.gold,
@@ -329,7 +304,7 @@ const styles = StyleSheet.create({
     height: 8,
     backgroundColor: '#2d2d2d',
     borderRadius: 4,
-    marginBottom: 8,
+    marginBottom: 12,
     overflow: 'hidden',
   },
   progressBarFill: {
@@ -402,26 +377,6 @@ const styles = StyleSheet.create({
     color: Colors.secondaryText,
     fontSize: 11,
     textAlign: 'center',
-  },
-  quickActionsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 18,
-    marginBottom: 32,
-  },
-  quickActionBtn: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: Colors.accent,
-    borderRadius: 12,
-    padding: 14,
-    marginHorizontal: 6,
-  },
-  quickActionText: {
-    color: Colors.primaryText,
-    fontWeight: 'bold',
-    fontSize: 13,
-    marginTop: 6,
   },
   walletCard: {
     marginBottom: 20,

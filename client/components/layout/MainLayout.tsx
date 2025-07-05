@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { BottomTabBar } from '../navigation/BottomTabBar';
 import { 
   HomeScreen, 
@@ -49,10 +50,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       end={{ x: 1, y: 1 }}
       locations={[0, 0.5, 1]}
     >
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <View style={styles.content}>
           {renderTabContent()}
         </View>
+      </SafeAreaView>
+      <SafeAreaView style={styles.bottomSafeArea} edges={['bottom']}>
         <BottomTabBar activeTab={activeTab} onTabPress={handleTabPress} />
       </SafeAreaView>
     </LinearGradient>
@@ -63,8 +66,11 @@ const styles = StyleSheet.create({
   gradientBg: {
     flex: 1,
   },
-  container: {
+  safeArea: {
     flex: 1,
+  },
+  bottomSafeArea: {
+    backgroundColor: 'transparent',
   },
   content: {
     flex: 1,
