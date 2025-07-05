@@ -73,12 +73,20 @@ const ActiveChallengeCard = ({ challenge }: ActiveChallengeCardProps) => (
   </Card>
 );
 
-export const HomeScreen: React.FC = () => {
+interface HomeScreenProps {
+  onTabSwitch?: (tabKey: string) => void;
+}
+
+export const HomeScreen: React.FC<HomeScreenProps> = ({ onTabSwitch }) => {
   const [addMoneyVisible, setAddMoneyVisible] = useState(false);
 
   const handleAddMoney = () => {
     setAddMoneyVisible(true);
   };
+
+  // Use onTabSwitch for tab navigation
+  const handleViewAllStats = () => onTabSwitch && onTabSwitch('analytics');
+  const handleSeeAllChallenges = () => onTabSwitch && onTabSwitch('challenges');
 
   return (
     <View style={styles.bg}>
@@ -105,7 +113,7 @@ export const HomeScreen: React.FC = () => {
           {/* Quick Stats - HIGH PRIORITY */}
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Quick Stats</Text>
-            <TouchableOpacity><Text style={styles.sectionAction}>View All</Text></TouchableOpacity>
+            <TouchableOpacity onPress={handleViewAllStats}><Text style={styles.sectionAction}>View All</Text></TouchableOpacity>
           </View>
           <View style={styles.quickStatsRow}>
             <QuickStat icon={<Ionicons name="walk" size={24} color={Colors.accent} />} label="Steps" value={stats.steps} />
@@ -130,7 +138,7 @@ export const HomeScreen: React.FC = () => {
           {/* Active Challenges Preview - HIGH PRIORITY */}
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Active Challenges</Text>
-            <TouchableOpacity><Text style={styles.sectionAction}>See All</Text></TouchableOpacity>
+            <TouchableOpacity onPress={handleSeeAllChallenges}><Text style={styles.sectionAction}>See All</Text></TouchableOpacity>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.activeChallengesScroll}>
             {activeChallenges.map(challenge => (
@@ -143,7 +151,8 @@ export const HomeScreen: React.FC = () => {
           {/* Friends Activity Feed - MEDIUM PRIORITY */}
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Friends Activity</Text>
-            <TouchableOpacity><Text style={styles.sectionAction}>See All</Text></TouchableOpacity>
+            {/* For now, just alert or navigate to placeholder */}
+            <TouchableOpacity onPress={() => Alert.alert('See All', 'Friends Activity screen coming soon!')}><Text style={styles.sectionAction}>See All</Text></TouchableOpacity>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.friendsScroll}>
             {friends.map((friend, idx) => (
@@ -158,7 +167,8 @@ export const HomeScreen: React.FC = () => {
           {/* Rewards & Achievements - MOVED DOWN (LOW PRIORITY) */}
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Rewards & Achievements</Text>
-            <TouchableOpacity><Text style={styles.sectionAction}>View</Text></TouchableOpacity>
+            {/* For now, just alert or navigate to placeholder */}
+            <TouchableOpacity onPress={() => Alert.alert('View', 'Achievements screen coming soon!')}><Text style={styles.sectionAction}>View</Text></TouchableOpacity>
           </View>
           <View style={styles.rewardsRow}>
             <RewardItem icon="💎" value={rewards.points} label="Points" />

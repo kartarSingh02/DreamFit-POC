@@ -46,6 +46,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     setAuthState('permissionsGranted');
   };
 
+  // Pass tab switch handler to HomeScreen
+  const handleTabSwitch = (tabKey: string) => {
+    setActiveTab(tabKey);
+  };
+
   // Render auth screens
   if (authState === 'unauthenticated') {
     return (
@@ -107,7 +112,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           {(() => {
             switch (activeTab) {
               case 'home':
-                return <HomeScreen />;
+                return <HomeScreen onTabSwitch={handleTabSwitch} />;
               case 'challenges':
                 return <ChallengesAndPoolsScreen />;
               case 'analytics':
