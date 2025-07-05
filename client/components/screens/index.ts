@@ -4,4 +4,6 @@ export { ChallengesScreen } from './ChallengesScreen';
 export { LeaderboardScreen } from './LeaderboardScreen';
 export { ProfileScreen } from './ProfileScreen';
 export { AnalyticsScreen } from './AnalyticsScreen';
-export { ChallengesAndPoolsScreen } from './ChallengesAndPoolsScreen'; 
+export { ChallengesAndPoolsScreen } from './ChallengesAndPoolsScreen';
+export { LoginScreen } from './LoginScreen';
+export { RegisterScreen } from './RegisterScreen'; 
