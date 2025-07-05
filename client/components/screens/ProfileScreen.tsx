@@ -29,11 +29,11 @@ interface EditableFieldProps {
 }
 
 const EditableField: React.FC<EditableFieldProps> = ({ label, value }) => (
-  <View style={styles.infoItem}>
-    <Text variant="caption" style={{ color: '#fff' }}>{label}</Text>
+    <View style={styles.infoItem}>
+      <Text variant="caption" style={{ color: '#fff' }}>{label}</Text>
     <Text variant="body" weight="medium" style={[styles.infoValue, { color: Colors.primaryText }]}> {value}</Text>
-  </View>
-);
+    </View>
+  );
 
 export const ProfileScreen: React.FC = () => {
   console.log('ProfileScreen rendering...');
@@ -230,7 +230,7 @@ export const ProfileScreen: React.FC = () => {
                 <Image source={{ uri: profile.imageUri }} style={styles.profileImage} />
               </TouchableOpacity>
               <View style={{ flex: 1, marginLeft: 16 }}>
-                <Text style={styles.profileName}>{profile.name}</Text>
+                    <Text style={styles.profileName}>{profile.name}</Text>
                 <Text style={styles.profileBio}>{profile.bio}</Text>
                 <Text style={styles.profileContact}>{profile.location}</Text>
               </View>
@@ -245,7 +245,7 @@ export const ProfileScreen: React.FC = () => {
                 <EditableField label="Weight" value={profile.weight} />
                 <EditableField label="Age" value={profile.age} />
                 <EditableField label="Gender" value={profile.gender} />
-              </View>
+                </View>
             </Card>
 
             {/* Settings Section */}
@@ -332,9 +332,9 @@ export const ProfileScreen: React.FC = () => {
                     <TouchableOpacity style={[styles.modalButton, styles.modalSave]} onPress={handleSaveProfile}>
                       <Text style={styles.modalButtonText}>Save</Text>
                     </TouchableOpacity>
-                  </View>
                 </View>
-              </View>
+                </View>
+                </View>
             </Modal>
 
             {/* Notifications Modal */}
@@ -352,29 +352,29 @@ export const ProfileScreen: React.FC = () => {
                       <View style={styles.notifTextCol}>
                         <Text style={styles.notifLabel}>Challenge Reminders</Text>
                         <Text style={styles.notifDescription}>Get notified about upcoming challenges and deadlines</Text>
-                      </View>
+                </View>
                       <Switch
                         value={notifPrefs.challengeReminders}
                         onValueChange={() => handleToggleNotif('challengeReminders')}
                         trackColor={{ false: Colors.secondaryText, true: Colors.accent }}
                         thumbColor={notifPrefs.challengeReminders ? Colors.accent : '#ccc'}
                       />
-                    </View>
-                  </View>
+                </View>
+                </View>
                   <View style={styles.notifItem}>
                     <View style={styles.notifRow}>
                       <View style={styles.notifTextCol}>
                         <Text style={styles.notifLabel}>Pool Start Alerts</Text>
                         <Text style={styles.notifDescription}>Receive alerts when walking pools begin</Text>
-                      </View>
+                </View>
                       <Switch
                         value={notifPrefs.poolStartAlerts}
                         onValueChange={() => handleToggleNotif('poolStartAlerts')}
                         trackColor={{ false: Colors.secondaryText, true: Colors.accent }}
                         thumbColor={notifPrefs.poolStartAlerts ? Colors.accent : '#ccc'}
                       />
-                    </View>
-                  </View>
+              </View>
+              </View>
                   <View style={styles.notifItem}>
                     <View style={styles.notifRow}>
                       <View style={styles.notifTextCol}>
@@ -386,8 +386,8 @@ export const ProfileScreen: React.FC = () => {
                         onValueChange={() => handleToggleNotif('rewards')}
                         trackColor={{ false: Colors.secondaryText, true: Colors.accent }}
                         thumbColor={notifPrefs.rewards ? Colors.accent : '#ccc'}
-                      />
-                    </View>
+                    />
+                  </View>
                   </View>
                   <View style={styles.helpButtonRow}>
                     <TouchableOpacity style={[styles.modalButton, styles.modalSave]} onPress={() => setShowNotificationsModal(false)}>
@@ -413,8 +413,8 @@ export const ProfileScreen: React.FC = () => {
                       <View key={idx} style={styles.faqItem}>
                         <Text style={styles.faqQuestion}>{faq.question}</Text>
                         <Text style={styles.faqAnswer}>{faq.answer}</Text>
-                      </View>
-                    ))}
+                </View>
+              ))}
                   </ScrollView>
                   <View style={styles.helpButtonRow}>
                     <TouchableOpacity style={[styles.modalButton, styles.modalSave, styles.helpButton]} onPress={handleContactSupport}>
@@ -440,15 +440,15 @@ export const ProfileScreen: React.FC = () => {
                   <Text style={styles.modalTitle}>Confirm Logout</Text>
                   <Text style={{ color: Colors.secondaryText, fontSize: 15, textAlign: 'center', marginVertical: 16 }}>
                     Are you sure you want to logout?
-                  </Text>
+              </Text>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
                     <TouchableOpacity style={[styles.modalButton, styles.modalCancel, { flex: 1, marginRight: 8 }]} onPress={() => setShowLogoutModal(false)}>
                       <Text style={styles.modalButtonText}>Cancel</Text>
-                    </TouchableOpacity>
+              </TouchableOpacity>
                     <TouchableOpacity style={[styles.modalButton, styles.modalSave, { flex: 1, marginLeft: 8 }]} onPress={handleLogout}>
                       <Text style={styles.modalButtonText}>Logout</Text>
                     </TouchableOpacity>
-                  </View>
+              </View>
                 </View>
               </View>
             </Modal>
