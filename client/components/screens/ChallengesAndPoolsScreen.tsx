@@ -506,7 +506,7 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
             <Text style={[
               styles.mainTabText, 
               { color: colors.secondaryText },
-              activeTab === 'pools' && { color: colors.primaryText }
+              activeTab === 'pools' && { color: '#FFFFFF' }
             ]}>
               🚶 Walking Pools
             </Text>
@@ -518,7 +518,7 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
             <Text style={[
               styles.mainTabText, 
               { color: colors.secondaryText },
-              activeTab === 'challenges' && { color: colors.primaryText }
+              activeTab === 'challenges' && { color: '#FFFFFF' }
             ]}>
               🏆 Challenges
             </Text>
@@ -530,7 +530,7 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
             <Text style={[
               styles.mainTabText, 
               { color: colors.secondaryText },
-              activeTab === 'my' && { color: colors.primaryText }
+              activeTab === 'my' && { color: '#FFFFFF' }
             ]}>
               ⭐ My Participation
             </Text>
@@ -555,14 +555,16 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
                     key={category.id}
                     style={[
                       styles.categoryButton,
-                      selectedCategory === category.id && styles.categoryButtonActive
+                      { backgroundColor: colors.cardBackground },
+                      selectedCategory === category.id && { backgroundColor: colors.accent }
                     ]}
                     onPress={() => setSelectedCategory(category.id)}
                   >
                     <Text style={styles.categoryIcon}>{category.icon}</Text>
                     <Text style={[
                       styles.categoryText,
-                      selectedCategory === category.id && styles.categoryTextActive
+                      { color: colors.secondaryText },
+                      selectedCategory === category.id && { color: '#FFFFFF' }
                     ]}>
                       {category.name}
                     </Text>
@@ -635,7 +637,7 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
                 <Text style={[
                   styles.poolTabText, 
                   { color: colors.secondaryText },
-                  selectedPoolTab === 'upcoming' && { color: colors.primaryText }
+                  selectedPoolTab === 'upcoming' && { color: '#FFFFFF' }
                 ]}>
                   Upcoming ({upcomingPools.length})
                 </Text>
@@ -647,7 +649,7 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
                 <Text style={[
                   styles.poolTabText, 
                   { color: colors.secondaryText },
-                  selectedPoolTab === 'active' && { color: colors.primaryText }
+                  selectedPoolTab === 'active' && { color: '#FFFFFF' }
                 ]}>
                   Live Now
                 </Text>
@@ -659,7 +661,7 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
                 <Text style={[
                   styles.poolTabText, 
                   { color: colors.secondaryText },
-                  selectedPoolTab === 'completed' && { color: colors.primaryText }
+                  selectedPoolTab === 'completed' && { color: '#FFFFFF' }
                 ]}>
                   History
                 </Text>

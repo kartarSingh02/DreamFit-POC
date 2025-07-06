@@ -240,7 +240,7 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ scrollToSectio
               <Text style={[
                 styles.periodText,
                 { color: colors.secondaryText },
-                selectedPeriod === period && { color: colors.primaryText }
+                selectedPeriod === period && { color: '#FFFFFF' }
               ]}>
                 {period.charAt(0).toUpperCase() + period.slice(1)}
               </Text>
