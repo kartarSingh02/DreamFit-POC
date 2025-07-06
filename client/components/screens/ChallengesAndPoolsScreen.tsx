@@ -492,8 +492,8 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
             <Text style={[styles.subtitle, { color: colors.secondaryText }]}>Join walking pools and challenges to win rewards!</Text>
           </View>
           <TouchableOpacity onPress={() => setAddMoneyVisible(true)} style={[styles.walletButton, { backgroundColor: colors.accent }]}>
-            <Ionicons name="wallet" size={24} color={colors.primaryText} />
-            <Ionicons name="add" size={16} color={colors.primaryText} style={styles.addIcon} />
+            <Ionicons name="wallet" size={24} color="#FFFFFF" />
+            <Ionicons name="add" size={16} color="#FFFFFF" style={styles.addIcon} />
           </TouchableOpacity>
         </View>
 
