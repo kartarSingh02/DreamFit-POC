@@ -99,6 +99,9 @@ const styles = StyleSheet.create({
   container: {
     borderTopWidth: 1,
     borderTopColor: 'rgba(0, 0, 0, 0.1)',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    overflow: 'hidden',
   },
   tabContainer: {
     flexDirection: 'row',
