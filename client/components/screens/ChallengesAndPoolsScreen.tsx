@@ -328,8 +328,8 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool, onJoin }) => {
       </View>
 
       {pool.status === 'upcoming' && (
-        <TouchableOpacity style={[styles.joinButton, { backgroundColor: colors.accent }]} onPress={() => onJoin(pool)}>
-          <Text style={[styles.joinButtonText, { color: colors.primaryText }]}>Join Pool</Text>
+        <TouchableOpacity style={[styles.joinButton, { backgroundColor: colors.accent, alignSelf: 'center', paddingHorizontal: 32 }]} onPress={() => onJoin(pool)}>
+          <Text style={[styles.joinButtonText, { color: '#fff' }]}>Join Pool</Text>
         </TouchableOpacity>
       )}
     </Card>
@@ -487,11 +487,13 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <View>
+          <View style={{ flex: 1, minWidth: 0 }}>
             <Text style={[styles.title, { color: colors.primaryText }]}>Challenges</Text>
-            <Text style={[styles.subtitle, { color: colors.secondaryText }]}>Join walking pools and challenges to win rewards!</Text>
+            <Text style={[styles.subtitle, { color: colors.secondaryText }]} numberOfLines={1} ellipsizeMode="tail">
+              Join walking pools and challenges to win rewards!
+            </Text>
           </View>
-          <TouchableOpacity onPress={() => setAddMoneyVisible(true)} style={[styles.walletButton, { backgroundColor: colors.accent }]}>
+          <TouchableOpacity onPress={() => setAddMoneyVisible(true)} style={[styles.walletButton, { backgroundColor: colors.accent, marginLeft: 12 }]}> 
             <Ionicons name="wallet" size={24} color="#FFFFFF" />
             <Ionicons name="add" size={16} color="#FFFFFF" style={styles.addIcon} />
           </TouchableOpacity>
@@ -604,7 +606,7 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
         {activeTab === 'pools' && (
           <>
             {/* Search Bar */}
-            <View style={[styles.searchContainer, { backgroundColor: colors.cardBackground }]}>
+            {/* <View style={[styles.searchContainer, { backgroundColor: colors.cardBackground }]}>
               <Ionicons name="search" size={20} color={colors.secondaryText} />
               <TextInput
                 style={[styles.searchInput, { color: colors.primaryText }]}
@@ -613,7 +615,7 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
                 value={searchQuery}
                 onChangeText={setSearchQuery}
               />
-            </View>
+            </View> */}
 
             {/* Schedule Info */}
             <Card style={styles.scheduleCard}>

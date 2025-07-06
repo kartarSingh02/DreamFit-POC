@@ -10,13 +10,13 @@ export const ScreenContainer: React.FC<ViewProps> = ({ children, style, ...props
   
   return (
     <LinearGradient colors={colors.backgroundGradient as [string, string]} style={styles.gradient}>
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <View style={[styles.container, style]} {...props}>
-        {children}
-      </View>
-    </SafeAreaView>
-  </LinearGradient>
-);
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <View style={[styles.container, style]} {...props}>
+          {children}
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -28,6 +28,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: padding.lg,
+    paddingHorizontal: padding.lg,
+    paddingTop: padding.sm,
+    paddingBottom: padding.lg,
   },
 }); 

@@ -239,8 +239,8 @@ export const LeaderboardScreen: React.FC = () => {
             ]}
             onPress={() => setShowFriends(!showFriends)}
           >
-            <Ionicons name={showFriends ? 'people' : 'earth'} size={20} color={showFriends ? colors.primaryText : colors.secondaryText} />
-            <Text style={[styles.friendsToggleText, { color: showFriends ? colors.primaryText : colors.secondaryText }]}>{showFriends ? 'Friends' : 'Global'}</Text>
+            <Ionicons name={showFriends ? 'people' : 'earth'} size={20} color={showFriends ? '#fff' : colors.secondaryText} />
+            <Text style={[styles.friendsToggleText, { color: showFriends ? '#fff' : colors.secondaryText }]}>{showFriends ? 'Friends' : 'Global'}</Text>
           </TouchableOpacity>
         </View>
 
@@ -258,7 +258,7 @@ export const LeaderboardScreen: React.FC = () => {
               <Text style={[
                 styles.tabText, 
                 { color: colors.secondaryText },
-                selectedTab === tab && { color: colors.primaryText }
+                selectedTab === tab && { color: '#fff' }
               ]}>
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </Text>

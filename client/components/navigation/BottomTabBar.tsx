@@ -105,7 +105,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: 8,
-    paddingHorizontal: 16,
   },
   tabButton: {
     alignItems: 'center',

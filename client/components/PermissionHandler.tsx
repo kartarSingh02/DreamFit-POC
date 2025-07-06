@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert, Platform } from 'react-native';
+import { View, StyleSheet, Alert, Platform, SafeAreaView } from 'react-native';
 import { Text } from './ui/Text';
 import { Card } from './ui/Card';
 import { useTheme } from '../contexts/ThemeContext';
+import { LinearGradient } from 'expo-linear-gradient';
+import { padding } from '../constants/Responsive';
 import * as Location from 'expo-location';
 import { Pedometer } from 'expo-sensors';
 
@@ -124,77 +126,93 @@ export const PermissionHandler: React.FC<PermissionHandlerProps> = ({ onPermissi
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.backgroundGradient[0] }]}>
-        <Card style={styles.loadingCard}>
-          <Text style={[styles.loadingText, { color: colors.secondaryText }]}>Checking permissions...</Text>
-        </Card>
-      </View>
+      <LinearGradient
+        colors={colors.backgroundGradient as [string, string, string]}
+        style={styles.bg}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        locations={[0, 0.5, 1]}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={styles.container}>
+            <Card style={styles.loadingCard}>
+              <Text style={[styles.loadingText, { color: colors.secondaryText }]}>Checking permissions...</Text>
+            </Card>
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.backgroundGradient[0] }]}>
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.primaryText }]}>Welcome to DreamFit</Text>
-        <Text style={[styles.subtitle, { color: colors.secondaryText }]}>Let's set up your experience</Text>
-      </View>
-      <View style={styles.permissionsContainer}>
-        <Text style={[styles.sectionTitle, { color: colors.primaryText }]}>Required Permissions</Text>
-        <Text style={[styles.sectionDescription, { color: colors.secondaryText }]}>
-          These permissions help us provide the best experience for walking pools and challenges.
-        </Text>
-        {isWeb && (
-          <Card style={styles.permissionCard}>
-            <Text style={{ color: colors.accent, marginBottom: 8 }}>
-              💻 Development Mode: Click "Grant Permission" buttons to simulate permission requests. On real devices, this would show native permission dialogs.
-            </Text>
-          </Card>
-        )}
-        {permissions.map((permission) => (
-          <Card key={permission.key} style={styles.permissionCard}>
-            <Text style={[styles.permissionTitle, { color: colors.primaryText }]}>{permission.title}</Text>
-            <Text style={[styles.permissionDescription, { color: colors.secondaryText }]}>{permission.description}</Text>
-            <View style={styles.permissionActionRow}>
-              <Text style={[styles.permissionStatusLabel, { color: colors.secondaryText }]}>
-                {permission.status === 'granted' ? '✅ Granted' : permission.required ? 'Required' : 'Optional'}
-              </Text>
-              {permission.status !== 'granted' && (
-                <Text 
-                  style={[styles.permissionButton, { color: colors.accent }]}
-                  onPress={() => requestPermission(permission.key)}
-                >
-                  Grant Permission
+    <LinearGradient
+      colors={colors.backgroundGradient as [string, string, string]}
+      style={styles.bg}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      locations={[0, 0.5, 1]}
+    >
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text style={[styles.title, { color: colors.primaryText }]}>Welcome to DreamFit</Text>
+            <Text style={[styles.subtitle, { color: colors.secondaryText }]}>Let's set up your experience</Text>
+          </View>
+          <View style={styles.permissionsContainer}>
+            <Text style={[styles.sectionTitle, { color: colors.primaryText }]}>Required Permissions</Text>
+            <Text style={[styles.sectionDescription, { color: colors.secondaryText }]}>These permissions help us provide the best experience for walking pools and challenges.</Text>
+            {isWeb && (
+              <Card style={styles.permissionCard}>
+                <Text style={{ color: colors.accent, marginBottom: 8 }}>
+                  💻 Development Mode: Click "Grant Permission" buttons to simulate permission requests. On real devices, this would show native permission dialogs.
                 </Text>
-              )}
-            </View>
-          </Card>
-        ))}
-      </View>
-      <View style={styles.footer}>
-        <Text 
-          style={[
-            styles.continueButton, 
-            { 
-              backgroundColor: canContinue() ? colors.accent : colors.secondaryText, 
-              color: canContinue() ? '#fff' : colors.primaryText 
-            }
-          ]}
-          onPress={handleContinue}
-        >
-          {canContinue() ? 'Continue to App' : 'Grant Required Permissions'}
-        </Text>
-        <Text style={[styles.skipText, { color: colors.secondaryText }]}>
-          You can change these permissions later in Settings
-        </Text>
-      </View>
-    </View>
+              </Card>
+            )}
+            {permissions.map((permission) => (
+              <Card key={permission.key} style={styles.permissionCard}>
+                <Text style={[styles.permissionTitle, { color: colors.primaryText }]}>{permission.title}</Text>
+                <Text style={[styles.permissionDescription, { color: colors.secondaryText }]}>{permission.description}</Text>
+                <View style={styles.permissionActionRow}>
+                  <Text style={[styles.permissionStatusLabel, { color: colors.secondaryText }]}> {permission.status === 'granted' ? '✅ Granted' : permission.required ? 'Required' : 'Optional'} </Text>
+                  {permission.status !== 'granted' && (
+                    <Text 
+                      style={[styles.permissionButton, { color: colors.accent }]}
+                      onPress={() => requestPermission(permission.key)}
+                    >
+                      Grant Permission
+                    </Text>
+                  )}
+                </View>
+              </Card>
+            ))}
+          </View>
+          <View style={styles.footer}>
+            <Text 
+              style={[
+                styles.continueButton, 
+                { 
+                  backgroundColor: colors.accent,
+                  opacity: canContinue() ? 1 : 0.5,
+                  color: '#fff'
+                }
+              ]}
+              onPress={handleContinue}
+            >
+              {canContinue() ? 'Continue to App' : 'Grant Required Permissions'}
+            </Text>
+            <Text style={[styles.skipText, { color: colors.secondaryText }]}>You can change these permissions later in Settings</Text>
+          </View>
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: padding.lg,
+    paddingTop: padding.sm,
     justifyContent: 'center',
   },
   header: {
@@ -274,5 +292,8 @@ const styles = StyleSheet.create({
   skipText: {
     fontSize: 12,
     marginTop: 4,
+  },
+  bg: {
+    flex: 1,
   },
 }); 

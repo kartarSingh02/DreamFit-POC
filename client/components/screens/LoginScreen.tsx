@@ -110,9 +110,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
           <TouchableOpacity
             style={[
               styles.button, 
-              { backgroundColor: (name.trim() && phone.trim()) ? colors.accent : colors.secondaryText }
+              { 
+                backgroundColor: colors.accent,
+                opacity: (name.trim() && phone.trim()) ? 1 : 0.5
+              }
             ]}
             onPress={handleSignIn}
+            disabled={!(name.trim() && phone.trim())}
           >
             <Text style={[styles.buttonText, { color: '#fff' }]}>Sign In</Text>
           </TouchableOpacity>

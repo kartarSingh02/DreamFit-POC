@@ -346,10 +346,10 @@ export const ProfileScreen: React.FC = () => {
                     />
                   </ScrollView>
                   <View style={styles.modalButtonRow}>
-                    <TouchableOpacity style={[styles.modalButton, styles.modalCancel]} onPress={() => setShowEditModal(false)}>
+                    <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.secondaryText }]} onPress={() => setShowEditModal(false)}>
                       <Text style={[styles.modalButtonText, { color: '#fff' }]}>Cancel</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.modalButton, styles.modalSave]} onPress={handleSaveProfile}>
+                    <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.accent }]} onPress={handleSaveProfile}>
                       <Text style={[styles.modalButtonText, { color: '#fff' }]}>Save</Text>
                     </TouchableOpacity>
                 </View>
@@ -410,7 +410,7 @@ export const ProfileScreen: React.FC = () => {
                   </View>
                   </View>
                   <View style={styles.helpButtonRow}>
-                    <TouchableOpacity style={[styles.modalButton, styles.modalSave]} onPress={() => setShowNotificationsModal(false)}>
+                    <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.accent }]} onPress={() => setShowNotificationsModal(false)}>
                       <Text style={[styles.modalButtonText, { color: '#fff' }]}>Save</Text>
                     </TouchableOpacity>
                   </View>
@@ -437,10 +437,10 @@ export const ProfileScreen: React.FC = () => {
               ))}
                   </ScrollView>
                   <View style={styles.helpButtonRow}>
-                    <TouchableOpacity style={[styles.modalButton, styles.modalSave, styles.helpButton]} onPress={handleContactSupport}>
+                    <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.accent }, styles.helpButton]} onPress={handleContactSupport}>
                       <Text style={[styles.modalButtonText, { color: '#fff' }]}>Contact Support</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.modalButton, styles.modalCancel]} onPress={() => setShowHelpModal(false)}>
+                    <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.secondaryText }]} onPress={() => setShowHelpModal(false)}>
                       <Text style={[styles.modalButtonText, { color: '#fff' }]}>Close</Text>
                     </TouchableOpacity>
                   </View>
@@ -462,10 +462,10 @@ export const ProfileScreen: React.FC = () => {
                     Are you sure you want to logout?
               </Text>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
-                    <TouchableOpacity style={[styles.modalButton, styles.modalCancel, { flex: 1, marginRight: 8 }]} onPress={() => setShowLogoutModal(false)}>
+                    <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.secondaryText }, { flex: 1, marginRight: 8 }]} onPress={() => setShowLogoutModal(false)}>
                       <Text style={[styles.modalButtonText, { color: '#fff' }]}>Cancel</Text>
               </TouchableOpacity>
-                    <TouchableOpacity style={[styles.modalButton, styles.modalSave, { flex: 1, marginLeft: 8 }]} onPress={handleLogout}>
+                    <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.accent }, { flex: 1, marginLeft: 8 }]} onPress={handleLogout}>
                       <Text style={[styles.modalButtonText, { color: '#fff' }]}>Logout</Text>
                     </TouchableOpacity>
               </View>
@@ -731,12 +731,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center' as const,
     marginHorizontal: 4,
-  },
-  modalCancel: {
-    backgroundColor: '#6B7280',
-  },
-  modalSave: {
-    backgroundColor: '#10B981', // Green color
   },
   modalButtonText: {
     fontWeight: 'bold',

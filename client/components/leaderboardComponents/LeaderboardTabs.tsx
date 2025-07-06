@@ -26,14 +26,16 @@ const leaderboardData = {
   ],
 };
 
-const tabs = ['Global', 'Country', 'Friends'];
+const tabs = ['Global', 'Country', 'Friends'] as const;
+
+type TabKey = keyof typeof leaderboardData;
 
 export const LeaderboardTabs: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('Global');
+  const [activeTab, setActiveTab] = useState<TabKey>('Global');
   const data = leaderboardData[activeTab];
   // User row for demo if not in top 5
   const userRow = { position: 1000, name: 'You', steps: 1234 };
-  const userInTop = data.some(row => row.name === 'You');
+  const userInTop = data.some((row: { position: number; name: string; steps: number }) => row.name === 'You');
 
   return (
     <View style={styles.container}>
@@ -54,7 +56,7 @@ export const LeaderboardTabs: React.FC = () => {
           <Text style={styles.tableHeaderText}>Name</Text>
           <Text style={styles.tableHeaderText}>Steps</Text>
         </View>
-        {data.map((row, idx) => (
+        {data.map((row: { position: number; name: string; steps: number }, idx: number) => (
           <View key={idx} style={[styles.tableRow, idx % 2 === 0 && styles.tableRowAlt, row.name === 'You' && styles.userRow]}> 
             <Text style={[styles.tableCell, row.name === 'You' && styles.userCell]}>{row.position}</Text>
             <Text style={[styles.tableCell, row.name === 'You' && styles.userCell]}>{row.name}</Text>
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   activeTabText: {
-    color: Colors.cardBackground,
+    color: '#fff',
   },
   tableContainer: {
     borderRadius: 10,
