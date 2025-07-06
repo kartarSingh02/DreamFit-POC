@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, TextInput, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants/Colors';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface AddMoneyModalProps {
   visible: boolean;
@@ -9,6 +9,7 @@ interface AddMoneyModalProps {
 }
 
 export const AddMoneyModal: React.FC<AddMoneyModalProps> = ({ visible, onClose }) => {
+  const { colors } = useTheme();
   const [selected, setSelected] = useState<number | null>(null);
   const [custom, setCustom] = useState('');
 
@@ -29,35 +30,45 @@ export const AddMoneyModal: React.FC<AddMoneyModalProps> = ({ visible, onClose }
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <View style={styles.modal}>
-          <Text style={styles.title}>Add Money</Text>
+        <View style={[styles.modal, { backgroundColor: colors.cardBackground }]}>
+          <Text style={[styles.title, { color: colors.primaryText }]}>Add Money</Text>
           <View style={styles.amountRow}>
             {[100, 500, 1000].map(val => (
               <TouchableOpacity
                 key={val}
-                style={[styles.amountBtn, selected === val && styles.amountBtnSelected]}
+                style={[
+                  styles.amountBtn, 
+                  { backgroundColor: colors.backgroundGradient[1] },
+                  selected === val && { backgroundColor: colors.accent }
+                ]}
                 onPress={() => { setSelected(val); setCustom(''); }}
               >
-                <Text style={styles.amountBtnText}>₹{val}</Text>
+                <Text style={[styles.amountBtnText, { color: colors.primaryText }]}>₹{val}</Text>
               </TouchableOpacity>
             ))}
           </View>
-          <Text style={styles.or}>or</Text>
+          <Text style={[styles.or, { color: colors.secondaryText }]}>or</Text>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input, 
+              { 
+                backgroundColor: colors.backgroundGradient[1],
+                color: colors.primaryText
+              }
+            ]}
             placeholder="Custom amount"
-            placeholderTextColor={Colors.secondaryText}
+            placeholderTextColor={colors.secondaryText}
             keyboardType="numeric"
             value={custom}
             onChangeText={txt => { setCustom(txt); setSelected(null); }}
             maxLength={6}
           />
-          <TouchableOpacity style={styles.addBtn} onPress={handleAdd}>
+          <TouchableOpacity style={[styles.addBtn, { backgroundColor: colors.accent }]} onPress={handleAdd}>
             <Ionicons name="add" size={18} color="#fff" style={{ marginRight: 6 }} />
-            <Text style={styles.addBtnText}>Add Money</Text>
+            <Text style={[styles.addBtnText, { color: '#fff' }]}>Add Money</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-            <Text style={styles.closeBtnText}>Cancel</Text>
+            <Text style={[styles.closeBtnText, { color: colors.secondaryText }]}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -73,7 +84,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modal: {
-    backgroundColor: Colors.cardBackground,
     borderRadius: 18,
     padding: 28,
     width: 320,
@@ -82,7 +92,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginBottom: 18,
   },
   amountRow: {
@@ -91,27 +100,19 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   amountBtn: {
-    backgroundColor: Colors.backgroundGradient[1],
     borderRadius: 8,
     paddingHorizontal: 18,
     paddingVertical: 10,
     marginHorizontal: 6,
   },
-  amountBtnSelected: {
-    backgroundColor: Colors.accent,
-  },
   amountBtnText: {
-    color: Colors.primaryText,
     fontWeight: 'bold',
     fontSize: 16,
   },
   or: {
-    color: Colors.secondaryText,
     marginVertical: 6,
   },
   input: {
-    backgroundColor: Colors.backgroundGradient[1],
-    color: Colors.primaryText,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -123,14 +124,12 @@ const styles = StyleSheet.create({
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.accent,
     borderRadius: 8,
     paddingHorizontal: 24,
     paddingVertical: 12,
     marginBottom: 10,
   },
   addBtnText: {
-    color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
   },
@@ -138,7 +137,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   closeBtnText: {
-    color: Colors.secondaryText,
     fontSize: 15,
   },
 }); 

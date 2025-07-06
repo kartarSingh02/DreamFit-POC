@@ -13,86 +13,61 @@ import {
 } from '../screens';
 import { PermissionHandler } from '../PermissionHandler';
 import { LinearGradient } from 'expo-linear-gradient';
-import Colors from '../../constants/Colors';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface MainLayoutProps {
   children?: React.ReactNode;
 }
 
-type AuthState = 'unauthenticated' | 'register' | 'authenticated' | 'permissionsGranted';
+type AppState = 'signin' | 'permissions' | 'main';
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [activeTab, setActiveTab] = useState('home');
-  const [authState, setAuthState] = useState<AuthState>('unauthenticated');
   const [analyticsScrollTo, setAnalyticsScrollTo] = useState<string | undefined>(undefined);
+  const [appState, setAppState] = useState<AppState>('signin');
+  const { colors } = useTheme();
 
-  const handleTabPress = (tabKey: string) => {
-    setActiveTab(tabKey);
-    if (tabKey !== 'analytics') setAnalyticsScrollTo(undefined);
-  };
-
-  // Auth flow handlers
-  const handleLoginSuccess = () => {
-    setAuthState('authenticated');
-  };
-  const handleRegisterSuccess = () => {
-    setAuthState('authenticated');
-  };
-  const handleSwitchToRegister = () => {
-    setAuthState('register');
-  };
-  const handleSwitchToLogin = () => {
-    setAuthState('unauthenticated');
-  };
-  const handlePermissionsGranted = () => {
-    setAuthState('permissionsGranted');
+  const handleTabPress = (tab: string) => {
+    setActiveTab(tab);
   };
 
-  // Pass tab switch handler to HomeScreen
-  const handleTabSwitch = (tabKey: string, section?: string) => {
-    setActiveTab(tabKey);
-    if (tabKey === 'analytics' && section) {
+  const handleTabSwitch = (tab: string, section?: string) => {
+    setActiveTab(tab);
+    if (section) {
       setAnalyticsScrollTo(section);
-    } else {
-      setAnalyticsScrollTo(undefined);
     }
   };
 
-  // Render auth screens
-  if (authState === 'unauthenticated') {
+  const handleSignInSuccess = () => {
+    setAppState('permissions');
+  };
+
+  const handlePermissionsGranted = () => {
+    setAppState('main');
+  };
+
+  // Show sign-in screen first
+  if (appState === 'signin') {
     return (
       <LinearGradient
-        colors={Colors.backgroundGradient as [string, string, string]}
+        colors={colors.backgroundGradient as [string, string, string]}
         style={styles.gradientBg}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         locations={[0, 0.5, 1]}
       >
         <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
-          <LoginScreen onLoginSuccess={handleLoginSuccess} />
+          <LoginScreen onLoginSuccess={handleSignInSuccess} />
         </SafeAreaView>
       </LinearGradient>
     );
   }
-  if (authState === 'register') {
+
+  // Show permission handler after sign-in
+  if (appState === 'permissions') {
     return (
       <LinearGradient
-        colors={Colors.backgroundGradient as [string, string, string]}
-        style={styles.gradientBg}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        locations={[0, 0.5, 1]}
-      >
-        <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
-          <RegisterScreen onRegisterSuccess={handleRegisterSuccess} onSwitchToLogin={handleSwitchToLogin} />
-        </SafeAreaView>
-      </LinearGradient>
-    );
-  }
-  if (authState === 'authenticated') {
-    return (
-      <LinearGradient
-        colors={Colors.backgroundGradient as [string, string, string]}
+        colors={colors.backgroundGradient as [string, string, string]}
         style={styles.gradientBg}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -105,10 +80,10 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     );
   }
 
-  // Permissions granted, show main app
+  // Show main app after permissions granted
   return (
     <LinearGradient
-      colors={Colors.backgroundGradient as [string, string, string]}
+      colors={colors.backgroundGradient as [string, string, string]}
       style={styles.gradientBg}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
@@ -153,14 +128,5 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-  },
-  debugIndicator: {
-    backgroundColor: Colors.accent,
-    padding: 8,
-    alignItems: 'center',
-  },
-  debugText: {
-    color: Colors.primaryText,
-    fontWeight: 'bold',
   },
 }); 

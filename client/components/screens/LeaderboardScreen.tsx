@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { ScrollView, View, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
-import Colors from '../../constants/Colors';
 import { Text } from '../ui/Text';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../ui/Card';
 import { ScreenContainer } from '../layout/ScreenContainer';
 import { padding, margin, fontSize, spacing } from '../../constants/Responsive';
+import { useTheme } from '../../contexts/ThemeContext';
 
 // Mock data for leaderboard
 const mockLeaderboard = [
@@ -138,32 +138,38 @@ const friendsLeaderboard = [
 
 const userWalletBalance = 1250; // in rupees
 
-const TopPerformersList: React.FC<{ data: any[] }> = ({ data }) => (
-  <View style={styles.topPerformersList}>
-    {data.slice(0, 5).map((user, idx) => (
-      <View key={user.id} style={styles.topPerformerItem}>
-        <View style={styles.topPerformerAvatarWrapper}>
-          <Image source={{ uri: user.avatar }} style={styles.topPerformerAvatar} />
-          {idx < 3 && (
-            <Text style={styles.topPerformerMedal}>
-              {idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}
-            </Text>
-          )}
+const TopPerformersList: React.FC<{ data: any[] }> = ({ data }) => {
+  const { colors } = useTheme();
+  
+  return (
+    <View style={styles.topPerformersList}>
+      {data.slice(0, 5).map((user, idx) => (
+        <View key={user.id} style={styles.topPerformerItem}>
+          <View style={styles.topPerformerAvatarWrapper}>
+            <Image source={{ uri: user.avatar }} style={styles.topPerformerAvatar} />
+            {idx < 3 && (
+              <Text style={styles.topPerformerMedal}>
+                {idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}
+              </Text>
+            )}
+          </View>
+          <Text style={[styles.topPerformerName, { color: colors.primaryText }]}>{user.name}</Text>
+          <Text style={[styles.topPerformerSteps, { color: colors.secondaryText }]}>{user.steps.toLocaleString()} steps</Text>
+          <Text style={[styles.topPerformerEarnings, { color: colors.accent }]}>₹{user.earnings}</Text>
         </View>
-        <Text style={styles.topPerformerName}>{user.name}</Text>
-        <Text style={styles.topPerformerSteps}>{user.steps.toLocaleString()} steps</Text>
-        <Text style={styles.topPerformerEarnings}>₹{user.earnings}</Text>
-      </View>
-    ))}
-  </View>
-);
+      ))}
+    </View>
+  );
+};
 
 const UserPoolCard: React.FC<{ pool: any }> = ({ pool }) => {
+  const { colors } = useTheme();
+  
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'won': return Colors.gold;
-      case 'refund': return Colors.accent;
-      default: return Colors.secondaryText;
+      case 'won': return '#FFD700'; // gold
+      case 'refund': return colors.accent;
+      default: return colors.secondaryText;
     }
   };
 
@@ -179,29 +185,29 @@ const UserPoolCard: React.FC<{ pool: any }> = ({ pool }) => {
     <Card style={styles.poolCard}>
       <View style={styles.poolHeader}>
         <View>
-          <Text style={styles.poolName}>{pool.name}</Text>
-          <Text style={styles.poolDate}>{pool.date}</Text>
+          <Text style={[styles.poolName, { color: colors.primaryText }]}>{pool.name}</Text>
+          <Text style={[styles.poolDate, { color: colors.secondaryText }]}>{pool.date}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(pool.status) }]}>
-          <Text style={styles.statusText}>{getStatusText(pool.status)}</Text>
+          <Text style={[styles.statusText, { color: '#fff' }]}>{getStatusText(pool.status)}</Text>
         </View>
       </View>
 
       <View style={styles.poolStats}>
         <View style={styles.statItem}>
-          <Ionicons name="walk" size={16} color={Colors.secondaryText} />
-          <Text style={styles.statValue}>{pool.steps.toLocaleString()}</Text>
-          <Text style={styles.statLabel}>Steps</Text>
+          <Ionicons name="walk" size={16} color={colors.secondaryText} />
+          <Text style={[styles.statValue, { color: colors.primaryText }]}>{pool.steps.toLocaleString()}</Text>
+          <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Steps</Text>
         </View>
         <View style={styles.statItem}>
-          <Ionicons name="trophy" size={16} color={Colors.secondaryText} />
-          <Text style={styles.statValue}>#{pool.position}</Text>
-          <Text style={styles.statLabel}>Position</Text>
+          <Ionicons name="trophy" size={16} color={colors.secondaryText} />
+          <Text style={[styles.statValue, { color: colors.primaryText }]}>#{pool.position}</Text>
+          <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Position</Text>
         </View>
         <View style={styles.statItem}>
-          <Ionicons name="wallet" size={16} color={Colors.secondaryText} />
-          <Text style={styles.statValue}>₹{pool.earnings}</Text>
-          <Text style={styles.statLabel}>Earnings</Text>
+          <Ionicons name="wallet" size={16} color={colors.secondaryText} />
+          <Text style={[styles.statValue, { color: colors.primaryText }]}>₹{pool.earnings}</Text>
+          <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Earnings</Text>
         </View>
       </View>
     </Card>
@@ -209,6 +215,7 @@ const UserPoolCard: React.FC<{ pool: any }> = ({ pool }) => {
 };
 
 export const LeaderboardScreen: React.FC = () => {
+  const { colors } = useTheme();
   const [selectedTab, setSelectedTab] = useState('daily');
   const [showFriends, setShowFriends] = useState(false);
   const leaderboardData = showFriends ? friendsLeaderboard : mockLeaderboard;
@@ -221,27 +228,38 @@ export const LeaderboardScreen: React.FC = () => {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>Leaderboard</Text>
-            <Text style={styles.subtitle}>Top performers in walking pools</Text>
+            <Text style={[styles.title, { color: colors.primaryText }]}>Leaderboard</Text>
+            <Text style={[styles.subtitle, { color: colors.secondaryText }]}>Top performers in walking pools</Text>
           </View>
           <TouchableOpacity 
-            style={[styles.friendsToggle, showFriends && styles.friendsToggleActive]}
+            style={[
+              styles.friendsToggle, 
+              { backgroundColor: colors.cardBackground },
+              showFriends && { backgroundColor: colors.accent }
+            ]}
             onPress={() => setShowFriends(!showFriends)}
           >
-            <Ionicons name={showFriends ? 'people' : 'earth'} size={20} color={showFriends ? Colors.primaryText : Colors.secondaryText} />
-            <Text style={styles.friendsToggleText}>{showFriends ? 'Friends' : 'Global'}</Text>
+            <Ionicons name={showFriends ? 'people' : 'earth'} size={20} color={showFriends ? colors.primaryText : colors.secondaryText} />
+            <Text style={[styles.friendsToggleText, { color: showFriends ? colors.primaryText : colors.secondaryText }]}>{showFriends ? 'Friends' : 'Global'}</Text>
           </TouchableOpacity>
         </View>
 
         {/* Tab Navigation */}
-        <View style={styles.tabContainer}>
+        <View style={[styles.tabContainer, { backgroundColor: colors.cardBackground }]}>
           {['daily', 'weekly', 'all-time'].map(tab => (
             <TouchableOpacity
               key={tab}
-              style={[styles.tab, selectedTab === tab && styles.activeTab]}
+              style={[
+                styles.tab, 
+                selectedTab === tab && { backgroundColor: colors.accent }
+              ]}
               onPress={() => setSelectedTab(tab)}
             >
-              <Text style={[styles.tabText, selectedTab === tab && styles.activeTabText]}>
+              <Text style={[
+                styles.tabText, 
+                { color: colors.secondaryText },
+                selectedTab === tab && { color: colors.primaryText }
+              ]}>
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </Text>
             </TouchableOpacity>
@@ -250,55 +268,55 @@ export const LeaderboardScreen: React.FC = () => {
 
         {/* Performance Summary - moved to top */}
         <Card style={styles.statsCard}>
-          <Text style={styles.statsTitle}>Performance Summary</Text>
+          <Text style={[styles.statsTitle, { color: colors.primaryText }]}>Performance Summary</Text>
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
-              <Text style={styles.statValue}>5</Text>
-              <Text style={styles.statLabel}>Pools Joined</Text>
+              <Text style={[styles.statValue, { color: colors.primaryText }]}>5</Text>
+              <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Pools Joined</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statValue}>₹301</Text>
-              <Text style={styles.statLabel}>Total Earned</Text>
+              <Text style={[styles.statValue, { color: colors.primaryText }]}>₹301</Text>
+              <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Total Earned</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statValue}>3</Text>
-              <Text style={styles.statLabel}>Top 3 Finishes</Text>
+              <Text style={[styles.statValue, { color: colors.primaryText }]}>3</Text>
+              <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Top 3 Finishes</Text>
             </View>
           </View>
         </Card>
 
         {/* Top 5 Performers List */}
         <Card style={styles.topPerformersCard}>
-          <Text style={styles.podiumTitle}>Top 5 Performers</Text>
+          <Text style={[styles.podiumTitle, { color: colors.primaryText }]}>Top 5 Performers</Text>
           <TopPerformersList data={leaderboardData} />
         </Card>
 
         {/* User's Rank */}
         <Card style={styles.userRankCard}>
           <View style={styles.userRankHeader}>
-            <Text style={styles.userRankTitle}>Your Rank</Text>
-            <Text style={styles.userRankNumber}>{userObj ? `#${userObj.rank}` : '-'}</Text>
+            <Text style={[styles.userRankTitle, { color: colors.primaryText }]}>Your Rank</Text>
+            <Text style={[styles.userRankNumber, { color: colors.accent }]}>{userObj ? `#${userObj.rank}` : '-'}</Text>
           </View>
           <View style={styles.userRankDetails}>
             {userObj ? (
               <>
                 <Image source={{ uri: userObj.avatar }} style={styles.userRankAvatar} />
                 <View style={styles.userRankInfo}>
-                  <Text style={styles.userRankName}>{userObj.name}</Text>
-                  <Text style={styles.userRankSteps}>{userObj.steps.toLocaleString()} steps</Text>
-                  <Text style={styles.userRankEarnings}>₹{userObj.earnings} earned</Text>
+                  <Text style={[styles.userRankName, { color: colors.primaryText }]}>{userObj.name}</Text>
+                  <Text style={[styles.userRankSteps, { color: colors.secondaryText }]}>{userObj.steps.toLocaleString()} steps</Text>
+                  <Text style={[styles.userRankEarnings, { color: colors.accent }]}>₹{userObj.earnings} earned</Text>
                 </View>
               </>
             ) : (
-              <Text style={styles.userRankName}>Not ranked</Text>
+              <Text style={[styles.userRankName, { color: colors.primaryText }]}>Not ranked</Text>
             )}
           </View>
         </Card>
 
         {/* Last 5 Pools */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Your Last 5 Pools</Text>
-          <TouchableOpacity><Text style={styles.sectionAction}>View All</Text></TouchableOpacity>
+          <Text style={[styles.sectionTitle, { color: colors.primaryText }]}>Your Last 5 Pools</Text>
+          <TouchableOpacity><Text style={[styles.sectionAction, { color: colors.accent }]}>View All</Text></TouchableOpacity>
         </View>
 
         <View style={styles.poolsContainer}>
@@ -324,24 +342,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.xxxl,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
   },
   subtitle: {
     fontSize: fontSize.sm,
-    color: Colors.secondaryText,
     marginTop: spacing.xs,
   },
   friendsToggle: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    backgroundColor: Colors.cardBackground,
     paddingHorizontal: padding.md,
     paddingVertical: padding.sm,
     borderRadius: 20,
     gap: spacing.xs,
-  },
-  friendsToggleActive: {
-    backgroundColor: Colors.accent,
   },
   friendsToggleText: {
     fontSize: fontSize.sm,
@@ -350,7 +362,6 @@ const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row' as const,
     marginBottom: margin.lg,
-    backgroundColor: Colors.cardBackground,
     borderRadius: 12,
     padding: spacing.xs,
   },
@@ -361,16 +372,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center' as const,
   },
-  activeTab: {
-    backgroundColor: Colors.accent,
-  },
   tabText: {
     fontSize: fontSize.sm,
     fontWeight: '600' as const,
-    color: Colors.secondaryText,
-  },
-  activeTabText: {
-    color: Colors.primaryText,
   },
   topPerformersCard: {
     marginBottom: margin.lg,
@@ -379,7 +383,6 @@ const styles = StyleSheet.create({
   podiumTitle: {
     fontSize: fontSize.lg,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
     marginBottom: spacing.md,
   },
   topPerformersList: {
@@ -412,18 +415,15 @@ const styles = StyleSheet.create({
   topPerformerName: {
     fontSize: fontSize.xs,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
     textAlign: 'center' as const,
   },
   topPerformerSteps: {
     fontSize: fontSize.xs,
-    color: Colors.secondaryText,
     textAlign: 'center' as const,
   },
   topPerformerEarnings: {
     fontSize: fontSize.xs,
     fontWeight: 'bold' as const,
-    color: Colors.gold,
     textAlign: 'center' as const,
   },
   userRankCard: {
@@ -439,12 +439,10 @@ const styles = StyleSheet.create({
   userRankTitle: {
     fontSize: fontSize.md,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
   },
   userRankNumber: {
     fontSize: fontSize.lg,
     fontWeight: 'bold' as const,
-    color: Colors.accent,
   },
   userRankDetails: {
     flexDirection: 'row' as const,
@@ -462,17 +460,14 @@ const styles = StyleSheet.create({
   userRankName: {
     fontSize: fontSize.md,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
   },
   userRankSteps: {
     fontSize: fontSize.sm,
-    color: Colors.secondaryText,
     marginTop: spacing.xs,
   },
   userRankEarnings: {
     fontSize: fontSize.sm,
     fontWeight: 'bold' as const,
-    color: Colors.gold,
     marginTop: spacing.xs,
   },
   sectionHeader: {
@@ -484,11 +479,9 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: fontSize.lg,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
   },
   sectionAction: {
     fontSize: fontSize.sm,
-    color: Colors.accent,
     fontWeight: '600' as const,
   },
   poolsContainer: {
@@ -506,11 +499,9 @@ const styles = StyleSheet.create({
   poolName: {
     fontSize: fontSize.md,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
   },
   poolDate: {
     fontSize: fontSize.xs,
-    color: Colors.secondaryText,
     marginTop: spacing.xs,
   },
   statusBadge: {
@@ -521,7 +512,6 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: fontSize.xs,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
   },
   poolStats: {
     flexDirection: 'row' as const,
@@ -535,12 +525,10 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: fontSize.md,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
     marginTop: spacing.xs,
   },
   statLabel: {
     fontSize: fontSize.xs,
-    color: Colors.secondaryText,
     marginTop: spacing.xs,
   },
   statsCard: {
@@ -550,7 +538,6 @@ const styles = StyleSheet.create({
   statsTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginBottom: 12,
   },
   statsRow: {

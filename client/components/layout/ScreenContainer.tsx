@@ -2,11 +2,14 @@ import React from 'react';
 import { View, StyleSheet, ViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors } from '../../constants/Colors';
+import { useTheme } from '../../contexts/ThemeContext';
 import { padding } from '../../constants/Responsive';
 
-export const ScreenContainer: React.FC<ViewProps> = ({ children, style, ...props }) => (
-  <LinearGradient colors={Colors.backgroundGradient as [string, string]} style={styles.gradient}>
+export const ScreenContainer: React.FC<ViewProps> = ({ children, style, ...props }) => {
+  const { colors } = useTheme();
+  
+  return (
+    <LinearGradient colors={colors.backgroundGradient as [string, string]} style={styles.gradient}>
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <View style={[styles.container, style]} {...props}>
         {children}
@@ -14,6 +17,7 @@ export const ScreenContainer: React.FC<ViewProps> = ({ children, style, ...props
     </SafeAreaView>
   </LinearGradient>
 );
+};
 
 const styles = StyleSheet.create({
   gradient: {

@@ -3,9 +3,9 @@ import { View, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-nat
 import { Text } from '../ui/Text';
 import { Card } from '../ui/Card';
 import { Ionicons } from '@expo/vector-icons';
-import Colors from '../../constants/Colors';
 import { ScreenContainer } from '../layout/ScreenContainer';
 import { useStepCounter } from '../StepCounterContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 // Mock data for analytics
 const weeklySteps = [8500, 9200, 7800, 10500, 8900, 11200, 9600];
@@ -34,13 +34,6 @@ const achievements = [
   { id: 3, name: 'Marathon Walker', description: 'Walk 42km in a month', earned: false, icon: '🏃' },
 ];
 
-const performanceInsights = [
-  { title: 'Best Performance Day', value: 'Wednesday', icon: '📈', color: Colors.gold },
-  { title: 'Average Daily Steps', value: '8,375', icon: '👟', color: Colors.accent },
-  { title: 'Goal Completion Rate', value: '87%', icon: '🎯', color: '#4CAF50' },
-  { title: 'Active Days This Month', value: '28/30', icon: '📅', color: '#2196F3' },
-];
-
 const rewards = {
   points: 1250,
   crowns: 2,
@@ -59,24 +52,28 @@ interface GoalCardProps {
   };
 }
 
-const GoalCard: React.FC<GoalCardProps> = ({ goal }) => (
-  <Card style={styles.goalCard}>
-    <View style={styles.goalHeader}>
-      <Text style={styles.goalIcon}>{goal.icon}</Text>
-      <Text style={styles.goalName}>{goal.name}</Text>
-    </View>
-    <View style={styles.goalProgress}>
-      <View style={styles.progressBarBg}>
-        <View style={[styles.progressBarFill, { width: `${goal.progress}%` }]} />
+const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
+  const { colors } = useTheme();
+  
+  return (
+    <Card style={styles.goalCard}>
+      <View style={styles.goalHeader}>
+        <Text style={styles.goalIcon}>{goal.icon}</Text>
+        <Text style={[styles.goalName, { color: colors.primaryText }]}>{goal.name}</Text>
       </View>
-      <Text style={styles.progressText}>{goal.progress}%</Text>
-    </View>
-    <View style={styles.goalStats}>
-      <Text style={styles.goalCurrent}>{goal.current.toLocaleString()}</Text>
-      <Text style={styles.goalTarget}>/ {goal.target.toLocaleString()}</Text>
-    </View>
-  </Card>
-);
+      <View style={styles.goalProgress}>
+        <View style={[styles.progressBarBg, { backgroundColor: colors.cardBackground }]}>
+          <View style={[styles.progressBarFill, { width: `${goal.progress}%`, backgroundColor: colors.accent }]} />
+        </View>
+        <Text style={[styles.progressText, { color: colors.primaryText }]}>{goal.progress}%</Text>
+      </View>
+      <View style={styles.goalStats}>
+        <Text style={[styles.goalCurrent, { color: colors.primaryText }]}>{goal.current.toLocaleString()}</Text>
+        <Text style={[styles.goalTarget, { color: colors.secondaryText }]}>/ {goal.target.toLocaleString()}</Text>
+      </View>
+    </Card>
+  );
+};
 
 interface AchievementCardProps {
   achievement: {
@@ -88,26 +85,38 @@ interface AchievementCardProps {
   };
 }
 
-const AchievementCard: React.FC<AchievementCardProps> = ({ achievement }) => (
-  <Card style={[styles.achievementCard, !achievement.earned && styles.achievementLocked]}>
-    <View style={styles.achievementHeader}>
-      <Text style={[styles.achievementIcon, !achievement.earned && styles.achievementIconLocked]}>
-        {achievement.icon}
-      </Text>
-      <View style={styles.achievementInfo}>
-        <Text style={[styles.achievementName, !achievement.earned && styles.achievementNameLocked]}>
-          {achievement.name}
+const AchievementCard: React.FC<AchievementCardProps> = ({ achievement }) => {
+  const { colors } = useTheme();
+  
+  return (
+    <Card style={[styles.achievementCard, !achievement.earned && styles.achievementLocked]}>
+      <View style={styles.achievementHeader}>
+        <Text style={[styles.achievementIcon, !achievement.earned && styles.achievementIconLocked]}>
+          {achievement.icon}
         </Text>
-        <Text style={[styles.achievementDescription, !achievement.earned && styles.achievementDescriptionLocked]}>
-          {achievement.description}
-        </Text>
+        <View style={styles.achievementInfo}>
+          <Text style={[
+            styles.achievementName, 
+            { color: colors.primaryText },
+            !achievement.earned && { color: colors.secondaryText }
+          ]}>
+            {achievement.name}
+          </Text>
+          <Text style={[
+            styles.achievementDescription, 
+            { color: colors.secondaryText },
+            !achievement.earned && { color: colors.secondaryText }
+          ]}>
+            {achievement.description}
+          </Text>
+        </View>
+        {achievement.earned && (
+          <Ionicons name="checkmark-circle" size={24} color="#FFD700" />
+        )}
       </View>
-      {achievement.earned && (
-        <Ionicons name="checkmark-circle" size={24} color={Colors.gold} />
-      )}
-    </View>
-  </Card>
-);
+    </Card>
+  );
+};
 
 interface InsightCardProps {
   insight: {
@@ -118,21 +127,26 @@ interface InsightCardProps {
   };
 }
 
-const InsightCard: React.FC<InsightCardProps> = ({ insight }) => (
-  <Card style={styles.insightCard}>
-    <View style={styles.insightHeader}>
-      <Text style={styles.insightIcon}>{insight.icon}</Text>
-      <Text style={styles.insightTitle}>{insight.title}</Text>
-    </View>
-    <Text style={[styles.insightValue, { color: insight.color }]}>{insight.value}</Text>
-  </Card>
-);
+const InsightCard: React.FC<InsightCardProps> = ({ insight }) => {
+  const { colors } = useTheme();
+  
+  return (
+    <Card style={styles.insightCard}>
+      <View style={styles.insightHeader}>
+        <Text style={styles.insightIcon}>{insight.icon}</Text>
+        <Text style={[styles.insightTitle, { color: colors.primaryText }]}>{insight.title}</Text>
+      </View>
+      <Text style={[styles.insightValue, { color: insight.color }]}>{insight.value}</Text>
+    </Card>
+  );
+};
 
 interface AnalyticsScreenProps {
   scrollToSection?: string;
 }
 
 export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ scrollToSection }) => {
+  const { colors } = useTheme();
   const { stepCount, isActive, hasActiveParticipation } = useStepCounter();
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week');
   const scrollViewRef = useRef<ScrollView>(null);
@@ -193,6 +207,13 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ scrollToSectio
     }
   };
 
+  const performanceInsights = [
+    { title: 'Best Performance Day', value: 'Wednesday', icon: '📈', color: '#FFD700' },
+    { title: 'Average Daily Steps', value: '8,375', icon: '👟', color: colors.accent },
+    { title: 'Goal Completion Rate', value: '87%', icon: '🎯', color: '#4CAF50' },
+    { title: 'Active Days This Month', value: '28/30', icon: '📅', color: '#2196F3' },
+  ];
+
   const periodData = getPeriodData();
   const trackingInfo = getTrackingStatus();
 
@@ -201,102 +222,118 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ scrollToSectio
       <ScrollView ref={scrollViewRef} style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.title}>Analytics</Text>
-            <Text style={styles.subtitle}>Track your progress and performance</Text>
-          </View>
-          <View style={styles.trackingStatus}>
-            <Text style={styles.trackingStatusText}>
-              {trackingInfo.status}
-            </Text>
-            <Text style={styles.trackingStatusLabel}>Step Tracking</Text>
-          </View>
+          <Text style={[styles.title, { color: colors.primaryText }]}>Analytics</Text>
+          <Text style={[styles.subtitle, { color: colors.secondaryText }]}>Track your fitness progress</Text>
         </View>
 
         {/* Period Selector */}
-        <View style={styles.periodSelector}>
-          {(['week', 'month', 'year'] as const).map((period) => (
+        <View style={[styles.periodContainer, { backgroundColor: colors.cardBackground }]}>
+          {(['week', 'month', 'year'] as const).map(period => (
             <TouchableOpacity
               key={period}
-              style={[styles.periodButton, selectedPeriod === period && styles.periodButtonActive]}
+              style={[
+                styles.periodTab,
+                selectedPeriod === period && { backgroundColor: colors.accent }
+              ]}
               onPress={() => setSelectedPeriod(period)}
             >
-              <Text style={[styles.periodText, selectedPeriod === period && styles.periodTextActive]}>
+              <Text style={[
+                styles.periodText,
+                { color: colors.secondaryText },
+                selectedPeriod === period && { color: colors.primaryText }
+              ]}>
                 {period.charAt(0).toUpperCase() + period.slice(1)}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* Current Stats */}
-        <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>Current Period Stats</Text>
-          <View style={styles.statsGrid}>
-            <Card style={styles.statCard}>
-              <Ionicons name="walk" size={24} color={Colors.accent} />
-              <Text style={styles.statValue}>{periodData.steps.toLocaleString()}</Text>
-              <Text style={styles.statLabel}>Steps</Text>
-            </Card>
-            <Card style={styles.statCard}>
-              <Ionicons name="flame" size={24} color={Colors.accent} />
-              <Text style={styles.statValue}>{periodData.calories.toLocaleString()}</Text>
-              <Text style={styles.statLabel}>Calories</Text>
-            </Card>
-            <Card style={styles.statCard}>
-              <Ionicons name="map" size={24} color={Colors.accent} />
-              <Text style={styles.statValue}>{periodData.distance.toFixed(1)}</Text>
-              <Text style={styles.statLabel}>Distance (km)</Text>
-            </Card>
+        {/* Summary Stats */}
+        <Card style={styles.summaryCard}>
+          <Text style={[styles.summaryTitle, { color: colors.primaryText }]}>Summary</Text>
+          <View style={styles.summaryGrid}>
+            <View style={styles.summaryItem}>
+              <Text style={[styles.summaryValue, { color: colors.primaryText }]}>{periodData.steps.toLocaleString()}</Text>
+              <Text style={[styles.summaryLabel, { color: colors.secondaryText }]}>Steps</Text>
+            </View>
+            <View style={styles.summaryItem}>
+              <Text style={[styles.summaryValue, { color: colors.primaryText }]}>{periodData.calories.toLocaleString()}</Text>
+              <Text style={[styles.summaryLabel, { color: colors.secondaryText }]}>Calories</Text>
+            </View>
+            <View style={styles.summaryItem}>
+              <Text style={[styles.summaryValue, { color: colors.primaryText }]}>{periodData.distance.toFixed(1)}</Text>
+              <Text style={[styles.summaryLabel, { color: colors.secondaryText }]}>Distance (km)</Text>
+            </View>
           </View>
-        </View>
+        </Card>
 
-        {/* Performance Insights */}
-        <View style={styles.insightsSection}>
-          <Text style={styles.sectionTitle}>Performance Insights</Text>
-          <View style={styles.insightsGrid}>
-            {performanceInsights.map((insight, index) => (
-              <InsightCard key={index} insight={insight} />
-            ))}
+        {/* Tracking Status */}
+        <Card style={styles.trackingCard}>
+          <View style={styles.trackingHeader}>
+            <Ionicons name="pulse" size={24} color={colors.accent} />
+            <Text style={[styles.trackingTitle, { color: colors.primaryText }]}>Tracking Status</Text>
           </View>
-        </View>
+          <Text style={[styles.trackingStatus, { color: colors.primaryText }]}>{trackingInfo.status}</Text>
+          <Text style={[styles.trackingMessage, { color: colors.secondaryText }]}>{trackingInfo.message}</Text>
+        </Card>
 
         {/* Goals */}
-        <View style={styles.goalsSection}>
-          <Text style={styles.sectionTitle}>Your Goals</Text>
-          {goals.map((goal) => (
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionTitle, { color: colors.primaryText }]}>Goals</Text>
+        </View>
+        <View style={styles.goalsContainer}>
+          {goals.map(goal => (
             <GoalCard key={goal.id} goal={goal} />
           ))}
         </View>
 
-        {/* Rewards & Achievements */}
-        <View style={styles.rewardsSection} ref={rewardsSectionRef}>
-          <Text style={styles.sectionTitle}>Rewards</Text>
-          <View style={styles.rewardsRow}>
-            <View style={styles.rewardItem}><Text style={styles.rewardIcon}>💎</Text><Text style={styles.rewardValue}>{rewards.points}</Text><Text style={styles.rewardLabel}>Points</Text></View>
-            <View style={styles.rewardItem}><Text style={styles.rewardIcon}>👑</Text><Text style={styles.rewardValue}>{rewards.crowns}</Text><Text style={styles.rewardLabel}>Crowns</Text></View>
-            <View style={styles.rewardItem}><Text style={styles.rewardIcon}>💍</Text><Text style={styles.rewardValue}>{rewards.rings}</Text><Text style={styles.rewardLabel}>Rings</Text></View>
-            <View style={styles.rewardItem}><Text style={styles.rewardIcon}>🏅</Text><Text style={styles.rewardValue}>{rewards.badges}</Text><Text style={styles.rewardLabel}>Badges</Text></View>
-          </View>
+        {/* Performance Insights */}
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionTitle, { color: colors.primaryText }]}>Performance Insights</Text>
+        </View>
+        <View style={styles.insightsContainer}>
+          {performanceInsights.map((insight, index) => (
+            <InsightCard key={index} insight={insight} />
+          ))}
         </View>
 
         {/* Achievements */}
-        <View style={styles.achievementsSection}>
-          <Text style={styles.sectionTitle}>Achievements</Text>
-          {achievements.map((achievement) => (
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionTitle, { color: colors.primaryText }]}>Achievements</Text>
+        </View>
+        <View style={styles.achievementsContainer}>
+          {achievements.map(achievement => (
             <AchievementCard key={achievement.id} achievement={achievement} />
           ))}
         </View>
 
-        {/* Live Step Counter */}
-        <Card style={styles.stepCounterCard}>
-          <Text style={styles.stepCounterTitle}>Today's Progress</Text>
-          <View style={styles.stepCounterDisplay}>
-            <Text style={styles.stepCount}>{stepCount}</Text>
-            <Text style={styles.stepCountLabel}>steps today</Text>
+        {/* Rewards */}
+        <View ref={rewardsSectionRef} style={styles.sectionHeader}>
+          <Text style={[styles.sectionTitle, { color: colors.primaryText }]}>Rewards</Text>
+        </View>
+        <Card style={styles.rewardsCard}>
+          <View style={styles.rewardsGrid}>
+            <View style={styles.rewardItem}>
+              <Text style={styles.rewardIcon}>👑</Text>
+              <Text style={[styles.rewardValue, { color: colors.primaryText }]}>{rewards.crowns}</Text>
+              <Text style={[styles.rewardLabel, { color: colors.secondaryText }]}>Crowns</Text>
+            </View>
+            <View style={styles.rewardItem}>
+              <Text style={styles.rewardIcon}>💍</Text>
+              <Text style={[styles.rewardValue, { color: colors.primaryText }]}>{rewards.rings}</Text>
+              <Text style={[styles.rewardLabel, { color: colors.secondaryText }]}>Rings</Text>
+            </View>
+            <View style={styles.rewardItem}>
+              <Text style={styles.rewardIcon}>🏆</Text>
+              <Text style={[styles.rewardValue, { color: colors.primaryText }]}>{rewards.badges}</Text>
+              <Text style={[styles.rewardLabel, { color: colors.secondaryText }]}>Badges</Text>
+            </View>
+            <View style={styles.rewardItem}>
+              <Text style={styles.rewardIcon}>⭐</Text>
+              <Text style={[styles.rewardValue, { color: colors.primaryText }]}>{rewards.points}</Text>
+              <Text style={[styles.rewardLabel, { color: colors.secondaryText }]}>Points</Text>
+            </View>
           </View>
-          <Text style={styles.stepCounterStatus}>
-            {trackingInfo.message}
-          </Text>
         </Card>
       </ScrollView>
     </ScreenContainer>
@@ -316,12 +353,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: Colors.secondaryText,
   },
   trackingStatus: {
     alignItems: 'center',
@@ -329,17 +364,14 @@ const styles = StyleSheet.create({
   trackingStatusText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginBottom: 2,
   },
   trackingStatusLabel: {
     fontSize: 12,
-    color: Colors.secondaryText,
   },
   periodSelector: {
     flexDirection: 'row',
     marginBottom: 24,
-    backgroundColor: Colors.cardBackground,
     borderRadius: 12,
     padding: 4,
   },
@@ -350,17 +382,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
-  periodButtonActive: {
-    backgroundColor: Colors.accent,
-  },
   periodText: {
     fontSize: 14,
-    color: Colors.secondaryText,
     fontWeight: '500',
-  },
-  periodTextActive: {
-    color: Colors.primaryText,
-    fontWeight: '600',
   },
   statsSection: {
     marginBottom: 24,
@@ -368,7 +392,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginBottom: 16,
   },
   statsGrid: {
@@ -384,12 +407,10 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginTop: 8,
   },
   statLabel: {
     fontSize: 12,
-    color: Colors.secondaryText,
     marginTop: 4,
   },
   insightsSection: {
@@ -416,7 +437,6 @@ const styles = StyleSheet.create({
   },
   insightTitle: {
     fontSize: 12,
-    color: Colors.secondaryText,
     flex: 1,
   },
   insightValue: {
@@ -442,7 +462,6 @@ const styles = StyleSheet.create({
   goalName: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.primaryText,
   },
   goalProgress: {
     flexDirection: 'row',
@@ -452,19 +471,16 @@ const styles = StyleSheet.create({
   progressBarBg: {
     flex: 1,
     height: 8,
-    backgroundColor: '#2d2d2d',
     borderRadius: 4,
     marginRight: 12,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: Colors.accent,
     borderRadius: 4,
   },
   progressText: {
     fontSize: 12,
-    color: Colors.accent,
     fontWeight: '600',
   },
   goalStats: {
@@ -474,11 +490,9 @@ const styles = StyleSheet.create({
   goalCurrent: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: Colors.primaryText,
   },
   goalTarget: {
     fontSize: 14,
-    color: Colors.secondaryText,
   },
   achievementsSection: {
     marginBottom: 24,
@@ -507,18 +521,15 @@ const styles = StyleSheet.create({
   achievementName: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.primaryText,
     marginBottom: 4,
   },
   achievementNameLocked: {
-    color: Colors.secondaryText,
+    color: '#666',
   },
   achievementDescription: {
     fontSize: 14,
-    color: Colors.secondaryText,
   },
   achievementDescriptionLocked: {
-    color: Colors.secondaryText,
     opacity: 0.7,
   },
   stepCounterCard: {
@@ -529,7 +540,6 @@ const styles = StyleSheet.create({
   stepCounterTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.primaryText,
     marginBottom: 16,
   },
   stepCounterDisplay: {
@@ -539,16 +549,13 @@ const styles = StyleSheet.create({
   stepCount: {
     fontSize: 48,
     fontWeight: 'bold',
-    color: Colors.accent,
   },
   stepCountLabel: {
     fontSize: 14,
-    color: Colors.secondaryText,
     marginTop: 4,
   },
   stepCounterStatus: {
     fontSize: 14,
-    color: Colors.secondaryText,
   },
   rewardsSection: {
     marginBottom: 24,
@@ -569,10 +576,87 @@ const styles = StyleSheet.create({
   rewardValue: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: Colors.primaryText,
   },
   rewardLabel: {
     fontSize: 12,
-    color: Colors.secondaryText,
+  },
+  // Missing styles
+  periodContainer: {
+    flexDirection: 'row',
+    marginBottom: 24,
+    borderRadius: 12,
+    padding: 4,
+  },
+  periodTab: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  summaryCard: {
+    marginBottom: 24,
+    padding: 16,
+  },
+  summaryTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  summaryGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  summaryItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  summaryValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  summaryLabel: {
+    fontSize: 12,
+  },
+  trackingCard: {
+    marginBottom: 24,
+    padding: 16,
+  },
+  trackingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  trackingTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  trackingMessage: {
+    fontSize: 14,
+  },
+  sectionHeader: {
+    marginBottom: 16,
+  },
+  goalsContainer: {
+    marginBottom: 24,
+  },
+  insightsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  achievementsContainer: {
+    marginBottom: 24,
+  },
+  rewardsCard: {
+    marginBottom: 24,
+    padding: 16,
+  },
+  rewardsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 }); 

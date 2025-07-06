@@ -1,63 +1,36 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
 import { useEffect } from 'react';
-import * as Location from 'expo-location';
-import * as ImagePicker from 'expo-image-picker';
-import { Platform, PermissionsAndroid, View } from 'react-native';
+import { SplashScreen, Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { StepCounterProvider } from '../components/StepCounterContext';
+import { StepCounterProvider } from '@/components/StepCounterContext';
 import { LinearGradient } from 'expo-linear-gradient';
-import Colors from '../constants/Colors';
+import Colors from '@/constants/Colors';
+import { ThemeProvider as CustomThemeProvider } from '@/contexts/ThemeContext';
+
+export {
+  // Catch any errors thrown by the Layout component.
+  ErrorBoundary,
+} from 'expo-router';
+
+export const unstable_settings = {
+  // Ensure that reloading on `/modal` keeps a back button present.
+  initialRouteName: '(tabs)',
+};
+
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
 
   useEffect(() => {
-    // Request permissions on app startup
-    const requestPermissions = async () => {
-      try {
-        // Request location permissions
-        await Location.requestForegroundPermissionsAsync();
-        // Request activity recognition permission (Android only)
-        if (Platform.OS === 'android') {
-          await PermissionsAndroid.request(
-            'android.permission.ACTIVITY_RECOGNITION',
-            {
-              title: 'Activity Recognition Permission',
-              message: 'DreamFit needs access to your physical activity to count steps.',
-              buttonPositive: 'OK',
-            }
-          );
-        }
-        // Request camera roll permissions
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-        console.log('All permissions requested successfully');
-      } catch (error) {
-        console.log('Error requesting permissions:', error);
-      }
-    };
-    requestPermissions();
+    SplashScreen.hideAsync();
   }, []);
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
-
   return (
-    <LinearGradient
-      colors={Colors.backgroundGradient as [string, string, string]}
-      style={{ flex: 1 }}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      locations={[0, 0.5, 1]}
-    >
+    <CustomThemeProvider>
       <StepCounterProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <Stack>
@@ -67,6 +40,6 @@ export default function RootLayout() {
           <StatusBar style="light" />
         </ThemeProvider>
       </StepCounterProvider>
-    </LinearGradient>
+    </CustomThemeProvider>
   );
 }

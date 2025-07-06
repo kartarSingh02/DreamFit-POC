@@ -2,13 +2,16 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from '../components/ui/Text';
 import { ScreenContainer } from '../components/layout/ScreenContainer';
+import { useTheme } from '../contexts/ThemeContext';
 
 const FriendsActivityScreen: React.FC = () => {
+  const { colors } = useTheme();
+  
   return (
     <ScreenContainer>
       <View style={styles.container}>
-        <Text style={styles.header}>Friends Activity</Text>
-        <Text style={styles.placeholder}>All your friends' activities will appear here.</Text>
+        <Text style={[styles.header, { color: colors.primaryText }]}>Friends Activity</Text>
+        <Text style={[styles.placeholder, { color: colors.secondaryText }]}>All your friends' activities will appear here.</Text>
       </View>
     </ScreenContainer>
   );
@@ -24,11 +27,9 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
     marginBottom: 16,
   },
   placeholder: {
-    color: '#aaa',
     fontSize: 16,
     textAlign: 'center',
   },

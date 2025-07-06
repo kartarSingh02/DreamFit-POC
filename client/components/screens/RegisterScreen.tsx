@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import { Text } from '../ui/Text';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface RegisterScreenProps {
   onRegisterSuccess: () => void;
@@ -8,39 +9,43 @@ interface RegisterScreenProps {
 }
 
 export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onSwitchToLogin }) => {
+  const { colors } = useTheme();
   const [name, setName] = useState('');
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Register</Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.primaryText }]}>Register</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors.cardBackground, color: colors.primaryText }]}
         placeholder="Name"
+        placeholderTextColor={colors.secondaryText}
         value={name}
         onChangeText={setName}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors.cardBackground, color: colors.primaryText }]}
         placeholder="Email or Phone Number"
+        placeholderTextColor={colors.secondaryText}
         value={identifier}
         onChangeText={setIdentifier}
         autoCapitalize="none"
         keyboardType="email-address"
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors.cardBackground, color: colors.primaryText }]}
         placeholder="Password"
+        placeholderTextColor={colors.secondaryText}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={onRegisterSuccess}>
-        <Text style={styles.buttonText}>Register</Text>
+      <TouchableOpacity style={[styles.button, { backgroundColor: colors.accent }]} onPress={onRegisterSuccess}>
+        <Text style={[styles.buttonText, { color: '#fff' }]}>Register</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={onSwitchToLogin}>
-        <Text style={styles.switchText}>Already have an account? Login</Text>
+        <Text style={[styles.switchText, { color: colors.accent }]}>Already have an account? Login</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -51,27 +56,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0A2222',
     padding: 16,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
     marginBottom: 32,
   },
   input: {
     width: '100%',
     maxWidth: 340,
-    backgroundColor: '#122D2D',
-    color: '#fff',
     borderRadius: 8,
     padding: 14,
     marginBottom: 16,
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#00C2A0',
     borderRadius: 8,
     paddingVertical: 14,
     paddingHorizontal: 32,
@@ -81,12 +81,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
   },
   switchText: {
-    color: '#00C2A0',
     fontSize: 15,
     marginTop: 8,
   },

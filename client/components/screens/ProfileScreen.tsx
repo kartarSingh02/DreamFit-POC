@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Text } from '../ui/Text';
 import { StepCounter } from '../StepCounter';
 import { Card } from '../ui/Card';
-import Colors from '../../constants/Colors';
+import { useTheme } from '../../contexts/ThemeContext';
 import { ChallengeJoinModal } from '../modals/ChallengeJoinModal';
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenContainer } from '../layout/ScreenContainer';
@@ -28,16 +28,20 @@ interface EditableFieldProps {
   value: string;
 }
 
-const EditableField: React.FC<EditableFieldProps> = ({ label, value }) => (
+const EditableField: React.FC<EditableFieldProps> = ({ label, value }) => {
+  const { colors } = useTheme();
+  return (
     <View style={styles.infoItem}>
-      <Text variant="caption" style={{ color: '#fff' }}>{label}</Text>
-    <Text variant="body" weight="medium" style={[styles.infoValue, { color: Colors.primaryText }]}> {value}</Text>
+      <Text variant="caption" style={{ color: colors.secondaryText }}>{label}</Text>
+      <Text variant="body" weight="medium" style={[styles.infoValue, { color: colors.primaryText }]}> {value}</Text>
     </View>
   );
+};
 
 export const ProfileScreen: React.FC = () => {
   console.log('ProfileScreen rendering...');
   
+  const { colors, theme, toggleTheme } = useTheme();
   const [editingField, setEditingField] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile>({
     name: 'Alex Johnson',
@@ -146,36 +150,6 @@ export const ProfileScreen: React.FC = () => {
     return true;
   };
 
-  const handleStartTest = async () => {
-    const granted = await requestStepPermission();
-    if (!granted) return;
-    
-    // Show platform-specific message
-    if (Platform.OS === 'web') {
-      Alert.alert(
-        'Testing Mode',
-        'You\'re testing on PC/Web. Step counting will be simulated for demonstration purposes. On a real device, it will use actual step sensors.',
-        [{ text: 'OK' }]
-      );
-    }
-    
-    setStepTestVisible(true);
-    start(); // Start real step counting (or mock on web)
-  };
-
-  const handleCloseTest = () => {
-    setStepTestVisible(false);
-    stop(); // Stop step counting
-  };
-
-  const handleStopTest = () => {
-    setStepTestVisible(false);
-    stop(); // Stop step counting and show result
-    if (lastResult) {
-      Alert.alert('Woho!', `You walked ${lastResult} steps!`);
-    }
-  };
-
   const handleEditField = (field: keyof UserProfile, value: string) => {
     setEditProfile(prev => ({ ...prev, [field]: value }));
   };
@@ -185,28 +159,28 @@ export const ProfileScreen: React.FC = () => {
     setShowEditModal(false);
   };
 
+  const handleContactSupport = () => {
+    Linking.openURL('mailto:support@dreamfit.com');
+  };
+
   const faqs = [
     {
-      question: 'How do I join a challenge or pool?',
-      answer: 'Go to the Challenges tab, select a challenge or pool, and tap Join. You may need enough wallet balance to enter.'
+      question: 'How do I join a challenge?',
+      answer: 'Go to the Challenges tab and tap on any challenge you\'d like to join. You can also browse trending challenges on the home screen.'
     },
     {
-      question: 'How do I withdraw my winnings?',
-      answer: 'Go to your Wallet, tap Withdraw, and follow the instructions to transfer money to your account.'
+      question: 'How are steps counted?',
+      answer: 'DreamFit uses your device\'s built-in step counter. Make sure to grant activity permissions for accurate step tracking.'
     },
     {
-      question: 'How is step tracking handled?',
-      answer: 'Step tracking is automatic when you join a challenge or pool. Make sure you have granted activity permissions.'
+      question: 'Can I withdraw my winnings?',
+      answer: 'Yes! Once you win a challenge, your earnings are automatically added to your account balance. You can withdraw them anytime from your profile.'
     },
     {
-      question: 'How do I contact support?',
-      answer: 'Tap the Contact Support button below to email us.'
-    },
+      question: 'What if I lose connection during a challenge?',
+      answer: 'Don\'t worry! Your steps are stored locally and will sync when you\'re back online. Your progress is never lost.'
+    }
   ];
-
-  const handleContactSupport = () => {
-    Linking.openURL('mailto:support@dreamfit.com?subject=DreamFit App Support');
-  };
 
   const handleToggleNotif = (key: keyof typeof notifPrefs) => {
     setNotifPrefs(prev => ({ ...prev, [key]: !prev[key] }));
@@ -230,15 +204,15 @@ export const ProfileScreen: React.FC = () => {
                 <Image source={{ uri: profile.imageUri }} style={styles.profileImage} />
               </TouchableOpacity>
               <View style={{ flex: 1, marginLeft: 16 }}>
-                    <Text style={styles.profileName}>{profile.name}</Text>
-                <Text style={styles.profileBio}>{profile.bio}</Text>
-                <Text style={styles.profileContact}>{profile.location}</Text>
+                    <Text style={[styles.profileName, { color: colors.primaryText }]}>{profile.name}</Text>
+                <Text style={[styles.profileBio, { color: colors.secondaryText }]}>{profile.bio}</Text>
+                <Text style={[styles.profileContact, { color: colors.secondaryText }]}>{profile.location}</Text>
               </View>
             </View>
 
             {/* Basic Information - Modern, non-editable */}
             <Card style={styles.infoCard}>
-              <Text style={styles.infoTitle}>Basic Information</Text>
+              <Text style={[styles.infoTitle, { color: colors.primaryText }]}>Basic Information</Text>
               <View style={styles.infoGrid}>
                 <EditableField label="Location" value={profile.location} />
                 <EditableField label="Height" value={profile.height} />
@@ -250,22 +224,40 @@ export const ProfileScreen: React.FC = () => {
 
             {/* Settings Section */}
             <Card style={styles.settingsCard}>
-              <Text style={styles.settingsTitle}>Settings</Text>
+              <Text style={[styles.settingsTitle, { color: colors.primaryText }]}>Settings</Text>
+              
+              {/* Theme Switcher */}
+              <View style={styles.settingsItem}>
+                <Ionicons name="color-palette-outline" size={20} color={colors.accent} style={{ marginRight: 12 }} />
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.settingsText, { color: colors.primaryText }]}>Theme</Text>
+                  <Text style={[styles.settingsSubtext, { color: colors.secondaryText }]}>
+                    {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                  </Text>
+                </View>
+                <Switch
+                  value={theme === 'light'}
+                  onValueChange={toggleTheme}
+                  trackColor={{ false: colors.secondaryText, true: colors.accent }}
+                  thumbColor={theme === 'light' ? colors.accent : '#ccc'}
+                />
+              </View>
+
               <TouchableOpacity style={styles.settingsItem} onPress={() => setShowEditModal(true)}>
-                <Ionicons name="person-circle-outline" size={20} color={Colors.accent} style={{ marginRight: 12 }} />
-                <Text style={styles.settingsText}>Edit Profile</Text>
+                <Ionicons name="person-circle-outline" size={20} color={colors.accent} style={{ marginRight: 12 }} />
+                <Text style={[styles.settingsText, { color: colors.primaryText }]}>Edit Profile</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.settingsItem} onPress={() => setShowNotificationsModal(true)}>
-                <Ionicons name="notifications-outline" size={20} color={Colors.accent} style={{ marginRight: 12 }} />
-                <Text style={styles.settingsText}>Notifications</Text>
+                <Ionicons name="notifications-outline" size={20} color={colors.accent} style={{ marginRight: 12 }} />
+                <Text style={[styles.settingsText, { color: colors.primaryText }]}>Notifications</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.settingsItem} onPress={() => setShowHelpModal(true)}>
-                <Ionicons name="help-circle-outline" size={20} color={Colors.accent} style={{ marginRight: 12 }} />
-                <Text style={styles.settingsText}>Help & Support</Text>
+                <Ionicons name="help-circle-outline" size={20} color={colors.accent} style={{ marginRight: 12 }} />
+                <Text style={[styles.settingsText, { color: colors.primaryText }]}>Help & Support</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.settingsItem} onPress={() => setShowLogoutModal(true)}>
-                <Ionicons name="log-out-outline" size={20} color={Colors.accent} style={{ marginRight: 12 }} />
-                <Text style={styles.settingsText}>Logout</Text>
+                <Ionicons name="log-out-outline" size={20} color={colors.accent} style={{ marginRight: 12 }} />
+                <Text style={[styles.settingsText, { color: colors.primaryText }]}>Logout</Text>
               </TouchableOpacity>
             </Card>
 
@@ -277,60 +269,88 @@ export const ProfileScreen: React.FC = () => {
               onRequestClose={() => setShowEditModal(false)}
             >
               <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                  <Text style={styles.modalTitle}>Edit Profile</Text>
+                <View style={[styles.modalContent, { backgroundColor: colors.cardBackground }]}>
+                  <Text style={[styles.modalTitle, { color: colors.primaryText }]}>Edit Profile</Text>
                   <ScrollView>
-                    <Text style={styles.modalLabel}>Name</Text>
+                    <Text style={[styles.modalLabel, { color: colors.primaryText }]}>Name</Text>
                     <TextInput
-                      style={styles.modalInput}
+                      style={[styles.modalInput, { 
+                        color: colors.primaryText, 
+                        backgroundColor: colors.cardBackground,
+                        borderColor: colors.borderColor 
+                      }]}
                       value={editProfile.name}
                       onChangeText={text => handleEditField('name', text)}
                     />
-                    <Text style={styles.modalLabel}>Bio</Text>
+                    <Text style={[styles.modalLabel, { color: colors.primaryText }]}>Bio</Text>
                     <TextInput
-                      style={styles.modalInput}
+                      style={[styles.modalInput, { 
+                        color: colors.primaryText, 
+                        backgroundColor: colors.cardBackground,
+                        borderColor: colors.borderColor 
+                      }]}
                       value={editProfile.bio}
                       onChangeText={text => handleEditField('bio', text)}
                       multiline
                     />
-                    <Text style={styles.modalLabel}>Location</Text>
+                    <Text style={[styles.modalLabel, { color: colors.primaryText }]}>Location</Text>
                     <TextInput
-                      style={styles.modalInput}
+                      style={[styles.modalInput, { 
+                        color: colors.primaryText, 
+                        backgroundColor: colors.cardBackground,
+                        borderColor: colors.borderColor 
+                      }]}
                       value={editProfile.location}
                       onChangeText={text => handleEditField('location', text)}
                     />
-                    <Text style={styles.modalLabel}>Height</Text>
+                    <Text style={[styles.modalLabel, { color: colors.primaryText }]}>Height</Text>
                     <TextInput
-                      style={styles.modalInput}
+                      style={[styles.modalInput, { 
+                        color: colors.primaryText, 
+                        backgroundColor: colors.cardBackground,
+                        borderColor: colors.borderColor 
+                      }]}
                       value={editProfile.height}
                       onChangeText={text => handleEditField('height', text)}
                     />
-                    <Text style={styles.modalLabel}>Weight</Text>
+                    <Text style={[styles.modalLabel, { color: colors.primaryText }]}>Weight</Text>
                     <TextInput
-                      style={styles.modalInput}
+                      style={[styles.modalInput, { 
+                        color: colors.primaryText, 
+                        backgroundColor: colors.cardBackground,
+                        borderColor: colors.borderColor 
+                      }]}
                       value={editProfile.weight}
                       onChangeText={text => handleEditField('weight', text)}
                     />
-                    <Text style={styles.modalLabel}>Age</Text>
+                    <Text style={[styles.modalLabel, { color: colors.primaryText }]}>Age</Text>
                     <TextInput
-                      style={styles.modalInput}
+                      style={[styles.modalInput, { 
+                        color: colors.primaryText, 
+                        backgroundColor: colors.cardBackground,
+                        borderColor: colors.borderColor 
+                      }]}
                       value={editProfile.age}
                       onChangeText={text => handleEditField('age', text)}
                       keyboardType="numeric"
                     />
-                    <Text style={styles.modalLabel}>Gender</Text>
+                    <Text style={[styles.modalLabel, { color: colors.primaryText }]}>Gender</Text>
                     <TextInput
-                      style={styles.modalInput}
+                      style={[styles.modalInput, { 
+                        color: colors.primaryText, 
+                        backgroundColor: colors.cardBackground,
+                        borderColor: colors.borderColor 
+                      }]}
                       value={editProfile.gender}
                       onChangeText={text => handleEditField('gender', text)}
                     />
                   </ScrollView>
                   <View style={styles.modalButtonRow}>
                     <TouchableOpacity style={[styles.modalButton, styles.modalCancel]} onPress={() => setShowEditModal(false)}>
-                      <Text style={styles.modalButtonText}>Cancel</Text>
+                      <Text style={[styles.modalButtonText, { color: '#fff' }]}>Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.modalButton, styles.modalSave]} onPress={handleSaveProfile}>
-                      <Text style={styles.modalButtonText}>Save</Text>
+                      <Text style={[styles.modalButtonText, { color: '#fff' }]}>Save</Text>
                     </TouchableOpacity>
                 </View>
                 </View>
@@ -345,53 +365,53 @@ export const ProfileScreen: React.FC = () => {
               onRequestClose={() => setShowNotificationsModal(false)}
             >
               <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                  <Text style={styles.modalTitle}>Notification Preferences</Text>
+                <View style={[styles.modalContent, { backgroundColor: colors.cardBackground }]}>
+                  <Text style={[styles.modalTitle, { color: colors.primaryText }]}>Notification Preferences</Text>
                   <View style={styles.notifItem}>
                     <View style={styles.notifRow}>
                       <View style={styles.notifTextCol}>
-                        <Text style={styles.notifLabel}>Challenge Reminders</Text>
-                        <Text style={styles.notifDescription}>Get notified about upcoming challenges and deadlines</Text>
+                        <Text style={[styles.notifLabel, { color: colors.primaryText }]}>Challenge Reminders</Text>
+                        <Text style={[styles.notifDescription, { color: colors.secondaryText }]}>Get notified about upcoming challenges and deadlines</Text>
                 </View>
                       <Switch
                         value={notifPrefs.challengeReminders}
                         onValueChange={() => handleToggleNotif('challengeReminders')}
-                        trackColor={{ false: Colors.secondaryText, true: Colors.accent }}
-                        thumbColor={notifPrefs.challengeReminders ? Colors.accent : '#ccc'}
+                        trackColor={{ false: colors.secondaryText, true: colors.accent }}
+                        thumbColor={notifPrefs.challengeReminders ? colors.accent : '#ccc'}
                       />
                 </View>
                 </View>
                   <View style={styles.notifItem}>
                     <View style={styles.notifRow}>
                       <View style={styles.notifTextCol}>
-                        <Text style={styles.notifLabel}>Pool Start Alerts</Text>
-                        <Text style={styles.notifDescription}>Receive alerts when walking pools begin</Text>
+                        <Text style={[styles.notifLabel, { color: colors.primaryText }]}>Pool Start Alerts</Text>
+                        <Text style={[styles.notifDescription, { color: colors.secondaryText }]}>Receive alerts when walking pools begin</Text>
                 </View>
                       <Switch
                         value={notifPrefs.poolStartAlerts}
                         onValueChange={() => handleToggleNotif('poolStartAlerts')}
-                        trackColor={{ false: Colors.secondaryText, true: Colors.accent }}
-                        thumbColor={notifPrefs.poolStartAlerts ? Colors.accent : '#ccc'}
+                        trackColor={{ false: colors.secondaryText, true: colors.accent }}
+                        thumbColor={notifPrefs.poolStartAlerts ? colors.accent : '#ccc'}
                       />
               </View>
               </View>
                   <View style={styles.notifItem}>
                     <View style={styles.notifRow}>
                       <View style={styles.notifTextCol}>
-                        <Text style={styles.notifLabel}>Rewards & Achievements</Text>
-                        <Text style={styles.notifDescription}>Celebrate your wins with achievement notifications</Text>
+                        <Text style={[styles.notifLabel, { color: colors.primaryText }]}>Rewards & Achievements</Text>
+                        <Text style={[styles.notifDescription, { color: colors.secondaryText }]}>Celebrate your wins with achievement notifications</Text>
                       </View>
                       <Switch
                         value={notifPrefs.rewards}
                         onValueChange={() => handleToggleNotif('rewards')}
-                        trackColor={{ false: Colors.secondaryText, true: Colors.accent }}
-                        thumbColor={notifPrefs.rewards ? Colors.accent : '#ccc'}
+                        trackColor={{ false: colors.secondaryText, true: colors.accent }}
+                        thumbColor={notifPrefs.rewards ? colors.accent : '#ccc'}
                     />
                   </View>
                   </View>
                   <View style={styles.helpButtonRow}>
                     <TouchableOpacity style={[styles.modalButton, styles.modalSave]} onPress={() => setShowNotificationsModal(false)}>
-                      <Text style={styles.modalButtonText}>Save</Text>
+                      <Text style={[styles.modalButtonText, { color: '#fff' }]}>Save</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -406,22 +426,22 @@ export const ProfileScreen: React.FC = () => {
               onRequestClose={() => setShowHelpModal(false)}
             >
               <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                  <Text style={styles.modalTitle}>Help & Support</Text>
+                <View style={[styles.modalContent, { backgroundColor: colors.cardBackground }]}>
+                  <Text style={[styles.modalTitle, { color: colors.primaryText }]}>Help & Support</Text>
                   <ScrollView style={{ maxHeight: 300 }}>
                     {faqs.map((faq, idx) => (
                       <View key={idx} style={styles.faqItem}>
-                        <Text style={styles.faqQuestion}>{faq.question}</Text>
-                        <Text style={styles.faqAnswer}>{faq.answer}</Text>
+                        <Text style={[styles.faqQuestion, { color: colors.primaryText }]}>{faq.question}</Text>
+                        <Text style={[styles.faqAnswer, { color: colors.secondaryText }]}>{faq.answer}</Text>
                 </View>
               ))}
                   </ScrollView>
                   <View style={styles.helpButtonRow}>
                     <TouchableOpacity style={[styles.modalButton, styles.modalSave, styles.helpButton]} onPress={handleContactSupport}>
-                      <Text style={styles.modalButtonText}>Contact Support</Text>
+                      <Text style={[styles.modalButtonText, { color: '#fff' }]}>Contact Support</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.modalButton, styles.modalCancel]} onPress={() => setShowHelpModal(false)}>
-                      <Text style={styles.modalButtonText}>Close</Text>
+                      <Text style={[styles.modalButtonText, { color: '#fff' }]}>Close</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -436,17 +456,17 @@ export const ProfileScreen: React.FC = () => {
               onRequestClose={() => setShowLogoutModal(false)}
             >
               <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                  <Text style={styles.modalTitle}>Confirm Logout</Text>
-                  <Text style={{ color: Colors.secondaryText, fontSize: 15, textAlign: 'center', marginVertical: 16 }}>
+                <View style={[styles.modalContent, { backgroundColor: colors.cardBackground }]}>
+                  <Text style={[styles.modalTitle, { color: colors.primaryText }]}>Confirm Logout</Text>
+                  <Text style={[styles.modalDescription, { color: colors.secondaryText }]}>
                     Are you sure you want to logout?
               </Text>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
                     <TouchableOpacity style={[styles.modalButton, styles.modalCancel, { flex: 1, marginRight: 8 }]} onPress={() => setShowLogoutModal(false)}>
-                      <Text style={styles.modalButtonText}>Cancel</Text>
+                      <Text style={[styles.modalButtonText, { color: '#fff' }]}>Cancel</Text>
               </TouchableOpacity>
                     <TouchableOpacity style={[styles.modalButton, styles.modalSave, { flex: 1, marginLeft: 8 }]} onPress={handleLogout}>
-                      <Text style={styles.modalButtonText}>Logout</Text>
+                      <Text style={[styles.modalButtonText, { color: '#fff' }]}>Logout</Text>
                     </TouchableOpacity>
               </View>
                 </View>
@@ -461,41 +481,38 @@ export const ProfileScreen: React.FC = () => {
       <Modal
         visible={stepTestVisible}
         transparent
-        animationType="fade"
-        onRequestClose={handleCloseTest}
+        animationType="slide"
+        onRequestClose={() => setStepTestVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Step Counter Test</Text>
-            <Text style={{ fontSize: fontSize.sm, color: Colors.secondaryText, marginBottom: spacing.lg, textAlign: 'center' }}>
-              {Platform.OS === 'web' 
-                ? 'Testing on PC/Web - Step counting is simulated. On a real device, it will detect actual steps.'
-                : 'Start walking to test your step counter. The counter will automatically detect your steps.'
-              }
-            </Text>
-            
+          <View style={[styles.modalContent, { backgroundColor: colors.cardBackground }]}>
+            <Text style={[styles.modalTitle, { color: colors.primaryText }]}>Step Counter Test</Text>
             <View style={styles.stepCountContainer}>
-              <Text style={{ fontSize: fontSize.xxxl, fontWeight: 'bold', color: Colors.accent }}>{stepCount}</Text>
-              <Text style={{ fontSize: fontSize.md, color: Colors.secondaryText }}>steps</Text>
+              <StepCounter />
             </View>
-
             <View style={styles.modalButtons}>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.modalButtonSecondary]} 
-                onPress={handleCloseTest}
-              >
-                <Text style={styles.modalButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.modalButtonPrimary]} 
-                onPress={handleStopTest}
-              >
-                <Text style={styles.modalButtonText}>Stop Test</Text>
+              <TouchableOpacity style={[styles.modalButton, styles.modalButtonSecondary]} onPress={() => setStepTestVisible(false)}>
+                <Text style={[styles.modalButtonText, { color: '#fff' }]}>Close</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
+
+      {/* Challenge Join Modal */}
+      <ChallengeJoinModal
+        visible={modalVisible}
+        time={challenge.time}
+        description={challenge.description}
+        totalUsers={challenge.totalUsers}
+        entryFee={challenge.entryFee}
+        image={challenge.image}
+        onClose={() => setModalVisible(false)}
+        onRegister={() => {
+          setModalVisible(false);
+          Alert.alert('Joined!', 'You have successfully joined the challenge.');
+        }}
+      />
     </ScreenContainer>
   );
 };
@@ -516,7 +533,6 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     borderWidth: 3,
-    borderColor: Colors.accent,
   },
   imageOverlay: {
     position: 'absolute',
@@ -539,9 +555,7 @@ const styles = StyleSheet.create({
   nameInput: {
     fontSize: fontSize.xl,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.accent,
     paddingVertical: spacing.xs,
   },
   bioContainer: {
@@ -553,16 +567,13 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   bioInput: {
-    color: Colors.secondaryText,
     textAlign: 'center',
     lineHeight: 24,
     fontSize: 16,
     minHeight: 60,
     padding: 8,
-    backgroundColor: Colors.cardBackground,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.accent,
     width: '100%',
   },
   infoCard: {
@@ -575,7 +586,6 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontSize: fontSize.lg,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
     marginBottom: spacing.md,
   },
   infoGrid: {
@@ -587,7 +597,6 @@ const styles = StyleSheet.create({
     alignItems: 'center' as const,
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderColor,
   },
   editableText: {
     fontSize: fontSize.md,
@@ -595,7 +604,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     fontSize: fontSize.md,
-    color: Colors.accent,
     fontWeight: '500' as const,
     textAlign: 'right' as const,
     minWidth: 100,
@@ -623,11 +631,9 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: fontSize.xl,
     fontWeight: 'bold' as const,
-    color: Colors.accent,
   },
   statLabel: {
     fontSize: fontSize.xs,
-    color: Colors.secondaryText,
     marginTop: spacing.xs,
   },
   rewardsCard: {
@@ -649,11 +655,9 @@ const styles = StyleSheet.create({
   rewardValue: {
     fontSize: fontSize.md,
     fontWeight: 'bold' as const,
-    color: Colors.gold,
   },
   rewardLabel: {
     fontSize: fontSize.xs,
-    color: Colors.secondaryText,
     marginTop: spacing.xs,
   },
   activityCard: {
@@ -663,7 +667,6 @@ const styles = StyleSheet.create({
   activityTitle: {
     fontSize: fontSize.lg,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
     marginBottom: spacing.md,
   },
   activityItem: {
@@ -671,113 +674,71 @@ const styles = StyleSheet.create({
     alignItems: 'center' as const,
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderColor,
   },
   activityText: {
     fontSize: fontSize.sm,
-    color: Colors.primaryText,
     fontWeight: '500' as const,
   },
   activityTime: {
     fontSize: fontSize.xs,
-    color: Colors.secondaryText,
     marginTop: spacing.xs,
-  },
-  walletCard: {
-    marginBottom: margin.lg,
-    padding: padding.lg,
-  },
-  walletHeader: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
-    marginBottom: spacing.sm,
-  },
-  walletTitle: {
-    fontSize: fontSize.md,
-    fontWeight: 'bold' as const,
-    color: Colors.primaryText,
-  },
-  walletBalance: {
-    fontSize: fontSize.xxl,
-    fontWeight: 'bold' as const,
-    color: Colors.gold,
-    marginTop: spacing.xs,
-  },
-  withdrawBtn: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    backgroundColor: Colors.accent,
-    paddingHorizontal: padding.sm,
-    paddingVertical: padding.xs,
-    borderRadius: 8,
-  },
-  withdrawText: {
-    fontSize: fontSize.xs,
-    fontWeight: 'bold' as const,
-    color: Colors.primaryText,
-    marginLeft: spacing.xs,
-  },
-  walletSubtext: {
-    fontSize: fontSize.xs,
-    color: Colors.secondaryText,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
   },
   modalContent: {
-    backgroundColor: Colors.cardBackground,
-    borderRadius: 16,
-    padding: 24,
-    width: '90%',
+    width: '100%',
     maxWidth: 400,
+    borderRadius: 12,
+    padding: 20,
     maxHeight: '80%',
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginBottom: 16,
     textAlign: 'center',
   },
+  modalDescription: {
+    fontSize: 15,
+    textAlign: 'center',
+    marginVertical: 16,
+  },
   modalLabel: {
     fontSize: 14,
-    color: Colors.secondaryText,
-    marginTop: 12,
+    fontWeight: 'bold',
     marginBottom: 4,
   },
   modalInput: {
-    backgroundColor: '#1a2d2d',
-    color: '#fff',
+    fontSize: 16,
+    borderWidth: 1,
     borderRadius: 8,
-    padding: 10,
-    fontSize: 15,
-    marginBottom: 4,
+    padding: 12,
+    marginBottom: 16,
   },
   modalButtonRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
     marginTop: 16,
   },
   modalButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 24,
+    flex: 1,
+    padding: 12,
     borderRadius: 8,
-    marginLeft: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    marginHorizontal: 4,
   },
   modalCancel: {
-    backgroundColor: Colors.secondaryText,
+    backgroundColor: '#6B7280',
   },
   modalSave: {
-    backgroundColor: Colors.accent,
+    backgroundColor: '#10B981', // Green color
   },
   modalButtonText: {
-    color: '#fff',
     fontWeight: 'bold',
     fontSize: 15,
   },
@@ -790,19 +751,17 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   modalButtonSecondary: {
-    backgroundColor: Colors.accent,
+    backgroundColor: '#10B981', // Green color
   },
   modalButtonPrimary: {
-    backgroundColor: Colors.accent,
+    backgroundColor: '#10B981', // Green color
   },
   profileName: {
     fontSize: fontSize.xl,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
   },
   profileBio: {
     fontSize: fontSize.sm,
-    color: Colors.secondaryText,
   },
   editButton: {
     padding: padding.md,
@@ -810,12 +769,10 @@ const styles = StyleSheet.create({
   editButtonText: {
     fontSize: fontSize.xs,
     fontWeight: 'bold' as const,
-    color: Colors.accent,
   },
   statsTitle: {
     fontSize: fontSize.lg,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
     marginBottom: spacing.md,
   },
   statsGrid: {
@@ -825,7 +782,6 @@ const styles = StyleSheet.create({
   rewardsTitle: {
     fontSize: fontSize.lg,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
     marginBottom: spacing.md,
   },
   rewardsGrid: {
@@ -838,7 +794,7 @@ const styles = StyleSheet.create({
   },
   stepTestButton: {
     marginTop: spacing.md,
-    backgroundColor: Colors.accent,
+    backgroundColor: '#10B981', // Green color
     borderRadius: 8,
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
@@ -859,18 +815,15 @@ const styles = StyleSheet.create({
   },
   infoValue: {
     fontSize: 15,
-    color: Colors.primaryText,
     marginTop: 2,
   },
   settingsCard: {
     padding: 16,
     borderRadius: 12,
-    backgroundColor: Colors.cardBackground,
   },
   settingsTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.primaryText,
+    fontWeight: 'bold' as const,
     marginBottom: 12,
   },
   settingsItem: {
@@ -878,15 +831,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderColor,
   },
   settingsText: {
     fontSize: 15,
-    color: Colors.primaryText,
+  },
+  settingsSubtext: {
+    fontSize: 12,
+    marginTop: 2,
   },
   profileContact: {
     fontSize: 13,
-    color: Colors.secondaryText,
     marginTop: 2,
   },
   faqItem: {
@@ -894,12 +848,10 @@ const styles = StyleSheet.create({
   },
   faqQuestion: {
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginBottom: 4,
     fontSize: 15,
   },
   faqAnswer: {
-    color: Colors.secondaryText,
     fontSize: 14,
     marginBottom: 2,
   },
@@ -917,6 +869,6 @@ const styles = StyleSheet.create({
   notifTextCol: { flex: 1 },
   notifRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
   notifItem: { marginBottom: 12 },
-  notifLabel: { fontWeight: 'bold', color: Colors.primaryText, fontSize: 15 },
-  notifDescription: { color: Colors.secondaryText, fontSize: 13, marginTop: 2 },
+  notifLabel: { fontWeight: 'bold', fontSize: 15 },
+  notifDescription: { fontSize: 13, marginTop: 2 },
 }); 

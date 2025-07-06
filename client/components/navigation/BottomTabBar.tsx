@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '../ui/Text';
-import { LinearGradient } from 'expo-linear-gradient';
-import { isSmallScreen, iconSize, fontSize, padding } from '../../constants/Responsive';
+import { fontSize } from '../../constants/Responsive';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface TabItem {
   key: string;
@@ -14,7 +15,7 @@ interface TabItem {
 
 interface BottomTabBarProps {
   activeTab: string;
-  onTabPress: (tabKey: string) => void;
+  onTabPress: (tab: string) => void;
 }
 
 const tabs: TabItem[] = [
@@ -54,9 +55,11 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
   activeTab,
   onTabPress
 }) => {
+  const { colors } = useTheme();
+
   return (
     <LinearGradient
-      colors={['#0A1A1A', '#1A2E2E']}
+      colors={[colors.cardBackground, colors.cardBackground]}
       style={styles.container}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
@@ -73,8 +76,8 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
             >
               <Ionicons
                 name={tab.icon}
-                size={iconSize.md}
-                color={isActive ? '#4A9B8F' : '#9ca3af'}
+                size={fontSize.md}
+                color={isActive ? colors.accent : colors.secondaryText}
               />
               <Text
                 variant="caption"
@@ -95,27 +98,20 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
 const styles = StyleSheet.create({
   container: {
     borderTopWidth: 1,
-    borderTopColor: 'rgba(74, 155, 143, 0.15)',
-    width: '100%',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    overflow: 'hidden',
-    paddingBottom: 8, // Extra padding for home indicator
+    borderTopColor: 'rgba(0, 0, 0, 0.1)',
   },
   tabContainer: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
-    paddingVertical: padding.sm,
-    paddingHorizontal: 0,
-    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
   tabButton: {
-    alignItems: 'center' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
     flex: 1,
-    paddingVertical: padding.sm,
-    paddingHorizontal: 0,
-    borderRadius: 8,
+    paddingVertical: 8,
   },
   tabText: {
     marginTop: 4,

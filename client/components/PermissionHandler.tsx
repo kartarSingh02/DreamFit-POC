@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Alert, Platform } from 'react-native';
 import { Text } from './ui/Text';
 import { Card } from './ui/Card';
-import Colors from '../constants/Colors';
+import { useTheme } from '../contexts/ThemeContext';
 import * as Location from 'expo-location';
 import { Pedometer } from 'expo-sensors';
 
@@ -19,6 +19,7 @@ interface Permission {
 }
 
 export const PermissionHandler: React.FC<PermissionHandlerProps> = ({ onPermissionsGranted }) => {
+  const { colors } = useTheme();
   const [permissions, setPermissions] = useState<Permission[]>([
     {
       key: 'activity',
@@ -42,8 +43,8 @@ export const PermissionHandler: React.FC<PermissionHandlerProps> = ({ onPermissi
     // Detect if running on web/PC
     if (Platform.OS === 'web') {
       setIsWeb(true);
-      // Mock all permissions as granted for web/PC
-      setPermissions(prev => prev.map(p => ({ ...p, status: 'granted' })));
+      // For web/PC, show permissions as pending so user can see the flow
+      setPermissions(prev => prev.map(p => ({ ...p, status: 'pending' })));
       setIsLoading(false);
       return;
     }
@@ -52,18 +53,21 @@ export const PermissionHandler: React.FC<PermissionHandlerProps> = ({ onPermissi
 
   const checkExistingPermissions = async () => {
     try {
-      const activityStatus = await Pedometer.isAvailableAsync();
-      const locationStatus = await Location.getForegroundPermissionsAsync();
-      setPermissions(prev => prev.map(permission => {
-        switch (permission.key) {
-          case 'activity':
-            return { ...permission, status: activityStatus ? 'granted' : 'pending' };
-          case 'location':
-            return { ...permission, status: locationStatus.status === 'granted' ? 'granted' : 'pending' };
-          default:
-            return permission;
-        }
-      }));
+      // For mobile devices, check actual permissions
+      if (Platform.OS !== 'web') {
+        const activityStatus = await Pedometer.isAvailableAsync();
+        const locationStatus = await Location.getForegroundPermissionsAsync();
+        setPermissions(prev => prev.map(permission => {
+          switch (permission.key) {
+            case 'activity':
+              return { ...permission, status: activityStatus ? 'granted' : 'pending' };
+            case 'location':
+              return { ...permission, status: locationStatus.status === 'granted' ? 'granted' : 'pending' };
+            default:
+              return permission;
+          }
+        }));
+      }
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -72,8 +76,10 @@ export const PermissionHandler: React.FC<PermissionHandlerProps> = ({ onPermissi
 
   const requestPermission = async (permissionKey: string) => {
     if (isWeb) {
-      // Instantly grant on web/PC
+      // For web/PC, directly grant the permission (simulate)
       setPermissions(prev => prev.map(p => p.key === permissionKey ? { ...p, status: 'granted' } : p));
+      // Show a brief feedback
+      console.log(`Permission ${permissionKey} granted (simulated)`);
       return;
     }
     try {
@@ -118,43 +124,43 @@ export const PermissionHandler: React.FC<PermissionHandlerProps> = ({ onPermissi
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.backgroundGradient[0] }]}>
         <Card style={styles.loadingCard}>
-          <Text style={styles.loadingText}>Checking permissions...</Text>
+          <Text style={[styles.loadingText, { color: colors.secondaryText }]}>Checking permissions...</Text>
         </Card>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.backgroundGradient[0] }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>Welcome to DreamFit</Text>
-        <Text style={styles.subtitle}>Let's set up your experience</Text>
+        <Text style={[styles.title, { color: colors.primaryText }]}>Welcome to DreamFit</Text>
+        <Text style={[styles.subtitle, { color: colors.secondaryText }]}>Let's set up your experience</Text>
       </View>
       <View style={styles.permissionsContainer}>
-        <Text style={styles.sectionTitle}>Required Permissions</Text>
-        <Text style={styles.sectionDescription}>
+        <Text style={[styles.sectionTitle, { color: colors.primaryText }]}>Required Permissions</Text>
+        <Text style={[styles.sectionDescription, { color: colors.secondaryText }]}>
           These permissions help us provide the best experience for walking pools and challenges.
         </Text>
         {isWeb && (
           <Card style={styles.permissionCard}>
-            <Text style={{ color: Colors.warning, marginBottom: 8 }}>
-              Step tracking is only available on mobile devices. Permissions are mocked for development.
+            <Text style={{ color: colors.accent, marginBottom: 8 }}>
+              💻 Development Mode: Click "Grant Permission" buttons to simulate permission requests. On real devices, this would show native permission dialogs.
             </Text>
           </Card>
         )}
         {permissions.map((permission) => (
           <Card key={permission.key} style={styles.permissionCard}>
-            <Text style={styles.permissionTitle}>{permission.title}</Text>
-            <Text style={styles.permissionDescription}>{permission.description}</Text>
+            <Text style={[styles.permissionTitle, { color: colors.primaryText }]}>{permission.title}</Text>
+            <Text style={[styles.permissionDescription, { color: colors.secondaryText }]}>{permission.description}</Text>
             <View style={styles.permissionActionRow}>
-              <Text style={styles.permissionStatusLabel}>
-                {permission.status === 'granted' ? 'Granted' : permission.required ? 'Required' : 'Optional'}
+              <Text style={[styles.permissionStatusLabel, { color: colors.secondaryText }]}>
+                {permission.status === 'granted' ? '✅ Granted' : permission.required ? 'Required' : 'Optional'}
               </Text>
               {permission.status !== 'granted' && (
                 <Text 
-                  style={styles.permissionButton}
+                  style={[styles.permissionButton, { color: colors.accent }]}
                   onPress={() => requestPermission(permission.key)}
                 >
                   Grant Permission
@@ -166,12 +172,18 @@ export const PermissionHandler: React.FC<PermissionHandlerProps> = ({ onPermissi
       </View>
       <View style={styles.footer}>
         <Text 
-          style={[styles.continueButton, !canContinue() && styles.continueButtonDisabled]}
+          style={[
+            styles.continueButton, 
+            { 
+              backgroundColor: canContinue() ? colors.accent : colors.secondaryText, 
+              color: canContinue() ? '#fff' : colors.primaryText 
+            }
+          ]}
           onPress={handleContinue}
         >
           {canContinue() ? 'Continue to App' : 'Grant Required Permissions'}
         </Text>
-        <Text style={styles.skipText}>
+        <Text style={[styles.skipText, { color: colors.secondaryText }]}>
           You can change these permissions later in Settings
         </Text>
       </View>
@@ -182,7 +194,6 @@ export const PermissionHandler: React.FC<PermissionHandlerProps> = ({ onPermissi
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A2222',
     padding: 16,
     justifyContent: 'center',
   },
@@ -193,12 +204,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.secondaryText,
     marginBottom: 8,
   },
   permissionsContainer: {
@@ -207,16 +216,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
     marginBottom: 4,
   },
   sectionDescription: {
     fontSize: 14,
-    color: Colors.secondaryText,
     marginBottom: 16,
   },
   permissionCard: {
-    backgroundColor: '#122D2D',
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
@@ -224,12 +230,10 @@ const styles = StyleSheet.create({
   permissionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#fff',
     marginBottom: 4,
   },
   permissionDescription: {
     fontSize: 13,
-    color: Colors.secondaryText,
     marginBottom: 8,
   },
   permissionActionRow: {
@@ -239,11 +243,9 @@ const styles = StyleSheet.create({
   },
   permissionStatusLabel: {
     fontSize: 13,
-    color: Colors.secondaryText,
   },
   permissionButton: {
     fontSize: 14,
-    color: Colors.accent,
     fontWeight: 'bold',
     marginLeft: 12,
   },
@@ -252,7 +254,6 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   loadingText: {
-    color: Colors.secondaryText,
     fontSize: 16,
     marginTop: 8,
   },
@@ -261,8 +262,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   continueButton: {
-    backgroundColor: Colors.accent,
-    color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
     paddingVertical: 12,
@@ -272,13 +271,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: 'center',
   },
-  continueButtonDisabled: {
-    backgroundColor: Colors.secondaryText,
-    color: '#888',
-  },
   skipText: {
     fontSize: 12,
-    color: Colors.secondaryText,
     marginTop: 4,
   },
 }); 

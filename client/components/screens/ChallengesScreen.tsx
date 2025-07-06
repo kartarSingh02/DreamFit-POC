@@ -4,9 +4,9 @@ import { Text } from '../ui/Text';
 import { Card } from '../ui/Card';
 import { ScreenContainer } from '../layout/ScreenContainer';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants/Colors';
 import { AddMoneyModal } from '../ui/AddMoneyModal';
 import { padding, margin, fontSize, spacing } from '../../constants/Responsive';
+import { useTheme } from '../../contexts/ThemeContext';
 
 // Generate upcoming pools for next 10 slots
 const generateUpcomingPools = () => {
@@ -120,12 +120,14 @@ const mockHistoryPools = [
 const userWalletBalance = 1250; // in rupees
 
 const PoolCard: React.FC<{ pool: any; onJoin: (pool: any) => void }> = ({ pool, onJoin }) => {
+  const { colors } = useTheme();
+  
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return Colors.accent;
-      case 'upcoming': return Colors.gold;
-      case 'completed': return Colors.secondaryText;
-      default: return Colors.secondaryText;
+      case 'active': return colors.accent;
+      case 'upcoming': return colors.gold;
+      case 'completed': return colors.secondaryText;
+      default: return colors.secondaryText;
     }
   };
 
@@ -142,84 +144,96 @@ const PoolCard: React.FC<{ pool: any; onJoin: (pool: any) => void }> = ({ pool, 
     <Card style={styles.poolCard}>
       <View style={styles.poolHeader}>
         <View style={styles.poolTitleRow}>
-          <Ionicons name="walk" size={20} color={Colors.accent} />
-          <Text style={styles.poolName}>{pool.name}</Text>
+          <Ionicons name="walk" size={20} color={colors.accent} />
+          <Text style={[styles.poolName, { color: colors.primaryText }]}>{pool.name}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(pool.status) }]}>
-          <Text style={styles.statusText}>{getStatusText(pool.status)}</Text>
+          <Text style={[styles.statusText, { color: pool.status === 'completed' ? colors.primaryText : '#fff' }]}>{getStatusText(pool.status)}</Text>
         </View>
       </View>
 
       <View style={styles.poolDetails}>
         <View style={styles.detailRow}>
-          <Ionicons name="time" size={16} color={Colors.secondaryText} />
-          <Text style={styles.detailText}>{pool.timeSlot}</Text>
+          <Ionicons name="time" size={16} color={colors.secondaryText} />
+          <Text style={[styles.detailText, { color: colors.primaryText }]}>{pool.timeSlot}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Ionicons name="people" size={16} color={Colors.secondaryText} />
-          <Text style={styles.detailText}>{pool.participants} participants</Text>
+          <Ionicons name="people" size={16} color={colors.secondaryText} />
+          <Text style={[styles.detailText, { color: colors.primaryText }]}>{pool.participants} participants</Text>
         </View>
         <View style={styles.detailRow}>
-          <Ionicons name="wallet" size={16} color={Colors.secondaryText} />
-          <Text style={styles.detailText}>Entry: ₹{pool.entryFee}</Text>
+          <Ionicons name="wallet" size={16} color={colors.secondaryText} />
+          <Text style={[styles.detailText, { color: colors.primaryText }]}>Entry: ₹{pool.entryFee}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Ionicons name="trophy" size={16} color={Colors.secondaryText} />
-          <Text style={styles.detailText}>Pool: ₹{pool.totalPool}</Text>
+          <Ionicons name="trophy" size={16} color={colors.secondaryText} />
+          <Text style={[styles.detailText, { color: colors.primaryText }]}>Pool: ₹{pool.totalPool}</Text>
         </View>
       </View>
 
       {pool.status === 'active' && (
-        <View style={styles.countdownContainer}>
-          <Text style={styles.countdownLabel}>Time Remaining:</Text>
-          <Text style={styles.countdownTime}>{pool.timeLeft}</Text>
+        <View style={[styles.countdownContainer, { backgroundColor: colors.cardBackground }]}>
+          <Text style={[styles.countdownLabel, { color: colors.primaryText }]}>Time Remaining:</Text>
+          <Text style={[styles.countdownTime, { color: colors.accent }]}>{pool.timeLeft}</Text>
         </View>
       )}
 
-      <View style={styles.payoutInfo}>
-        <Text style={styles.payoutTitle}>Payout Structure:</Text>
+      <View style={[styles.payoutInfo, { backgroundColor: colors.cardBackground }]}>
+        <Text style={[styles.payoutTitle, { color: colors.primaryText }]}>Payout Structure:</Text>
         <View style={styles.payoutRow}>
-          <Text style={styles.payoutRank}>🥇 1st:</Text>
-          <Text style={styles.payoutAmount}>₹{Math.round(pool.totalPool * 0.10)}</Text>
+          <Text style={[styles.payoutRank, { color: colors.primaryText }]}>🥇 1st:</Text>
+          <Text style={[styles.payoutAmount, { color: colors.accent }]}>₹{Math.round(pool.totalPool * 0.10)}</Text>
         </View>
         <View style={styles.payoutRow}>
-          <Text style={styles.payoutRank}>🥈 2nd:</Text>
-          <Text style={styles.payoutAmount}>₹{Math.round(pool.totalPool * 0.05)}</Text>
+          <Text style={[styles.payoutRank, { color: colors.primaryText }]}>🥈 2nd:</Text>
+          <Text style={[styles.payoutAmount, { color: colors.accent }]}>₹{Math.round(pool.totalPool * 0.05)}</Text>
         </View>
         <View style={styles.payoutRow}>
-          <Text style={styles.payoutRank}>🥉 3rd:</Text>
-          <Text style={styles.payoutAmount}>₹{Math.round(pool.totalPool * 0.03)}</Text>
+          <Text style={[styles.payoutRank, { color: colors.primaryText }]}>🥉 3rd:</Text>
+          <Text style={[styles.payoutAmount, { color: colors.accent }]}>₹{Math.round(pool.totalPool * 0.03)}</Text>
         </View>
         <View style={styles.payoutRow}>
-          <Text style={styles.payoutRank}>4th-50th:</Text>
-          <Text style={styles.payoutAmount}>₹10 (refund)</Text>
+          <Text style={[styles.payoutRank, { color: colors.primaryText }]}>4th-50th:</Text>
+          <Text style={[styles.payoutAmount, { color: colors.accent }]}>₹10 (refund)</Text>
         </View>
       </View>
 
       {pool.status === 'active' && (
         <TouchableOpacity 
-          style={styles.joinButton} 
+          style={[styles.joinButton, { backgroundColor: colors.accent }]}
           onPress={() => onJoin(pool)}
         >
-          <Ionicons name="play" size={18} color={Colors.primaryText} />
-          <Text style={styles.joinButtonText}>Join Pool</Text>
+          <Text style={[styles.joinButtonText, { color: '#fff' }]}>Join Pool</Text>
         </TouchableOpacity>
       )}
 
       {pool.status === 'upcoming' && (
         <TouchableOpacity 
-          style={[styles.joinButton, styles.reminderButton]} 
-          onPress={() => Alert.alert('Reminder Set', 'You\'ll be notified when this pool starts!')}
+          style={[styles.joinButton, { backgroundColor: colors.secondaryText }]}
+          onPress={() => onJoin(pool)}
         >
-          <Ionicons name="notifications" size={18} color={Colors.primaryText} />
-          <Text style={styles.joinButtonText}>Set Reminder</Text>
+          <Text style={[styles.joinButtonText, { color: '#fff' }]}>Join Pool</Text>
         </TouchableOpacity>
+      )}
+
+      {pool.status === 'completed' && (
+        <View style={[styles.completedInfo, { backgroundColor: colors.cardBackground }]}>
+          {pool.winnings > 0 ? (
+            <>
+              <Text style={[styles.completedText, { color: colors.accent }]}>You won ₹{pool.winnings}!</Text>
+              <Text style={[styles.positionText, { color: colors.secondaryText }]}>Position: #{pool.position}</Text>
+            </>
+          ) : (
+            <>
+              <Text style={[styles.completedText, { color: colors.secondaryText }]}>No winnings</Text>
+              <Text style={[styles.positionText, { color: colors.secondaryText }]}>Position: #{pool.position}</Text>
+            </>
+          )}
+        </View>
       )}
     </Card>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -228,20 +242,17 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: margin.lg,
   },
-  headerTitle: {
+  title: {
     fontSize: fontSize.xxxl,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
     marginBottom: spacing.xs,
   },
-  headerSubtitle: {
+  subtitle: {
     fontSize: fontSize.md,
-    color: Colors.secondaryText,
   },
   searchContainer: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    backgroundColor: Colors.cardBackground,
     borderRadius: 12,
     paddingHorizontal: padding.lg,
     paddingVertical: padding.md,
@@ -251,7 +262,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: spacing.md,
     fontSize: fontSize.md,
-    color: Colors.primaryText,
   },
   scheduleCard: {
     marginBottom: margin.lg,
@@ -265,7 +275,6 @@ const styles = StyleSheet.create({
   scheduleTitle: {
     fontSize: fontSize.lg,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
     marginLeft: spacing.sm,
   },
   scheduleDetails: {
@@ -273,12 +282,16 @@ const styles = StyleSheet.create({
   },
   scheduleText: {
     fontSize: fontSize.sm,
-    color: Colors.secondaryText,
   },
   tabsContainer: {
     flexDirection: 'row' as const,
     marginBottom: margin.lg,
-    backgroundColor: Colors.cardBackground,
+    borderRadius: 12,
+    padding: spacing.xs,
+  },
+  tabContainer: {
+    flexDirection: 'row' as const,
+    marginBottom: margin.lg,
     borderRadius: 12,
     padding: spacing.xs,
   },
@@ -289,16 +302,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center' as const,
   },
-  activeTab: {
-    backgroundColor: Colors.accent,
-  },
   tabText: {
     fontSize: fontSize.sm,
     fontWeight: '600' as const,
-    color: Colors.secondaryText,
   },
-  activeTabText: {
-    color: Colors.primaryText,
+  walletInfo: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: spacing.sm,
+  },
+  walletBalance: {
+    fontSize: fontSize.lg,
+    fontWeight: 'bold' as const,
   },
   poolsContainer: {
     gap: spacing.md,
@@ -309,7 +324,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: fontSize.md,
-    color: Colors.secondaryText,
     textAlign: 'center' as const,
     marginTop: spacing.md,
   },
@@ -330,7 +344,6 @@ const styles = StyleSheet.create({
   poolName: {
     fontSize: fontSize.md,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
     marginLeft: spacing.sm,
   },
   statusBadge: {
@@ -341,7 +354,6 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: fontSize.xs,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
   },
   poolDetails: {
     gap: spacing.sm,
@@ -353,14 +365,12 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: fontSize.sm,
-    color: Colors.secondaryText,
     marginLeft: spacing.sm,
   },
   joinButton: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
-    backgroundColor: Colors.accent,
     paddingVertical: padding.md,
     borderRadius: 8,
     gap: spacing.sm,
@@ -368,13 +378,8 @@ const styles = StyleSheet.create({
   joinButtonText: {
     fontSize: fontSize.md,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
-  },
-  reminderButton: {
-    backgroundColor: Colors.gold,
   },
   countdownContainer: {
-    backgroundColor: Colors.accent,
     padding: padding.md,
     borderRadius: 8,
     marginBottom: spacing.md,
@@ -382,16 +387,13 @@ const styles = StyleSheet.create({
   },
   countdownLabel: {
     fontSize: fontSize.xs,
-    color: Colors.primaryText,
     marginBottom: spacing.xs,
   },
   countdownTime: {
     fontSize: fontSize.lg,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
   },
   payoutInfo: {
-    backgroundColor: Colors.cardBackground,
     padding: padding.md,
     borderRadius: 8,
     marginBottom: spacing.md,
@@ -399,7 +401,6 @@ const styles = StyleSheet.create({
   payoutTitle: {
     fontSize: fontSize.sm,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
     marginBottom: spacing.sm,
   },
   payoutRow: {
@@ -409,226 +410,160 @@ const styles = StyleSheet.create({
   },
   payoutRank: {
     fontSize: fontSize.xs,
-    color: Colors.secondaryText,
   },
   payoutAmount: {
     fontSize: fontSize.xs,
     fontWeight: 'bold' as const,
-    color: Colors.primaryText,
+  },
+  completedInfo: {
+    padding: padding.md,
+    borderRadius: 8,
+    marginBottom: spacing.md,
+  },
+  completedText: {
+    fontSize: fontSize.sm,
+    fontWeight: 'bold' as const,
+    marginBottom: spacing.xs,
+  },
+  positionText: {
+    fontSize: fontSize.xs,
   },
 });
 
 export const ChallengesScreen: React.FC = () => {
+  const { colors, theme } = useTheme();
   const [selectedTab, setSelectedTab] = useState('upcoming');
-  const [addMoneyVisible, setAddMoneyVisible] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(1250);
-  const [joinedPools, setJoinedPools] = useState<number[]>([]);
+  const [showAddMoneyModal, setShowAddMoneyModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [upcomingPools, setUpcomingPools] = useState<any[]>([]);
+  const [historyPools, setHistoryPools] = useState<any[]>(mockHistoryPools);
 
   useEffect(() => {
     setUpcomingPools(generateUpcomingPools());
+    
+    // Update countdown every second for active pools
+    const interval = setInterval(() => {
+      setHistoryPools(prev => prev.map(pool => {
+        if (pool.status === 'active' && pool.timeLeft) {
+          const [minutes, seconds] = pool.timeLeft.split(':').map(Number);
+          if (seconds > 0) {
+            return { ...pool, timeLeft: `${minutes}:${(seconds - 1).toString().padStart(2, '0')}` };
+          } else if (minutes > 0) {
+            return { ...pool, timeLeft: `${minutes - 1}:59` };
+          } else {
+            return { ...pool, status: 'completed', timeLeft: '00:00' };
+          }
+        }
+        return pool;
+      }));
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleJoinPool = (pool: any) => {
-    if (joinedPools.includes(pool.id)) return;
-    if (walletBalance < pool.entryFee) {
-      setAddMoneyVisible(true);
+    if (userWalletBalance < pool.entryFee) {
+      setShowAddMoneyModal(true);
       return;
     }
-    setWalletBalance(bal => bal - pool.entryFee);
-    setJoinedPools(ids => [...ids, pool.id]);
-    Alert.alert('Success', `You have registered for ${pool.name}! ₹${pool.entryFee} deducted from your wallet.`);
+    
+    Alert.alert(
+      'Join Pool',
+      `Join ${pool.name} for ₹${pool.entryFee}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Join', 
+          onPress: () => {
+            Alert.alert('Success', `You've joined ${pool.name}!`);
+          }
+        }
+      ]
+    );
   };
 
   const getFilteredPools = () => {
-    let pools = [];
+    const pools = selectedTab === 'upcoming' ? upcomingPools : historyPools;
+    if (!searchQuery) return pools;
     
-    if (selectedTab === 'upcoming') {
-      pools = upcomingPools;
-    } else if (selectedTab === 'active') {
-      pools = mockHistoryPools.filter(p => p.status === 'active');
-    } else if (selectedTab === 'completed') {
-      pools = mockHistoryPools.filter(p => p.status === 'completed');
-    }
-
-    // Filter by search query
-    if (searchQuery) {
-      pools = pools.filter(pool => 
-        pool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        pool.timeSlot.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    return pools;
+    return pools.filter(pool => 
+      pool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      pool.timeSlot.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   };
 
   const formatTimeLeft = (startTime: Date) => {
     const now = new Date();
     const diff = startTime.getTime() - now.getTime();
+    
     if (diff <= 0) return '00:00';
     
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    const minutes = Math.floor(diff / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const filteredPools = getFilteredPools();
-
   return (
-    <ScreenContainer>
+    <ScreenContainer key={theme}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Walking Pools</Text>
-          <Text style={styles.headerSubtitle}>Join walking challenges and win rewards!</Text>
+        <View style={styles.header} key={`header-${theme}`}>
+          <View>
+            <Text style={[styles.title, { color: colors.primaryText }]}>Challenges & Pools</Text>
+            <Text style={[styles.subtitle, { color: colors.secondaryText }]}>Join walking pools and earn rewards</Text>
+          </View>
+          <View style={styles.walletInfo}>
+            <Ionicons name="wallet" size={20} color={colors.accent} />
+            <Text style={[styles.walletBalance, { color: colors.primaryText }]}>₹{userWalletBalance}</Text>
+          </View>
         </View>
 
         {/* Search Bar */}
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color={Colors.secondaryText} />
+        <View style={[styles.searchContainer, { backgroundColor: colors.cardBackground }]} key={`search-${theme}`}>
+          <Ionicons name="search" size={20} color={colors.secondaryText} />
           <TextInput
-            style={styles.searchInput}
-            placeholder="Search pools by time..."
-            placeholderTextColor={Colors.secondaryText}
+            style={[styles.searchInput, { color: colors.primaryText }]}
+            placeholder="Search pools..."
+            placeholderTextColor={colors.secondaryText}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
         </View>
 
-        {/* Schedule Info */}
-        <Card style={styles.scheduleCard}>
-          <View style={styles.scheduleHeader}>
-            <Ionicons name="calendar" size={24} color={Colors.accent} />
-            <Text style={styles.scheduleTitle}>Pool Schedule</Text>
-          </View>
-          <View style={styles.scheduleDetails}>
-            <Text style={styles.scheduleText}>• Morning: 5:00 AM - 9:00 AM (10-min intervals)</Text>
-            <Text style={styles.scheduleText}>• Evening: 6:00 PM - 10:00 PM (10-min intervals)</Text>
-            <Text style={styles.scheduleText}>• Entry Fee: ₹10 per pool</Text>
-            <Text style={styles.scheduleText}>• Register up to 1 day in advance</Text>
-          </View>
-        </Card>
-
-        {/* Tabs */}
-        <View style={styles.tabsContainer}>
-          <TouchableOpacity 
-            style={[styles.tab, selectedTab === 'upcoming' && styles.activeTab]} 
-            onPress={() => setSelectedTab('upcoming')}
-          >
-            <Text style={[styles.tabText, selectedTab === 'upcoming' && styles.activeTabText]}>
-              Upcoming ({upcomingPools.length})
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.tab, selectedTab === 'active' && styles.activeTab]} 
-            onPress={() => setSelectedTab('active')}
-          >
-            <Text style={[styles.tabText, selectedTab === 'active' && styles.activeTabText]}>
-              Live Now
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.tab, selectedTab === 'completed' && styles.activeTab]} 
-            onPress={() => setSelectedTab('completed')}
-          >
-            <Text style={[styles.tabText, selectedTab === 'completed' && styles.activeTabText]}>
-              History
-            </Text>
-          </TouchableOpacity>
+        {/* Tab Navigation */}
+        <View style={[styles.tabContainer, { backgroundColor: colors.cardBackground }]} key={`tabs-${theme}`}>
+          {['upcoming', 'history'].map(tab => (
+            <TouchableOpacity
+              key={tab}
+              style={[
+                styles.tab, 
+                selectedTab === tab && { backgroundColor: colors.accent }
+              ]}
+              onPress={() => setSelectedTab(tab)}
+            >
+              <Text style={[
+                styles.tabText, 
+                { color: selectedTab === tab ? '#fff' : colors.secondaryText }
+              ]}>
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
         {/* Pools List */}
         <View style={styles.poolsContainer}>
-          {filteredPools.length === 0 ? (
-            <Card style={styles.emptyCard}>
-              <Ionicons name="search" size={48} color={Colors.secondaryText} />
-              <Text style={styles.emptyText}>
-                {searchQuery ? 'No pools found for your search.' : 'No pools available in this category.'}
-              </Text>
-            </Card>
-          ) : (
-            filteredPools.map(pool => (
-              <Card key={pool.id} style={styles.poolCard}>
-                <View style={styles.poolHeader}>
-                  <View style={styles.poolTitleRow}>
-                    <Ionicons name="walk" size={20} color={Colors.accent} />
-                    <Text style={styles.poolName}>{pool.name}</Text>
-                  </View>
-                  <View style={[
-                    styles.statusBadge, 
-                    { 
-                      backgroundColor: pool.status === 'active' ? Colors.accent : 
-                                    pool.status === 'upcoming' ? Colors.gold : 
-                                    Colors.secondaryText 
-                    }
-                  ]}> 
-                    <Text style={styles.statusText}>
-                      {pool.status === 'active' ? 'LIVE NOW' : 
-                       pool.status === 'upcoming' ? 'UPCOMING' : 
-                       'COMPLETED'}
-                    </Text>
-                  </View>
-                </View>
-                
-                <View style={styles.poolDetails}>
-                  <View style={styles.detailRow}>
-                    <Ionicons name="time" size={16} color={Colors.secondaryText} />
-                    <Text style={styles.detailText}>{pool.timeSlot}</Text>
-                  </View>
-                  <View style={styles.detailRow}>
-                    <Ionicons name="people" size={16} color={Colors.secondaryText} />
-                    <Text style={styles.detailText}>{pool.participants} participants</Text>
-                  </View>
-                  <View style={styles.detailRow}>
-                    <Ionicons name="wallet" size={16} color={Colors.secondaryText} />
-                    <Text style={styles.detailText}>Entry: ₹{pool.entryFee}</Text>
-                  </View>
-                  <View style={styles.detailRow}>
-                    <Ionicons name="trophy" size={16} color={Colors.secondaryText} />
-                    <Text style={styles.detailText}>Pool: ₹{pool.totalPool}</Text>
-                  </View>
-                  
-                  {/* Show time left for upcoming pools */}
-                  {pool.status === 'upcoming' && (
-                    <View style={styles.detailRow}>
-                      <Ionicons name="timer" size={16} color={Colors.gold} />
-                      <Text style={[styles.detailText, { color: Colors.gold }]}>
-                        Starts in: {formatTimeLeft(pool.startTime)}
-                      </Text>
-                    </View>
-                  )}
-                  
-                  {/* Show results for completed pools */}
-                  {pool.status === 'completed' && (
-                    <View style={styles.detailRow}>
-                      <Ionicons name="medal" size={16} color={pool.winnings > 0 ? Colors.gold : Colors.secondaryText} />
-                      <Text style={[styles.detailText, { color: pool.winnings > 0 ? Colors.gold : Colors.secondaryText }]}>
-                        Position: {pool.position} • Winnings: ₹{pool.winnings}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-                
-                {/* Join/Register Button - Only show for upcoming pools */}
-                {pool.status === 'upcoming' && (
-                  joinedPools.includes(pool.id) ? (
-                    <View style={[styles.joinButton, { backgroundColor: Colors.secondaryText }]}> 
-                      <Text style={[styles.joinButtonText, { color: Colors.primaryText }]}>Registered</Text>
-                    </View>
-                  ) : (
-                    <TouchableOpacity style={styles.joinButton} onPress={() => handleJoinPool(pool)}>
-                      <Ionicons name="log-in" size={18} color={Colors.primaryText} />
-                      <Text style={styles.joinButtonText}>Join for ₹{pool.entryFee}</Text>
-                    </TouchableOpacity>
-                  )
-                )}
-              </Card>
-            ))
-          )}
+          {getFilteredPools().map(pool => (
+            <PoolCard key={pool.id} pool={pool} onJoin={handleJoinPool} />
+          ))}
         </View>
       </ScrollView>
-      <AddMoneyModal visible={addMoneyVisible} onClose={() => setAddMoneyVisible(false)} />
+
+      <AddMoneyModal 
+        visible={showAddMoneyModal} 
+        onClose={() => setShowAddMoneyModal(false)} 
+      />
     </ScreenContainer>
   );
 }; 

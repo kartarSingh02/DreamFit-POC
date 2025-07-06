@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Modal, TouchableOpacity, Image, StyleSheet, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Colors from '../../constants/Colors';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface ChallengeJoinModalProps {
   visible: boolean;
@@ -26,6 +26,7 @@ export const ChallengeJoinModal: React.FC<ChallengeJoinModalProps> = ({
   image,
   onRegister,
 }) => {
+  const { colors } = useTheme();
   const totalWinnings = Math.round(totalUsers * entryFee * 0.10);
 
   return (
@@ -38,26 +39,26 @@ export const ChallengeJoinModal: React.FC<ChallengeJoinModalProps> = ({
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.overlay}>
           <TouchableWithoutFeedback onPress={() => {}}>
-            <View style={styles.floatingCard}>
+            <View style={[styles.floatingCard, { backgroundColor: colors.cardBackground }]}>
               {/* Header */}
               <View style={styles.header}>
                 <TouchableOpacity onPress={onClose} style={styles.backButton}>
-                  <Ionicons name="arrow-back" size={28} color="#fff" />
+                  <Ionicons name="arrow-back" size={28} color={colors.primaryText} />
                 </TouchableOpacity>
-                <Text style={styles.timeText}>{time}</Text>
+                <Text style={[styles.timeText, { color: colors.primaryText }]}>{time}</Text>
                 <View style={{ width: 28 }} /> {/* Placeholder for alignment */}
               </View>
               {/* Description */}
-              <Text style={styles.description}>{description}</Text>
+              <Text style={[styles.description, { color: colors.secondaryText }]}>{description}</Text>
               {/* Total Winnings */}
-              <Text style={styles.winningsText}>
-                Total Winnings: <Text style={styles.winningsAmount}>₹{totalWinnings}</Text>
+              <Text style={[styles.winningsText, { color: colors.primaryText }]}>
+                Total Winnings: <Text style={[styles.winningsAmount, { color: colors.accent }]}>₹{totalWinnings}</Text>
               </Text>
               {/* Image */}
               <Image source={image} style={styles.challengeImage} resizeMode="contain" />
               {/* Register Button */}
-              <TouchableOpacity style={styles.registerButton} onPress={onRegister}>
-                <Text style={styles.registerButtonText}>Register</Text>
+              <TouchableOpacity style={[styles.registerButton, { backgroundColor: colors.accent }]} onPress={onRegister}>
+                <Text style={[styles.registerButtonText, { color: '#fff' }]}>Register</Text>
               </TouchableOpacity>
             </View>
           </TouchableWithoutFeedback>
@@ -76,7 +77,6 @@ const styles = StyleSheet.create({
   },
   floatingCard: {
     width: '90%',
-    backgroundColor: Colors.cardBackground,
     borderRadius: 22,
     padding: 24,
     alignItems: 'center',
@@ -105,37 +105,32 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#fff',
   },
   registerButton: {
-    backgroundColor: Colors.accent,
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 32,
     marginVertical: 10,
     width: '100%',
     alignItems: 'center',
+    backgroundColor: '#10B981', // Green color
   },
   registerButtonText: {
-    color: '#fff',
     fontWeight: 'bold',
     fontSize: 18,
   },
   description: {
     fontSize: 15,
-    color: Colors.secondaryText,
     marginVertical: 10,
     textAlign: 'center',
   },
   winningsText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
     marginTop: 10,
   },
   winningsAmount: {
     fontSize: 22,
-    color: Colors.accent,
     fontWeight: 'bold',
   },
   challengeImage: {

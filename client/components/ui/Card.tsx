@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ViewProps, StyleSheet } from 'react-native';
-import Colors from '../../constants/Colors';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface CardProps extends ViewProps {
   variant?: 'primary' | 'secondary';
@@ -14,11 +14,25 @@ export const Card: React.FC<CardProps> = ({
   style,
   ...props
 }) => {
+  const { colors, theme } = useTheme();
+
   const getCardStyle = () => {
-    const variantStyle = styles[variant];
+    const variantStyle = { 
+      backgroundColor: colors.cardBackground, 
+      borderColor: colors.borderColor,
+      borderWidth: 1, // Always show border
+      // Add shadows for light theme
+      ...(theme === 'light' && {
+        shadowColor: colors.shadowColor,
+        shadowOffset: colors.shadowOffset,
+        shadowOpacity: colors.shadowOpacity,
+        shadowRadius: colors.shadowRadius,
+        elevation: colors.elevation,
+      })
+    };
     const paddingStyle = styles[`padding_${padding}`];
     
-    return [variantStyle, paddingStyle, style];
+    return [styles.base, variantStyle, paddingStyle, style];
   };
 
   return (
@@ -29,17 +43,9 @@ export const Card: React.FC<CardProps> = ({
 };
 
 const styles = StyleSheet.create({
-  primary: {
-    backgroundColor: Colors.cardBackground,
+  base: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: Colors.borderColor,
-  },
-  secondary: {
-    backgroundColor: '#2d2d2d',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.borderColor,
   },
   padding_small: {
     padding: 12,

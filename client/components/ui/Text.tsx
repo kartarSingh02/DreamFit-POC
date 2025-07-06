@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text as RNText, TextProps, StyleSheet } from 'react-native';
-import Colors from '../../constants/Colors';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface CustomTextProps extends TextProps {
   variant?: 'h1' | 'h2' | 'h3' | 'body' | 'caption' | 'label';
@@ -16,9 +16,15 @@ export const Text: React.FC<CustomTextProps> = ({
   style,
   ...props
 }) => {
+  const { colors } = useTheme();
+
   const getTextStyle = () => {
     const variantStyle = styles[variant];
-    const colorStyle = styles[`text_${color}`];
+    const colorStyle = {
+      color: color === 'primary' ? colors.primaryText : 
+             color === 'secondary' ? colors.secondaryText : 
+             colors.accent
+    };
     const weightStyle = styles[`weight_${weight}`];
     
     return [variantStyle, colorStyle, weightStyle, style];
@@ -56,17 +62,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     lineHeight: 20,
-  },
-  
-  // Colors
-  text_primary: {
-    color: Colors.primaryText,
-  },
-  text_secondary: {
-    color: Colors.secondaryText,
-  },
-  text_accent: {
-    color: Colors.accent,
   },
   
   // Weights

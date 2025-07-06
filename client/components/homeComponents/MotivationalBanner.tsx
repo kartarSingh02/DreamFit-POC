@@ -5,7 +5,7 @@ import Colors from '../../constants/Colors';
 
 export const MotivationalBanner: React.FC = () => (
   <View style={styles.banner}>
-    <Ionicons name="bulb" size={22} color="#fff" style={{ marginRight: 8 }} />
+            <Ionicons name="bulb" size={22} color={colors.accent} style={{ marginRight: 8 }} />
     <Text style={styles.text}>
       <Text style={styles.bold}>Tip:</Text> Stay hydrated! Invite friends to earn bonus cash. Take the stairs!
     </Text>

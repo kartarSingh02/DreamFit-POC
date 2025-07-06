@@ -3,10 +3,11 @@ import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput } from
 import { Text } from '../ui/Text';
 import { Card } from '../ui/Card';
 import { Ionicons } from '@expo/vector-icons';
-import Colors from '../../constants/Colors';
 import { ScreenContainer } from '../layout/ScreenContainer';
 import { AddMoneyModal } from '../ui/AddMoneyModal';
 import { useStepCounter } from '../StepCounterContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import Colors from '@/constants/Colors';
 
 // Trending challenges data
 const trendingChallenges = [
@@ -177,6 +178,8 @@ interface ChallengeCardProps {
 }
 
 const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge, onJoin }) => {
+  const { colors } = useTheme();
+  
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy': return '#4CAF50';
@@ -184,7 +187,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge, onJoin }) => {
       case 'hard': return '#F44336';
       case 'epic': return '#9C27B0';
       case 'legendary': return '#FFD700';
-      default: return Colors.accent;
+      default: return colors.accent;
     }
   };
 
@@ -198,42 +201,42 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge, onJoin }) => {
   };
 
   return (
-    <Card style={styles.challengeCard}>
+    <Card style={[styles.challengeCard, { borderColor: colors.borderColor }]}>
       <View style={styles.challengeHeader}>
-        <View style={styles.challengeIcon}>
+        <View style={[styles.challengeIcon, { backgroundColor: colors.accent }]}>
           <Text style={styles.challengeIconText}>{getTypeIcon(challenge.type)}</Text>
         </View>
         <View style={styles.challengeInfo}>
-          <Text style={styles.challengeName}>{challenge.name}</Text>
+          <Text style={[styles.challengeName, { color: colors.primaryText }]}>{challenge.name}</Text>
           {challenge.description && (
-            <Text style={styles.challengeDescription}>{challenge.description}</Text>
+            <Text style={[styles.challengeDescription, { color: colors.secondaryText }]}>{challenge.description}</Text>
           )}
           <View style={styles.challengeMeta}>
             <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(challenge.difficulty) }]}>
-              <Text style={styles.difficultyText}>{challenge.difficulty.toUpperCase()}</Text>
+              <Text style={[styles.difficultyText, { color: colors.primaryText }]}>{challenge.difficulty.toUpperCase()}</Text>
             </View>
-            <Text style={styles.timeLimit}>{challenge.timeLimit}</Text>
+            <Text style={[styles.timeLimit, { color: colors.secondaryText }]}>{challenge.timeLimit}</Text>
           </View>
         </View>
         <View style={styles.participantsContainer}>
-          <Text style={styles.participantsText}>{challenge.participants}</Text>
-          <Text style={styles.participantsLabel}>participants</Text>
+          <Text style={[styles.participantsText, { color: colors.primaryText }]}>{challenge.participants}</Text>
+          <Text style={[styles.participantsLabel, { color: colors.secondaryText }]}>participants</Text>
         </View>
       </View>
       
       <View style={styles.challengeFooter}>
         <View style={styles.rewardContainer}>
-          <Text style={styles.rewardLabel}>Reward:</Text>
-          <Text style={styles.rewardText}>{challenge.reward}</Text>
+          <Text style={[styles.rewardLabel, { color: colors.secondaryText }]}>Reward:</Text>
+          <Text style={[styles.rewardText, { color: colors.gold }]}>{challenge.reward}</Text>
           {challenge.specialReward && (
-            <Text style={styles.specialReward}>{challenge.specialReward}</Text>
+            <Text style={[styles.specialReward, { color: colors.accent }]}>{challenge.specialReward}</Text>
           )}
         </View>
         <TouchableOpacity 
-          style={styles.joinButton}
+          style={[styles.joinButton, { backgroundColor: colors.accent }]}
           onPress={() => onJoin(challenge)}
         >
-          <Text style={styles.joinButtonText}>Join</Text>
+          <Text style={[styles.joinButtonText, { color: colors.primaryText }]}>Join</Text>
         </TouchableOpacity>
       </View>
     </Card>
@@ -246,12 +249,14 @@ interface PoolCardProps {
 }
 
 const PoolCard: React.FC<PoolCardProps> = ({ pool, onJoin }) => {
+  const { colors } = useTheme();
+  
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return Colors.accent;
-      case 'upcoming': return Colors.gold;
-      case 'completed': return Colors.secondaryText;
-      default: return Colors.secondaryText;
+      case 'active': return colors.accent;
+      case 'upcoming': return colors.gold;
+      case 'completed': return colors.secondaryText;
+      default: return colors.secondaryText;
     }
   };
 
@@ -268,102 +273,106 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool, onJoin }) => {
     <Card style={styles.poolCard}>
       <View style={styles.poolHeader}>
         <View style={styles.poolTitleRow}>
-          <Ionicons name="walk" size={20} color={Colors.accent} />
-          <Text style={styles.poolName}>{pool.name}</Text>
+          <Ionicons name="walk" size={20} color={colors.accent} />
+          <Text style={[styles.poolName, { color: colors.primaryText }]}>{pool.name}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(pool.status) }]}>
-          <Text style={styles.statusText}>{getStatusText(pool.status)}</Text>
+          <Text style={[styles.statusText, { color: colors.primaryText }]}>{getStatusText(pool.status)}</Text>
         </View>
       </View>
 
       <View style={styles.poolDetails}>
         <View style={styles.detailRow}>
-          <Ionicons name="time" size={16} color={Colors.secondaryText} />
-          <Text style={styles.detailText}>{pool.timeSlot}</Text>
+          <Ionicons name="time" size={16} color={colors.secondaryText} />
+          <Text style={[styles.detailText, { color: colors.secondaryText }]}>{pool.timeSlot}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Ionicons name="people" size={16} color={Colors.secondaryText} />
-          <Text style={styles.detailText}>{pool.participants} participants</Text>
+          <Ionicons name="people" size={16} color={colors.secondaryText} />
+          <Text style={[styles.detailText, { color: colors.secondaryText }]}>{pool.participants} participants</Text>
         </View>
         <View style={styles.detailRow}>
-          <Ionicons name="wallet" size={16} color={Colors.secondaryText} />
-          <Text style={styles.detailText}>Entry: ₹{pool.entryFee}</Text>
+          <Ionicons name="wallet" size={16} color={colors.secondaryText} />
+          <Text style={[styles.detailText, { color: colors.secondaryText }]}>Entry: ₹{pool.entryFee}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Ionicons name="trophy" size={16} color={Colors.secondaryText} />
-          <Text style={styles.detailText}>Pool: ₹{pool.totalPool}</Text>
+          <Ionicons name="trophy" size={16} color={colors.secondaryText} />
+          <Text style={[styles.detailText, { color: colors.secondaryText }]}>Pool: ₹{pool.totalPool}</Text>
         </View>
       </View>
 
       {pool.status === 'active' && (
-        <View style={styles.countdownContainer}>
-          <Text style={styles.countdownLabel}>Time Remaining:</Text>
-          <Text style={styles.countdownTime}>{pool.timeLeft}</Text>
+        <View style={[styles.countdownContainer, { backgroundColor: colors.accent }]}>
+          <Text style={[styles.countdownLabel, { color: colors.primaryText }]}>Time Remaining:</Text>
+          <Text style={[styles.countdownTime, { color: colors.primaryText }]}>{pool.timeLeft}</Text>
         </View>
       )}
 
       <View style={styles.payoutInfo}>
-        <Text style={styles.payoutTitle}>Payout Structure:</Text>
+        <Text style={[styles.payoutTitle, { color: colors.primaryText }]}>Payout Structure:</Text>
         <View style={styles.payoutRow}>
-          <Text style={styles.payoutRank}>🥇 1st:</Text>
-          <Text style={styles.payoutAmount}>₹{Math.round(pool.totalPool * 0.10)}</Text>
+          <Text style={[styles.payoutRank, { color: colors.secondaryText }]}>🥇 1st:</Text>
+          <Text style={[styles.payoutAmount, { color: colors.gold }]}>₹{Math.round(pool.totalPool * 0.10)}</Text>
         </View>
         <View style={styles.payoutRow}>
-          <Text style={styles.payoutRank}>🥈 2nd:</Text>
-          <Text style={styles.payoutAmount}>₹{Math.round(pool.totalPool * 0.05)}</Text>
+          <Text style={[styles.payoutRank, { color: colors.secondaryText }]}>🥈 2nd:</Text>
+          <Text style={[styles.payoutAmount, { color: colors.gold }]}>₹{Math.round(pool.totalPool * 0.05)}</Text>
         </View>
         <View style={styles.payoutRow}>
-          <Text style={styles.payoutRank}>🥉 3rd:</Text>
-          <Text style={styles.payoutAmount}>₹{Math.round(pool.totalPool * 0.03)}</Text>
+          <Text style={[styles.payoutRank, { color: colors.secondaryText }]}>🥉 3rd:</Text>
+          <Text style={[styles.payoutAmount, { color: colors.gold }]}>₹{Math.round(pool.totalPool * 0.03)}</Text>
         </View>
         <View style={styles.payoutRow}>
-          <Text style={styles.payoutRank}>4th-50th:</Text>
-          <Text style={styles.payoutAmount}>₹10 (refund)</Text>
+          <Text style={[styles.payoutRank, { color: colors.secondaryText }]}>4th-50th:</Text>
+          <Text style={[styles.payoutAmount, { color: colors.gold }]}>₹10 (refund)</Text>
         </View>
       </View>
 
       {pool.status === 'upcoming' && (
-        <TouchableOpacity style={styles.joinButton} onPress={() => onJoin(pool)}>
-          <Text style={styles.joinButtonText}>Join Pool</Text>
+        <TouchableOpacity style={[styles.joinButton, { backgroundColor: colors.accent }]} onPress={() => onJoin(pool)}>
+          <Text style={[styles.joinButtonText, { color: colors.primaryText }]}>Join Pool</Text>
         </TouchableOpacity>
       )}
     </Card>
   );
 };
 
-const MyParticipationTab: React.FC<{ myJoinedPools: any[]; myJoinedChallenges: any[]; styles: any; }> = ({ myJoinedPools, myJoinedChallenges, styles }) => (
-  <View style={styles.myParticipationContainer}>
-    <Text style={styles.sectionTitle}>My Joined Pools & Challenges</Text>
-    {myJoinedPools.length === 0 && myJoinedChallenges.length === 0 ? (
-      <Card style={styles.emptyCard}>
-        <Ionicons name="star-outline" size={48} color={Colors.secondaryText} />
-        <Text style={styles.emptyText}>You haven't joined any pools or challenges yet.</Text>
-      </Card>
-    ) : (
-      <>
-        {myJoinedPools.map(pool => (
-          <Card key={`pool-${pool.id}`} style={styles.myItemCard}>
-            <Text style={styles.myItemType}>🚶 Walking Pool</Text>
-            <Text style={styles.myItemName}>{pool.name}</Text>
-            <Text style={styles.myItemDetail}>Time: {pool.timeSlot}</Text>
-            <Text style={styles.myItemDetail}>Entry Fee: ₹{pool.entryFee}</Text>
-            <Text style={styles.myItemDetail}>Status: {pool.status === 'active' ? 'Live' : pool.status.charAt(0).toUpperCase() + pool.status.slice(1)}</Text>
-          </Card>
-        ))}
-        {myJoinedChallenges.map(challenge => (
-          <Card key={`challenge-${challenge.id}`} style={styles.myItemCard}>
-            <Text style={styles.myItemType}>🏆 Challenge</Text>
-            <Text style={styles.myItemName}>{challenge.name}</Text>
-            <Text style={styles.myItemDetail}>Reward: {challenge.reward}</Text>
-            <Text style={styles.myItemDetail}>Difficulty: {challenge.difficulty}</Text>
-          </Card>
-        ))}
-      </>
-    )}
-  </View>
-);
+const MyParticipationTab: React.FC<{ myJoinedPools: any[]; myJoinedChallenges: any[]; styles: any; }> = ({ myJoinedPools, myJoinedChallenges, styles }) => {
+  const { colors } = useTheme();
+  return (
+    <View style={styles.myParticipationContainer}>
+      <Text style={[styles.sectionTitle, { color: colors.primaryText }]}>My Joined Pools & Challenges</Text>
+      {myJoinedPools.length === 0 && myJoinedChallenges.length === 0 ? (
+        <Card style={styles.emptyCard}>
+          <Ionicons name="star-outline" size={48} color={colors.secondaryText} />
+          <Text style={[styles.emptyText, { color: colors.secondaryText }]}>You haven't joined any pools or challenges yet.</Text>
+        </Card>
+      ) : (
+        <>
+          {myJoinedPools.map(pool => (
+            <Card key={`pool-${pool.id}`} style={styles.myItemCard}>
+              <Text style={[styles.myItemType, { color: colors.primaryText }]}>🚶 Walking Pool</Text>
+              <Text style={[styles.myItemName, { color: colors.primaryText }]}>{pool.name}</Text>
+              <Text style={[styles.myItemDetail, { color: colors.secondaryText }]}>Time: {pool.timeSlot}</Text>
+              <Text style={[styles.myItemDetail, { color: colors.secondaryText }]}>Entry Fee: ₹{pool.entryFee}</Text>
+              <Text style={[styles.myItemDetail, { color: colors.secondaryText }]}>Status: {pool.status === 'active' ? 'Live' : pool.status.charAt(0).toUpperCase() + pool.status.slice(1)}</Text>
+            </Card>
+          ))}
+          {myJoinedChallenges.map(challenge => (
+            <Card key={`challenge-${challenge.id}`} style={styles.myItemCard}>
+              <Text style={[styles.myItemType, { color: colors.primaryText }]}>🏆 Challenge</Text>
+              <Text style={[styles.myItemName, { color: colors.primaryText }]}>{challenge.name}</Text>
+              <Text style={[styles.myItemDetail, { color: colors.secondaryText }]}>Reward: {challenge.reward}</Text>
+              <Text style={[styles.myItemDetail, { color: colors.secondaryText }]}>Difficulty: {challenge.difficulty}</Text>
+            </Card>
+          ))}
+        </>
+      )}
+    </View>
+  );
+};
 
 export const ChallengesAndPoolsScreen: React.FC = () => {
+  const { colors, theme } = useTheme();
   const [activeTab, setActiveTab] = useState<'pools' | 'challenges' | 'my'>('pools');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedPoolTab, setSelectedPoolTab] = useState<'upcoming' | 'active' | 'completed'>('upcoming');
@@ -479,38 +488,50 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>Challenges</Text>
-            <Text style={styles.subtitle}>Join walking pools and challenges to win rewards!</Text>
+            <Text style={[styles.title, { color: colors.primaryText }]}>Challenges</Text>
+            <Text style={[styles.subtitle, { color: colors.secondaryText }]}>Join walking pools and challenges to win rewards!</Text>
           </View>
-          <TouchableOpacity onPress={() => setAddMoneyVisible(true)} style={styles.walletButton}>
-            <Ionicons name="wallet" size={24} color={Colors.primaryText} />
-            <Ionicons name="add" size={16} color={Colors.primaryText} style={styles.addIcon} />
+          <TouchableOpacity onPress={() => setAddMoneyVisible(true)} style={[styles.walletButton, { backgroundColor: colors.accent }]}>
+            <Ionicons name="wallet" size={24} color={colors.primaryText} />
+            <Ionicons name="add" size={16} color={colors.primaryText} style={styles.addIcon} />
           </TouchableOpacity>
         </View>
 
         {/* Main Tabs */}
-        <View style={styles.mainTabs}>
+        <View style={[styles.mainTabs, { backgroundColor: colors.cardBackground }]}>
           <TouchableOpacity 
-            style={[styles.mainTab, activeTab === 'pools' && styles.mainTabActive]} 
+            style={[styles.mainTab, activeTab === 'pools' && { backgroundColor: colors.accent }]} 
             onPress={() => setActiveTab('pools')}
           >
-            <Text style={[styles.mainTabText, activeTab === 'pools' && styles.mainTabTextActive]}>
+            <Text style={[
+              styles.mainTabText, 
+              { color: colors.secondaryText },
+              activeTab === 'pools' && { color: colors.primaryText }
+            ]}>
               🚶 Walking Pools
             </Text>
           </TouchableOpacity>
           <TouchableOpacity 
-            style={[styles.mainTab, activeTab === 'challenges' && styles.mainTabActive]} 
+            style={[styles.mainTab, activeTab === 'challenges' && { backgroundColor: colors.accent }]} 
             onPress={() => setActiveTab('challenges')}
           >
-            <Text style={[styles.mainTabText, activeTab === 'challenges' && styles.mainTabTextActive]}>
+            <Text style={[
+              styles.mainTabText, 
+              { color: colors.secondaryText },
+              activeTab === 'challenges' && { color: colors.primaryText }
+            ]}>
               🏆 Challenges
             </Text>
           </TouchableOpacity>
           <TouchableOpacity 
-            style={[styles.mainTab, activeTab === 'my' && styles.mainTabActive]} 
+            style={[styles.mainTab, activeTab === 'my' && { backgroundColor: colors.accent }]} 
             onPress={() => setActiveTab('my')}
           >
-            <Text style={[styles.mainTabText, activeTab === 'my' && styles.mainTabTextActive]}>
+            <Text style={[
+              styles.mainTabText, 
+              { color: colors.secondaryText },
+              activeTab === 'my' && { color: colors.primaryText }
+            ]}>
               ⭐ My Participation
             </Text>
           </TouchableOpacity>
@@ -581,12 +602,12 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
         {activeTab === 'pools' && (
           <>
             {/* Search Bar */}
-            <View style={styles.searchContainer}>
-              <Ionicons name="search" size={20} color={Colors.secondaryText} />
+            <View style={[styles.searchContainer, { backgroundColor: colors.cardBackground }]}>
+              <Ionicons name="search" size={20} color={colors.secondaryText} />
               <TextInput
-                style={styles.searchInput}
+                style={[styles.searchInput, { color: colors.primaryText }]}
                 placeholder="Search pools by time..."
-                placeholderTextColor={Colors.secondaryText}
+                placeholderTextColor={colors.secondaryText}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
               />
@@ -595,39 +616,51 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
             {/* Schedule Info */}
             <Card style={styles.scheduleCard}>
               <View style={styles.scheduleHeader}>
-                <Ionicons name="calendar" size={24} color={Colors.accent} />
+                <Ionicons name="calendar" size={24} color={colors.accent} />
                 <Text style={styles.scheduleTitle}>Pool Schedule</Text>
               </View>
               <View style={styles.scheduleDetails}>
-                <Text style={styles.scheduleText}>• Morning: 5:00 AM - 9:00 AM (10-min intervals)</Text>
-                <Text style={styles.scheduleText}>• Evening: 6:00 PM - 10:00 PM (10-min intervals)</Text>
-                <Text style={styles.scheduleText}>• Entry Fee: ₹10 per pool</Text>
+                <Text style={[styles.scheduleText, { color: colors.secondaryText }]}>• Morning: 5:00 AM - 9:00 AM (10-min intervals)</Text>
+                <Text style={[styles.scheduleText, { color: colors.secondaryText }]}>• Evening: 6:00 PM - 10:00 PM (10-min intervals)</Text>
+                <Text style={[styles.scheduleText, { color: colors.secondaryText }]}>• Entry Fee: ₹10 per pool</Text>
               </View>
             </Card>
 
             {/* Pool Tabs */}
-            <View style={styles.poolTabs}>
+            <View style={[styles.poolTabs, { backgroundColor: colors.cardBackground }]}>
               <TouchableOpacity 
-                style={[styles.poolTab, selectedPoolTab === 'upcoming' && styles.poolTabActive]} 
+                style={[styles.poolTab, selectedPoolTab === 'upcoming' && { backgroundColor: colors.accent }]} 
                 onPress={() => setSelectedPoolTab('upcoming')}
               >
-                <Text style={[styles.poolTabText, selectedPoolTab === 'upcoming' && styles.poolTabTextActive]}>
+                <Text style={[
+                  styles.poolTabText, 
+                  { color: colors.secondaryText },
+                  selectedPoolTab === 'upcoming' && { color: colors.primaryText }
+                ]}>
                   Upcoming ({upcomingPools.length})
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity 
-                style={[styles.poolTab, selectedPoolTab === 'active' && styles.poolTabActive]} 
+                style={[styles.poolTab, selectedPoolTab === 'active' && { backgroundColor: colors.accent }]} 
                 onPress={() => setSelectedPoolTab('active')}
               >
-                <Text style={[styles.poolTabText, selectedPoolTab === 'active' && styles.poolTabTextActive]}>
+                <Text style={[
+                  styles.poolTabText, 
+                  { color: colors.secondaryText },
+                  selectedPoolTab === 'active' && { color: colors.primaryText }
+                ]}>
                   Live Now
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity 
-                style={[styles.poolTab, selectedPoolTab === 'completed' && styles.poolTabActive]} 
+                style={[styles.poolTab, selectedPoolTab === 'completed' && { backgroundColor: colors.accent }]} 
                 onPress={() => setSelectedPoolTab('completed')}
               >
-                <Text style={[styles.poolTabText, selectedPoolTab === 'completed' && styles.poolTabTextActive]}>
+                <Text style={[
+                  styles.poolTabText, 
+                  { color: colors.secondaryText },
+                  selectedPoolTab === 'completed' && { color: colors.primaryText }
+                ]}>
                   History
                 </Text>
               </TouchableOpacity>
@@ -637,8 +670,8 @@ export const ChallengesAndPoolsScreen: React.FC = () => {
             <View style={styles.poolsContainer}>
               {filteredPools.length === 0 ? (
                 <Card style={styles.emptyCard}>
-                  <Ionicons name="search" size={48} color={Colors.secondaryText} />
-                  <Text style={styles.emptyText}>
+                  <Ionicons name="search" size={48} color={colors.secondaryText} />
+                  <Text style={[styles.emptyText, { color: colors.secondaryText }]}>
                     {searchQuery ? 'No pools found for your search.' : 'No pools available in this category.'}
                   </Text>
                 </Card>
@@ -669,16 +702,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: Colors.secondaryText,
   },
   walletButton: {
     position: 'relative',
-    backgroundColor: Colors.accent,
     padding: 12,
     borderRadius: 12,
   },
@@ -690,7 +720,6 @@ const styles = StyleSheet.create({
   mainTabs: {
     flexDirection: 'row',
     marginBottom: 24,
-    backgroundColor: Colors.cardBackground,
     borderRadius: 12,
     padding: 4,
   },
@@ -701,16 +730,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
-  mainTabActive: {
-    backgroundColor: Colors.accent,
-  },
   mainTabText: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.secondaryText,
-  },
-  mainTabTextActive: {
-    color: Colors.primaryText,
   },
   categoryContainer: {
     marginBottom: 24,
@@ -718,14 +740,13 @@ const styles = StyleSheet.create({
   categoryButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.cardBackground,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 12,
   },
   categoryButtonActive: {
-    backgroundColor: Colors.accent,
+    // backgroundColor will be set inline
   },
   categoryIcon: {
     fontSize: 16,
@@ -733,11 +754,9 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 14,
-    color: Colors.secondaryText,
     fontWeight: '500',
   },
   categoryTextActive: {
-    color: Colors.primaryText,
     fontWeight: '600',
   },
   section: {
@@ -746,7 +765,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginBottom: 16,
   },
   horizontalScroll: {
@@ -758,7 +776,6 @@ const styles = StyleSheet.create({
   },
   challengeCard: {
     borderWidth: 1,
-    borderColor: Colors.borderColor,
     padding: 16,
   },
   challengeHeader: {
@@ -770,7 +787,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.accent,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -784,12 +800,10 @@ const styles = StyleSheet.create({
   challengeName: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginBottom: 4,
   },
   challengeDescription: {
     fontSize: 12,
-    color: Colors.secondaryText,
     marginBottom: 8,
   },
   challengeMeta: {
@@ -805,11 +819,9 @@ const styles = StyleSheet.create({
   difficultyText: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: Colors.primaryText,
   },
   timeLimit: {
     fontSize: 12,
-    color: Colors.secondaryText,
   },
   participantsContainer: {
     alignItems: 'center',
@@ -817,11 +829,9 @@ const styles = StyleSheet.create({
   participantsText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: Colors.primaryText,
   },
   participantsLabel: {
     fontSize: 10,
-    color: Colors.secondaryText,
   },
   challengeFooter: {
     flexDirection: 'row',
@@ -833,33 +843,27 @@ const styles = StyleSheet.create({
   },
   rewardLabel: {
     fontSize: 12,
-    color: Colors.secondaryText,
   },
   rewardText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: Colors.gold,
   },
   specialReward: {
     fontSize: 12,
-    color: Colors.accent,
     marginTop: 2,
   },
   joinButton: {
-    backgroundColor: Colors.accent,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
   },
   joinButtonText: {
-    color: Colors.primaryText,
     fontWeight: 'bold',
     fontSize: 14,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.cardBackground,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -868,7 +872,6 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     marginLeft: 12,
-    color: Colors.primaryText,
     fontSize: 16,
   },
   scheduleCard: {
@@ -883,7 +886,6 @@ const styles = StyleSheet.create({
   scheduleTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginLeft: 8,
   },
   scheduleDetails: {
@@ -891,13 +893,11 @@ const styles = StyleSheet.create({
   },
   scheduleText: {
     fontSize: 14,
-    color: Colors.secondaryText,
     marginBottom: 4,
   },
   poolTabs: {
     flexDirection: 'row',
     marginBottom: 16,
-    backgroundColor: Colors.cardBackground,
     borderRadius: 12,
     padding: 4,
   },
@@ -909,15 +909,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   poolTabActive: {
-    backgroundColor: Colors.accent,
+    // backgroundColor will be set inline
   },
   poolTabText: {
     fontSize: 14,
-    color: Colors.secondaryText,
     fontWeight: '500',
   },
   poolTabTextActive: {
-    color: Colors.primaryText,
     fontWeight: '600',
   },
   poolsContainer: {
@@ -929,7 +927,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: Colors.secondaryText,
     textAlign: 'center',
     marginTop: 16,
   },
@@ -951,7 +948,6 @@ const styles = StyleSheet.create({
   poolName: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginLeft: 8,
   },
   statusBadge: {
@@ -962,7 +958,6 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: Colors.primaryText,
   },
   poolDetails: {
     marginBottom: 12,
@@ -974,11 +969,9 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 14,
-    color: Colors.secondaryText,
     marginLeft: 8,
   },
   countdownContainer: {
-    backgroundColor: Colors.accent,
     padding: 8,
     borderRadius: 8,
     marginBottom: 12,
@@ -986,13 +979,11 @@ const styles = StyleSheet.create({
   },
   countdownLabel: {
     fontSize: 12,
-    color: Colors.primaryText,
     marginBottom: 4,
   },
   countdownTime: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: Colors.primaryText,
   },
   payoutInfo: {
     marginBottom: 12,
@@ -1000,7 +991,6 @@ const styles = StyleSheet.create({
   payoutTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginBottom: 8,
   },
   payoutRow: {
@@ -1010,12 +1000,10 @@ const styles = StyleSheet.create({
   },
   payoutRank: {
     fontSize: 12,
-    color: Colors.secondaryText,
   },
   payoutAmount: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: Colors.gold,
   },
   myItemCard: {
     marginBottom: 12,
@@ -1024,18 +1012,15 @@ const styles = StyleSheet.create({
   myItemType: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginBottom: 4,
   },
   myItemName: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: Colors.primaryText,
     marginBottom: 4,
   },
   myItemDetail: {
     fontSize: 12,
-    color: Colors.secondaryText,
     marginBottom: 4,
   },
 }); 

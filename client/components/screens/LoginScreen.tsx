@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import { Text } from '../ui/Text';
 import { LinearGradient } from 'expo-linear-gradient';
-import Colors from '../../constants/Colors';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface LoginScreenProps {
   onLoginSuccess: () => void;
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
+  const { colors } = useTheme();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -28,7 +29,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
 
   return (
     <LinearGradient
-      colors={Colors.backgroundGradient as [string, string, string]}
+      colors={colors.backgroundGradient as [string, string, string]}
       style={styles.bg}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
@@ -37,59 +38,83 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
       <SafeAreaView style={styles.container}>
         <View style={styles.logoContainer}>
           {/* Replace with your logo if available */}
-          <Text style={styles.logo}>DreamFit</Text>
+          <Text style={[styles.logo, { color: colors.primaryText }]}>DreamFit</Text>
         </View>
-        <Text style={styles.welcome}>Welcome! Let's get you moving.</Text>
+        <Text style={[styles.welcome, { color: colors.primaryText }]}>Welcome! Let's get you moving.</Text>
         <View style={styles.formContainer}>
           <View style={styles.inputLabelRow}>
-            <Text style={styles.inputLabel}>Name</Text>
+            <Text style={[styles.inputLabel, { color: colors.primaryText }]}>Name</Text>
             <Text style={styles.asterisk}>*</Text>
           </View>
           <TextInput
-            style={[styles.input, nameError && styles.inputError]}
+            style={[
+              styles.input, 
+              { 
+                backgroundColor: colors.cardBackground,
+                color: colors.primaryText,
+                borderColor: nameError ? '#FF5252' : colors.borderColor
+              }
+            ]}
             placeholder="Enter your name"
             value={name}
             onChangeText={text => { setName(text); setTouched(t => ({ ...t, name: true })); }}
-            placeholderTextColor="#aaa"
+            placeholderTextColor={colors.secondaryText}
             onBlur={() => setTouched(t => ({ ...t, name: true }))}
           />
           {nameError && <Text style={styles.errorText}>Name is required</Text>}
 
           <View style={styles.inputLabelRow}>
-            <Text style={styles.inputLabel}>Phone Number</Text>
+            <Text style={[styles.inputLabel, { color: colors.primaryText }]}>Phone Number</Text>
             <Text style={styles.asterisk}>*</Text>
           </View>
           <TextInput
-            style={[styles.input, phoneError && styles.inputError]}
+            style={[
+              styles.input, 
+              { 
+                backgroundColor: colors.cardBackground,
+                color: colors.primaryText,
+                borderColor: phoneError ? '#FF5252' : colors.borderColor
+              }
+            ]}
             placeholder="Enter your phone number"
             value={phone}
             onChangeText={text => { setPhone(text); setTouched(t => ({ ...t, phone: true })); }}
             keyboardType="phone-pad"
             maxLength={15}
-            placeholderTextColor="#aaa"
+            placeholderTextColor={colors.secondaryText}
             onBlur={() => setTouched(t => ({ ...t, phone: true }))}
           />
           {phoneError && <Text style={styles.errorText}>Phone number is required</Text>}
 
           <View style={styles.inputLabelRow}>
-            <Text style={styles.inputLabel}>Email</Text>
-            <Text style={styles.optionalLabel}>(optional)</Text>
+            <Text style={[styles.inputLabel, { color: colors.primaryText }]}>Email</Text>
+            <Text style={[styles.optionalLabel, { color: colors.secondaryText }]}>(optional)</Text>
           </View>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input, 
+              { 
+                backgroundColor: colors.cardBackground,
+                color: colors.primaryText,
+                borderColor: colors.borderColor
+              }
+            ]}
             placeholder="Enter your email (optional)"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
-            placeholderTextColor="#aaa"
+            placeholderTextColor={colors.secondaryText}
           />
 
           <TouchableOpacity
-            style={[styles.button, (!(name.trim() && phone.trim())) && styles.buttonDisabled]}
+            style={[
+              styles.button, 
+              { backgroundColor: (name.trim() && phone.trim()) ? colors.accent : colors.secondaryText }
+            ]}
             onPress={handleSignIn}
           >
-            <Text style={styles.buttonText}>Sign In</Text>
+            <Text style={[styles.buttonText, { color: '#fff' }]}>Sign In</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -117,13 +142,11 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: '#fff',
     letterSpacing: 2,
     marginBottom: 4,
   },
   welcome: {
     fontSize: 18,
-    color: '#fff',
     marginBottom: 32,
     textAlign: 'center',
   },
@@ -140,7 +163,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   inputLabel: {
-    color: '#fff',
     fontSize: 15,
     fontWeight: '500',
   },
@@ -151,23 +173,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   optionalLabel: {
-    color: '#aaa',
     marginLeft: 4,
     fontSize: 13,
   },
   input: {
     width: '100%',
-    backgroundColor: 'rgba(18,45,45,0.85)',
-    color: '#fff',
     borderRadius: 8,
     padding: 14,
     marginBottom: 10,
     fontSize: 16,
     borderWidth: 1.5,
-    borderColor: 'transparent',
-  },
-  inputError: {
-    borderColor: '#FF5252',
   },
   errorText: {
     color: '#FF5252',
@@ -177,7 +192,6 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   button: {
-    backgroundColor: '#00C2A0',
     borderRadius: 8,
     paddingVertical: 14,
     paddingHorizontal: 32,
@@ -185,11 +199,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  buttonDisabled: {
-    backgroundColor: '#6ad7c2',
-  },
   buttonText: {
-    color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
   },
